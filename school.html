@@ -44,11 +44,11 @@
             font-family: 'Orbitron', sans-serif;
             font-size: clamp(2rem, 5vw, 3rem);
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 0px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(255, 0, 51, 0.6);
+            text-shadow: 0 0 0px rgba(255, 0, 51, 0.6);
         }
-        .highlight { color: #ff0033; }
+        .highlight { color: var(--primary); }
 
         /* Табы дней недели */
         .days-tabs {
@@ -67,11 +67,11 @@
             user-select: none;
         }
         .day-tab.active, .day-tab:hover {
-            background: #ff0033;
-            color: #000;
-            border-color: #ff0033;
-            box-shadow: 0 0 15px rgba(255, 0, 51, 0.5);
-        }
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--glow-strong);
+    }
 
         /* Обертка таблицы с анимацией смены */
         .schedule-table-wrapper {
@@ -94,13 +94,15 @@
         th {
             background: rgba(255, 0, 51, 0.1); padding: 20px; text-align: left;
             font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px;
-            border-bottom: 2px solid #ff0033;
+            border-bottom: 2px solid var(--primary);
         }
         td { padding: 18px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
         tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255, 0, 51, 0.05); padding-left: 25px; }
+        tr:hover td {
+    background: var(--glow);
+}
 
-        .lesson-num { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #ff0033; font-size: 1.2rem; width: 60px; text-align: center; }
+        .lesson-num { font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--primary); font-size: 1.2rem; width: 60px; text-align: center; }
         .lesson-time { color: #aaa; font-size: 0.9rem; white-space: nowrap; }
         .lesson-name { font-weight: 700; font-size: 1.1rem; }
         .lesson-room { text-align: right; color: #888; font-size: 0.9rem; }
@@ -286,7 +288,7 @@ body { background-color: #050505; color: #ffffff; font-family: 'Montserrat', san
 .theme-switcher { position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px; }
 .theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s ease; opacity: 0.6; }
 .theme-btn:hover, .theme-btn.active { opacity: 1; transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px currentColor; }
-.theme-btn[data-set="red"] { background: #ff0033; color: #ff0033; }
+.theme-btn[data-set="red"] { background: #ff0003; color: #ff0033; }
 .theme-btn[data-set="blue"] { background: #00aaff; color: #00aaff; }
 .theme-btn[data-set="green"] { background: #00ff66; color: #00ff66; }
 .theme-btn[data-set="aero"] { background: #00ffff; color: #00ffff; }

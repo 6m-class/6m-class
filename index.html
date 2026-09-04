@@ -202,7 +202,7 @@
                     <li><span>4.</span> Технология (11:40 - 12:25) </li>
                     <li><span>5.</span> Технология (12:35 - 13:20)</li>
                     <li><span>6.</span> Изобразительное искусство (13:30 - 14:15) </li>
-                    <li><span>5.</span> Литература (14:20 - 15:05) </li>
+                    <li><span>7.</span> Литература (14:20 - 15:05) </li>
                 </ul>
                 <!-- Ссылка-заглушка, потом замените # на нужный файл -->
                 <a href="school.html" class="card-link">Полное расписание →</a>
@@ -537,12 +537,24 @@ nav { padding: 20px 40px; display: flex; justify-content: space-between; align-i
 const themeBtns=document.querySelectorAll('.theme-btn');const savedTheme=localStorage.getItem('site-theme')||'red';document.documentElement.setAttribute('data-theme',savedTheme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===savedTheme));themeBtns.forEach(btn=>{btn.addEventListener('click',()=>{const theme=btn.dataset.set;document.documentElement.setAttribute('data-theme',theme);localStorage.setItem('site-theme',theme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===theme));});});
 const pc=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*4+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+5}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
 </script>
-</body>
+<script>
+// Анимация только при ПЕРВОМ заходе
+if (sessionStorage.getItem('visitedMain')) {
+    // Уже заходили → показываем ВСЁ сразу: текст, кнопку, расписание, новости, форму
+    const s = document.createElement('style');
+    s.innerHTML = `
+        .typewriter-line { width: 100% !important; animation: none !important; border-right: none !important; }
+        .btn { opacity: 1 !important; transform: translateY(0) !important; animation: none !important; }
+        .extra-sections { opacity: 1 !important; animation: none !important; }
+        .contact-section { opacity: 1 !important; transform: translateY(0) !important; }
+    `;
+    document.head.appendChild(s);
+} else {
+    // Первый заход → всё печатается и появляется красиво
+    sessionStorage.setItem('visitedMain', 'true');
+}
+</script></body>
 </html>
-<!-- ============================================================ -->
-<!-- === КОНЕЦ CLASS.HTML === -->
-<!-- ============================================================ -->
-
 
 
 
