@@ -460,6 +460,91 @@ for (let i = 0; i < 50; i++) {
 <!-- ============================================================ -->
 
 
+<!-- ============================================================ -->
+<!-- === НАЧАЛО CLASS.HTML === -->
+<!-- ============================================================ -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наша Команда | Самый лучший класс</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root { --primary:#ff0033; --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --border:rgba(255,0,51,0.3); --shadow:rgba(255,0,51,0.2); }
+[data-theme="blue"] { --primary:#00aaff; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.3); --shadow:rgba(0,170,255,0.2); }
+[data-theme="green"] { --primary:#00ff66; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.3); --shadow:rgba(0,255,102,0.2); }
+[data-theme="aero"] { --primary:#00ffff; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.3); --shadow:rgba(0,255,255,0.2); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background-color: #050505; color: #ffffff; font-family: 'Montserrat', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+
+.theme-switcher { position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px; }
+.theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s ease; opacity: 0.6; }
+.theme-btn:hover, .theme-btn.active { opacity: 1; transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px currentColor; }
+.theme-btn[data-set="red"] { background: #ff0033; color: #ff0033; }
+.theme-btn[data-set="blue"] { background: #00aaff; color: #00aaff; }
+.theme-btn[data-set="green"] { background: #00ff66; color: #00ff66; }
+.theme-btn[data-set="aero"] { background: #00ffff; color: #00ffff; }
+
+.background-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 0%, var(--glow) 0%, rgba(5,5,5,0) 60%); z-index: -2; pointer-events: none; }
+
+nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 10px var(--shadow); text-decoration: none; }
+.back-btn { color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.9rem; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; transition: 0.3s; }
+.back-btn:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--shadow); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+.teacher-section { text-align: center; margin-bottom: 80px; padding: 40px; background: rgba(20,20,20,0.5); border: 1px solid var(--border); border-radius: 15px; box-shadow: 0 0 30px rgba(0,0,0,0.5); animation: fadeIn 1s ease-out; }
+.section-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+.section-title span { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
+.teacher-card { display: inline-flex; flex-direction: column; align-items: center; gap: 20px; }
+.teacher-photo { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: 0 0 20px var(--shadow); transition: transform 0.3s; }
+.teacher-photo:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--glow-strong); }
+.teacher-name { font-size: 1.5rem; font-weight: 700; }
+.teacher-role { color: #aaa; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+
+.students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
+.student-card { background: rgba(20,20,20,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; position: relative; }
+.student-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 10px 30px var(--shadow); }
+.student-img-wrapper { width: 100%; height: 250px; overflow: hidden; position: relative; }
+.student-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; filter: grayscale(80%); }
+.student-card:hover .student-img { transform: scale(1.1); filter: grayscale(0%); }
+.student-info { padding: 15px; text-align: center; background: #0a0a0a; border-top: 2px solid var(--primary); }
+.student-name { font-weight: 700; font-size: 1.1rem; color: #fff; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.particle { position: absolute; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); animation: floatUp linear infinite; opacity: 0; }
+@keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 50%{opacity:0.5} 100%{transform:translateY(-10vh) scale(1);opacity:0} }
+</style>
+</head>
+<body>
+<div class="theme-switcher">
+    <div class="theme-btn active" data-set="red" title="Красная"></div>
+    <div class="theme-btn" data-set="blue" title="Синяя"></div>
+    <div class="theme-btn" data-set="green" title="Зелёная"></div>
+    <div class="theme-btn" data-set="aero" title="Аэро"></div>
+</div>
+<div class="background-glow"></div>
+<div class="particles" id="particles"></div>
+<nav>
+
+
+    </div>
+</div>
+<script>
+const themeBtns=document.querySelectorAll('.theme-btn');const savedTheme=localStorage.getItem('site-theme')||'red';document.documentElement.setAttribute('data-theme',savedTheme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===savedTheme));themeBtns.forEach(btn=>{btn.addEventListener('click',()=>{const theme=btn.dataset.set;document.documentElement.setAttribute('data-theme',theme);localStorage.setItem('site-theme',theme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===theme));});});
+const pc=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*4+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+5}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
+</script>
+</body>
+</html>
+<!-- ============================================================ -->
+<!-- === КОНЕЦ CLASS.HTML === -->
+<!-- ============================================================ -->
+
+
+
 
 
 
