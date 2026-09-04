@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Самый лучший класс</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Базовые настройки */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh; /* Изменили height на min-height, чтобы контент поместился */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 40px 20px; /* Добавили отступы, чтобы контент не прилипал к краям на мобильных */
+        }
+
+        /* Анимированный фон (красное свечение) */
+        .background-glow {
+            position: fixed; /* Фиксируем фон, чтобы он не скроллился */
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw; height: 80vw;
+            background: radial-gradient(circle, rgba(255, 0, 51, 0.15) 0%, rgba(5, 5, 5, 0) 70%);
+            z-index: -2;
+            animation: pulseGlow 4s infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+
+        /* Контейнер для контента */
+        .container {
+            text-align: center;
+            z-index: 10;
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Главный заголовок */
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.3rem, 4vw, 3.3rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1.4;
+            margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 0, 51, 0.8), 0 0 20px rgba(255, 0, 51, 0.5);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .highlight { color: #ff0033; text-shadow: 0 0 15px #ff0033, 0 0 30px #ff0033; }
+
+        /* Эффект печати */
+        .typewriter-wrapper {
+            display: flex; flex-direction: column; align-items: center; gap: 15px; min-height: 120px;
+        }
+        .typewriter-line {
+            display: inline-block; font-size: clamp(1.2rem, 3vw, 2.5rem); font-weight: 700;
+            white-space: nowrap; overflow: hidden; width: 0; border-right: 3px solid transparent;
+        }
+        .line-1 { color: #ffffff; animation: typingLine1 2.5s steps(30, end) forwards, blinkCursor 0.75s step-end infinite 2.5s; }
+        .line-2 { color: #ff0033; text-shadow: 0 0 10px rgba(255, 0, 51, 0.5); animation: typingLine2 2s steps(25, end) 2.5s forwards, blinkCursorRed 0.75s step-end infinite 4.5s; }
+        .line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); animation: typingLine3 2s steps(35, end) 4.5s forwards; border-right: none; }
+
+        /* Кнопка "Наша история" */
+        .btn {
+            display: inline-block; margin-top: 40px; padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700;
+            color: #ff0033; text-decoration: none; text-transform: uppercase;
+            border: 2px solid #ff0033; border-radius: 5px; background: transparent;
+            cursor: pointer; transition: all 0.3s ease;
+            opacity: 0; transform: translateY(20px);
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.2);
+            animation: fadeInUp 1s ease-out 6.5s forwards;
+        }
+        .btn:hover {
+            background: #ff0033; color: #000;
+            box-shadow: 0 0 20px rgba(255, 0, 51, 0.8), 0 0 40px rgba(255, 0, 51, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* --- НОВЫЕ СЕКЦИИ (Расписание и Новости) --- */
+        .extra-sections {
+            margin-top: 80px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 7.5s forwards; /* Появляются после главной кнопки */
+        }
+
+        .card {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 0, 51, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #ff0033;
+            box-shadow: 0 0 25px rgba(255, 0, 51, 0.2);
+        }
+
+        .card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #ff0033;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* Стили для списка расписания */
+        .schedule-list { list-style: none; margin-bottom: 20px; flex-grow: 1; }
+        .schedule-list li {
+            display: flex; justify-content: space-between;
+            padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.95rem; color: #ccc;
+        }
+        .schedule-list li span:first-child { color: #ff0033; font-weight: 700; margin-right: 10px;}
+
+        /* Стили для новости */
+        .news-date { color: #ff0033; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase;}
+        .news-text { color: #ddd; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1;}
+
+        /* Маленькая кнопка внутри карточек */
+        .card-link {
+            align-self: flex-start;
+            color: #fff; text-decoration: none; font-weight: 700; font-size: 0.9rem;
+            text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s; padding: 8px 15px;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+        }
+        .card-link:hover { border-color: #ff0033; color: #ff0033; box-shadow: 0 0 10px rgba(255,0,51,0.3); }
+
+        /* Анимации */
+        @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes typingLine1 { from { width: 0; border-right-color: #fff; } to { width: 100%; border-right-color: #fff; } }
+        @keyframes typingLine2 { from { width: 0; border-right-color: #ff0033; } to { width: 100%; border-right-color: #ff0033; } }
+        @keyframes typingLine3 { from { width: 0; } to { width: 100%; } }
+        @keyframes blinkCursor { from, to { border-right-color: transparent; } 50% { border-right-color: #fff; } }
+        @keyframes blinkCursorRed { from, to { border-right-color: transparent; } 50% { border-right-color: #ff0033; } }
+
+        /* Частицы */
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .particle { position: absolute; background: #ff0033; border-radius: 50%; box-shadow: 0 0 10px #ff0033; animation: floatUp linear infinite; opacity: 0; }
+        @keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <h1></h1>
+        
+        <div class="typewriter-wrapper">
+            <div class="typewriter-line line-1">Самый лучший в мире класс</div>
+            <div class="typewriter-line line-2">это сказано про нас</div>
+            <div class="typewriter-line line-3">Мы, внуки Пифагора!</div>
+        </div>
+
+        <!-- Главная кнопка -->
+        <a href="class.html" class="btn">Наши ученики</a>
+
+        <!-- НОВЫЙ БЛОК: Расписание и Новости -->
+        <div class="extra-sections">
+            
+            <!-- Карточка Расписания -->
+            <div class="card">
+                <h3>Расписание</h3>
+                <ul class="schedule-list">
+                    <li><span>1.</span> Разговоры о важном (8:30 - 9:15) </li>
+                    <li><span>2.</span> Математика (9:30 - 10:15) </li>
+                    <li><span>6.</span> Русский язык (10:35 - 11:20) </li>
+                    <li><span>4.</span> Технология (11:40 - 12:25) </li>
+                    <li><span>5.</span> Технология (12:35 - 13:20)</li>
+                    <li><span>6.</span> Изобразительное искусство (13:30 - 14:15) </li>
+                    <li><span>5.</span> Литература (14:20 - 15:05) </li>
+                </ul>
+                <!-- Ссылка-заглушка, потом замените # на нужный файл -->
+                <a href="school.html" class="card-link">Полное расписание →</a>
+            </div>
+
+            <!-- Карточка Новостей -->
+            <div class="card">
+                <h3>Новости</h3>
+                <div class="news-item">
+                    <div class="news-date"> </div>
+                    <p class="news-text">Упс... Тут пока что ничего нету.</p>
+                </div>
+                <!-- Ссылка-заглушка, потом замените # на нужный файл -->
+                <a href="#" class="card-link">Все новости →</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 5 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>
+<!-- ============================================================ -->
+<!-- === НАЧАЛО INDEX.HTML === -->
+<!-- ============================================================ -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Самый лучший класс</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* === СИСТЕМА ТЕМ (CSS ПЕРЕМЕННЫЕ) === */
+:root {
+    --primary: #ff0033;
+    --glow: rgba(255, 0, 51, 0.15);
+    --glow-strong: rgba(255, 0, 51, 0.8);
+    --border: rgba(255, 0, 51, 0.3);
+    --shadow: rgba(255, 0, 51, 0.2);
+}
+[data-theme="blue"] {
+    --primary: #00aaff; --glow: rgba(0,170,255,0.15);
+    --glow-strong: rgba(0,170,255,0.8); --border: rgba(0,170,255,0.3); --shadow: rgba(0,170,255,0.2);
+}
+[data-theme="green"] {
+    --primary: #00ff66; --glow: rgba(0,255,102,0.15);
+    --glow-strong: rgba(0,255,102,0.8); --border: rgba(0,255,102,0.3); --shadow: rgba(0,255,102,0.2);
+}
+[data-theme="aero"] {
+    --primary: #00ffff; --glow: rgba(0,255,255,0.15);
+    --glow-strong: rgba(0,255,255,0.8); --border: rgba(0,255,255,0.3); --shadow: rgba(0,255,255,0.2);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background-color: #050505; color: #ffffff; font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden; min-height: 100vh; display: flex; justify-content: center; align-items: center;
+    position: relative; padding: 40px 20px;
+}
+
+/* === ПЕРЕКЛЮЧАТЕЛЬ ТЕМ (КРУЖОЧКИ ВВЕРХУ СЛЕВА) === */
+.theme-switcher {
+    position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px;
+}
+.theme-btn {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);
+    cursor: pointer; transition: all 0.3s ease; opacity: 0.6;
+}
+.theme-btn:hover, .theme-btn.active { opacity: 1; transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px currentColor; }
+.theme-btn[data-set="red"] { background: #ff0033; color: #ff0033; }
+.theme-btn[data-set="blue"] { background: #00aaff; color: #00aaff; }
+.theme-btn[data-set="green"] { background: #00ff66; color: #00ff66; }
+.theme-btn[data-set="aero"] { background: #00ffff; color: #00ffff; }
+
+.background-glow {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80vw; height: 80vw;
+    background: radial-gradient(circle, var(--glow) 0%, rgba(5,5,5,0) 70%);
+    z-index: -2; animation: pulseGlow 4s infinite alternate; pointer-events: none;
+}
+@keyframes pulseGlow { 0%{transform:translate(-50%,-50%) scale(1);opacity:.8} 100%{transform:translate(-50%,-50%) scale(1.2);opacity:1} }
+
+.container { text-align: center; z-index: 10; padding: 20px; max-width: 1000px; display: flex; flex-direction: column; align-items: center; }
+h1 {
+    font-family: 'Orbitron', sans-serif; font-size: clamp(1.3rem, 4vw, 3.3rem); font-weight: 900;
+    text-transform: uppercase; line-height: 1.4; margin-bottom: 30px; color: #fff;
+    text-shadow: 0 0 10px var(--glow-strong), 0 0 20px var(--shadow);
+    animation: fadeInUp 1s ease-out forwards;
+}
+.highlight { color: var(--primary); text-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary); }
+
+.typewriter-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; min-height: 120px; }
+.typewriter-line { display: inline-block; font-size: clamp(1.2rem, 3vw, 2.5rem); font-weight: 700; white-space: nowrap; overflow: hidden; width: 0; border-right: 3px solid transparent; }
+.line-1 { color: #fff; animation: typingLine1 2.5s steps(30,end) forwards, blinkCursor .75s step-end infinite 2.5s; }
+.line-2 { color: var(--primary); text-shadow: 0 0 10px var(--shadow); animation: typingLine2 2s steps(25,end) 2.5s forwards, blinkCursorTheme .75s step-end infinite 4.5s; }
+.line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); animation: typingLine3 2s steps(35,end) 4.5s forwards; border-right: none; }
+
+.btn {
+    display: inline-block; margin-top: 40px; padding: 15px 40px; font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem; font-weight: 700; color: var(--primary); text-decoration: none; text-transform: uppercase;
+    border: 2px solid var(--primary); border-radius: 5px; background: transparent; cursor: pointer;
+    transition: all 0.3s ease; opacity: 0; transform: translateY(20px);
+    box-shadow: 0 0 10px var(--shadow); animation: fadeInUp 1s ease-out 6.5s forwards;
+}
+.btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--glow-strong), 0 0 40px var(--shadow); transform: scale(1.05); }
+
+/* Карточки расписания и новостей */
+.extra-sections { margin-top: 80px; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; opacity: 0; animation: fadeInUp 1s ease-out 7.5s forwards; }
+.card { background: rgba(20,20,20,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 30px; text-align: left; transition: all 0.3s ease; display: flex; flex-direction: column; }
+.card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 0 25px var(--shadow); }
+.card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block; }
+.schedule-list { list-style: none; margin-bottom: 20px; flex-grow: 1; }
+.schedule-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; color: #ccc; }
+.schedule-list li span:first-child { color: var(--primary); font-weight: 700; margin-right: 10px; }
+.news-date { color: var(--primary); font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+.news-text { color: #ddd; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
+.card-link { align-self: flex-start; color: #fff; text-decoration: none; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; padding: 8px 15px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; }
+.card-link:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--shadow); }
+
+/* Контактная форма */
+.contact-section { margin-top: 100px; width: 100%; max-width: 600px; background: rgba(20,20,20,0.6); border: 1px solid var(--border); border-radius: 15px; padding: 40px; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.5); opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+.contact-section.visible { opacity: 1; transform: translateY(0); }
+.contact-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; margin-bottom: 30px; text-transform: uppercase; color: #fff; }
+.contact-title span { color: var(--primary); text-shadow: 0 0 10px var(--shadow); }
+.form-group { margin-bottom: 20px; text-align: left; }
+.form-group label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; outline: none; resize: vertical; }
+.form-group input:focus, .form-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--shadow); }
+.btn-submit { width: 100%; padding: 15px; margin-top: 10px; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--primary); text-transform: uppercase; background: transparent; border: 2px solid var(--primary); border-radius: 5px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px var(--shadow); }
+.btn-submit:hover { background: var(--primary); color: #000; box-shadow: 0 0 25px var(--glow-strong); transform: translateY(-2px); }
+
+@keyframes fadeInUp { 0%{opacity:0;transform:translateY(30px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes typingLine1 { from{width:0;border-right-color:#fff} to{width:100%;border-right-color:#fff} }
+@keyframes typingLine2 { from{width:0;border-right-color:var(--primary)} to{width:100%;border-right-color:var(--primary)} }
+@keyframes typingLine3 { from{width:0} to{width:100%} }
+@keyframes blinkCursor { from,to{border-right-color:transparent} 50%{border-right-color:#fff} }
+@keyframes blinkCursorTheme { from,to{border-right-color:transparent} 50%{border-right-color:var(--primary)} }
+
+.particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+.particle { position: absolute; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: floatUp linear infinite; opacity: 0; }
+@keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 20%{opacity:1} 80%{opacity:1} 100%{transform:translateY(-10vh) scale(1.5);opacity:0} }
+</style>
+</head>
+<body>
+<!-- Переключатель тем -->
+<div class="theme-switcher">
+    <div class="theme-btn active" data-set="red" title="Красная"></div>
+    <div class="theme-btn" data-set="blue" title="Синяя"></div>
+    <div class="theme-btn" data-set="green" title="Зелёная"></div>
+    <div class="theme-btn" data-set="aero" title="Аэро"></div>
+</div>
+
+<div class="background-glow"></div>
+<div class="particles" id="particles"></div>
+<script>
+
+
+// === СИСТЕМА ТЕМ ===
+const themeBtns = document.querySelectorAll('.theme-btn');
+const savedTheme = localStorage.getItem('site-theme') || 'red';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === savedTheme));
+themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const theme = btn.dataset.set;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('site-theme', theme);
+        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+    });
+});
+
+// Частицы
+const pc = document.getElementById('particles');
+for (let i = 0; i < 50; i++) {
+    const p = document.createElement('div'); p.classList.add('particle');
+    const s = Math.random() * 5 + 2;
+    p.style.width = `${s}px`; p.style.height = `${s}px`;
+    p.style.left = `${Math.random() * 100}vw`;
+    p.style.animationDuration = `${Math.random() * 5 + 3}s`;
+    p.style.animationDelay = `${Math.random() * 5}s`;
+    pc.appendChild(p);
+}
+
+// Анимация формы при скролле
+new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) document.getElementById('contactForm').classList.add('visible'); });
+}, { threshold: 0.2 }).observe(document.getElementById('contactForm'));
+
+// Mailto (ЗАМЕНИТЕ your-email@example.com НА РЕАЛЬНУЮ ПОЧТУ)
+document.getElementById('emailForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const n = document.getElementById('name').value;
+    const em = document.getElementById('email').value;
+    const m = document.getElementById('message').value;
+    window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n\n${m}`)}`;
+});
+// 1. Проверка: был ли пользователь уже на этой странице в текущей сессии?
+if (!sessionStorage.getItem('visitedIndex')) {
+    // Первый вход: разрешаем анимацию
+    document.querySelector('.container').classList.add('animate-print');
+    sessionStorage.setItem('visitedIndex', 'true');
+} else {
+    // Повторный вход: показываем всё сразу без анимации
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .typewriter-line { width: 100% !important; border-right: none !important; animation: none !important; }
+        .line-1 { color: #fff !important; }
+        .line-2 { color: var(--primary, #ff0033) !important; text-shadow: 0 0 10px rgba(255,0,51,0.5) !important; }
+        .line-3 { color: #e0e0e0 !important; font-size: clamp(1rem, 2.5vw, 2rem) !important; }
+        .btn { opacity: 1 !important; transform: translateY(0) !important; animation: none !important; }
+    `;
+    document.head.appendChild(style);
+}
+
+// 2. Генерация частиц (оставляем как было)
+const particlesContainer = document.getElementById('particles');
+for (let i = 0; i < 50; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    const size = Math.random() * 5 + 2;
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.left = `${Math.random() * 100}vw`;
+    particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
+    particle.style.animationDelay = `${Math.random() * 5}s`;
+    particlesContainer.appendChild(particle);
+}
+</script>
+</body>
+</html>
+<!-- ============================================================ -->
+<!-- === КОНЕЦ INDEX.HTML === -->
+<!-- ============================================================ -->
+
+
+
+
+
