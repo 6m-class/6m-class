@@ -413,36 +413,44 @@ document.getElementById('emailForm').addEventListener('submit', function(e) {
     const m = document.getElementById('message').value;
     window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n\n${m}`)}`;
 });
-// 1. Проверка: был ли пользователь уже на этой странице в текущей сессии?
-if (!sessionStorage.getItem('visitedIndex')) {
-    // Первый вход: разрешаем анимацию
-    document.querySelector('.container').classList.add('animate-print');
-    sessionStorage.setItem('visitedIndex', 'true');
+// === СИСТЕМА ТЕМ ===
+const themeBtns = document.querySelectorAll('.theme-btn');
+const savedTheme = localStorage.getItem('site-theme') || 'red';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === savedTheme));
+themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const theme = btn.dataset.set;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('site-theme', theme);
+        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+    });
+});
+
+// === УПРАВЛЕНИЕ АНИМАЦИЕЙ ПЕЧАТИ ===
+const container = document.querySelector('.container');
+const hasVisited = sessionStorage.getItem('hasVisitedIndex');
+
+if (!hasVisited) {
+    // Первый визит в этой сессии → запускаем анимацию
+    container.classList.add('animate');
+    sessionStorage.setItem('hasVisitedIndex', 'true');
 } else {
-    // Повторный вход: показываем всё сразу без анимации
-    const style = document.createElement('style');
-    style.innerHTML = `
-        .typewriter-line { width: 100% !important; border-right: none !important; animation: none !important; }
-        .line-1 { color: #fff !important; }
-        .line-2 { color: var(--primary, #ff0033) !important; text-shadow: 0 0 10px rgba(255,0,51,0.5) !important; }
-        .line-3 { color: #e0e0e0 !important; font-size: clamp(1rem, 2.5vw, 2rem) !important; }
-        .btn { opacity: 1 !important; transform: translateY(0) !important; animation: none !important; }
-    `;
-    document.head.appendChild(style);
+    // Повторный визит → показываем контент мгновенно
+    container.classList.add('no-animate');
 }
 
-// 2. Генерация частиц (оставляем как было)
-const particlesContainer = document.getElementById('particles');
+// === ЧАСТИЦЫ ===
+const pc = document.getElementById('particles');
 for (let i = 0; i < 50; i++) {
-    const particle = document.createElement('div');
-    particle.classList.add('particle');
-    const size = Math.random() * 5 + 2;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-    particle.style.left = `${Math.random() * 100}vw`;
-    particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
-    particle.style.animationDelay = `${Math.random() * 5}s`;
-    particlesContainer.appendChild(particle);
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    const s = Math.random() * 5 + 2;
+    p.style.width = `${s}px`; p.style.height = `${s}px`;
+    p.style.left = `${Math.random() * 100}vw`;
+    p.style.animationDuration = `${Math.random() * 5 + 3}s`;
+    p.style.animationDelay = `${Math.random() * 5}s`;
+    pc.appendChild(p);
 }
 </script>
 </body>
