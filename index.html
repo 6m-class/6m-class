@@ -224,7 +224,97 @@ async function loadSite() {
         document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
     }
 }
+async function loadSite() {
+    try {
+        // Загрузка data.json с защитой от кэша
+        const timestamp = Date.now();
+        const res = await fetch(`${API}/contents/data.json?ref=main&_t=${timestamp}`, { 
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            }
+        });
+        
+        if (!res.ok) throw new Error('data.json not found');
+        const file = await res.json();
+        const data = JSON.parse(atob(file.content));
 
+        // Тексты
+        if (data.title) document.getElementById('mainTitle').textContent = data.title;
+        if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
+        if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
+        if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
+        if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
+        if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
+
+        // Тема
+        const theme = data.theme || 'red';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+
+        // Расписание
+        const schedList = document.getElementById('scheduleList');
+        if (data.schedule && data.schedule.trim()) {
+            schedList.innerHTML = data.schedule.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
+        } else {
+            schedList.innerHTML = '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
+        }
+
+        // Внеурочка
+        const actList = document.getElementById('activitiesList');
+        if (data.activities && data.activities.trim()) {
+            actList.innerHTML = data.activities.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
+        } else {
+            actList.innerHTML = '<li style="color:#777"><span>—</span> Нет занятий</li>';
+        }
+
+        // Новости из Issues
+        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=3&_t=${timestamp}`, { cache: 'no-store' });
+        const news = await newsRes.json();
+        const newsContent = document.getElementById('newsContent');
+        const newsEmpty = data.news_empty || 'Упс... Тут пока что ничего нету.';
+
+        if (news.length > 0) {
+            newsContent.innerHTML = news.map(n => `
+                <div class="news-item">
+                    <div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div>
+                    <div class="news-text"><b>${esc(n.title)}</b><br>${esc(n.body || '')}</div>
+                </div>
+            `).join('');
+        } else {
+            newsContent.innerHTML = `<p class="news-empty">${esc(newsEmpty)}</p>`;
+        }
+
+        // Уведомления из Issues
+        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=1&_t=${timestamp}`, { cache: 'no-store' });
+        const notifs = await notifRes.json();
+        if (notifs.length > 0) {
+            const last = notifs[0];
+            const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+            if (!seen.includes(last.number)) {
+                const popup = document.createElement('div');
+                popup.className = 'notif-popup';
+                popup.innerHTML = `
+                    <button class="notif-close" onclick="this.parentElement.remove()">✕</button>
+                    <h4>🔔 Уведомление</h4>
+                    <p>${esc(last.title)}</p>
+                    <div class="notif-date">${new Date(last.created_at).toLocaleString('ru-RU')}</div>
+                `;
+                document.body.appendChild(popup);
+                setTimeout(() => { if (popup.parentElement) popup.remove(); }, 15000);
+                seen.push(last.number);
+                localStorage.setItem('seenNotifs', JSON.stringify(seen.slice(-20)));
+            }
+        }
+
+    } catch (err) {
+        console.error('Ошибка загрузки:', err);
+        document.getElementById('poemLine1').textContent = 'Самый лучший в мире класс';
+        document.getElementById('poemLine2').textContent = 'это сказано про нас';
+        document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
+    }
+}
 loadSite();
 
 // Переключатель тем (локально)
