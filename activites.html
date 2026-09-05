@@ -144,5 +144,28 @@ for (let i = 0; i < 30; i++) {
     pc.appendChild(p);
 }
 </script>
+<script>
+// ===== ЧТЕНИЕ ВНЕУРОЧКИ ИЗ АДМИНКИ =====
+(function() {
+    // Тема
+    const theme = localStorage.getItem('site-theme') || 'red';
+    if (theme !== 'red') document.documentElement.setAttribute('data-theme', theme);
+
+    // Внеурочка
+    const activities = localStorage.getItem('siteActivities');
+    if (activities) {
+        const lines = activities.split('\n').filter(l => l.trim());
+        // Ищем контейнер занятий
+        const container = document.querySelector('.activities-grid') || document.querySelector('.activities-list') || document.querySelector('.container');
+        if (container) {
+            container.innerHTML = lines.map(l => `
+                <div class="activity-item" style="background:rgba(20,20,20,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:15px;margin-bottom:10px;">
+                    ${l}
+                </div>
+            `).join('');
+        }
+    }
+})();
+</script>
 </body>
 </html>

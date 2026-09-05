@@ -178,6 +178,7 @@
         @keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
     </style>
 </head>
+<a href="admin.html" style="position:fixed; top:20px; right:20px; z-index:9999; color:rgba(255,255,255,0.4); text-decoration:none; font-size:0.75rem; padding:6px 14px; border:1px solid rgba(255,255,255,0.15); border-radius:4px; transition:0.3s;">⚙️ Админ</a>
 <body>
     <div class="background-glow"></div>
     <div class="particles" id="particles"></div>
@@ -221,7 +222,7 @@
                     <p class="news-text">Упс... Тут пока что ничего нету.</p>
                 </div>
                 <!-- Ссылка-заглушка, потом замените # на нужный файл -->
-                <a href="#" class="card-link">Все новости →</a>
+                <a href="news.html" class="card-link">Все новости →</a>
             </div>
 			<div class="card">
     <h3>Внеурочка</h3>
@@ -468,6 +469,118 @@ for (let i = 0; i < 50; i++) {
     pc.appendChild(p);
 }
 </script>
+<script>
+// ===== ЧТЕНИЕ ДАННЫХ ИЗ АДМИНКИ =====
+(function() {
+    // 1. ТЕМА
+    const theme = localStorage.getItem('site-theme') || 'red';
+    if (theme !== 'red') document.documentElement.setAttribute('data-theme', theme);
+
+    // 2. ЗАГОЛОВОК И ПОЭМА
+    const siteTitle = localStorage.getItem('siteTitle');
+    const sitePoem = localStorage.getItem('sitePoem');
+    if (siteTitle) {
+        const h1 = document.querySelector('h1');
+        if (h1) h1.innerHTML = siteTitle;
+    }
+    if (sitePoem) {
+        // Ищем элемент с поэмой (подзаголовок)
+        const poemEl = document.querySelector('.poem') || document.querySelector('.tagline') || document.querySelector('h1 + p');
+        if (poemEl) poemEl.innerHTML = sitePoem.replace(/\n/g, '<br>');
+    }
+
+    // 3. КНОПКА
+    const btnText = localStorage.getItem('siteBtnText');
+    const btnLink = localStorage.getItem('siteBtnLink');
+    if (btnText || btnLink) {
+        const btn = document.querySelector('.btn') || document.querySelector('a[href="class.html"]');
+        if (btn) {
+            if (btnText) btn.textContent = btnText;
+            if (btnLink) btn.href = btnLink;
+        }
+    }
+
+    // 4. РАСПИСАНИЕ
+    const sched = localStorage.getItem('siteSchedule');
+    if (sched) {
+        const lines = sched.split('\n').filter(l => l.trim());
+        // Ищем список расписания
+        const list = document.querySelector('.schedule-list') || document.querySelector('.card ul');
+        if (list) {
+            list.innerHTML = lines.map((l, i) => `<li><span>${i + 1}.</span> ${esc(l)}</li>`).join('');
+        }
+    }
+
+    // 5. НОВОСТИ
+    const news = JSON.parse(localStorage.getItem('siteNews') || '[]');
+    const newsEmpty = localStorage.getItem('siteNewsEmpty');
+    const newsCards = document.querySelectorAll('.card');
+    let newsCard = null;
+    newsCards.forEach(c => {
+        const h = c.querySelector('h3');
+        if (h && h.textContent.includes('Новости')) newsCard = c;
+    });
+    if (newsCard) {
+        const content = newsCard.querySelector('p') || newsCard.querySelector('.schedule-list');
+        const link = newsCard.querySelector('a');
+        if (news.length > 0) {
+            // Показываем последние 3 новости
+            const html = news.slice(0, 3).map(n =>
+                `<li><span>📰</span> ${esc(n.title)}</li>`
+            ).join('');
+            if (content) content.outerHTML = `<ul class="schedule-list">${html}</ul>`;
+        } else if (newsEmpty && content) {
+            content.textContent = newsEmpty;
+        }
+        if (link) link.href = 'news.html';
+    }
+
+    // 6. ВНЕУРОЧКА
+    const activities = localStorage.getItem('siteActivities');
+    if (activities) {
+        const lines = activities.split('\n').filter(l => l.trim());
+        let actCard = null;
+        newsCards.forEach(c => {
+            const h = c.querySelector('h3');
+            if (h && h.textContent.includes('Внеурочка')) actCard = c;
+        });
+        if (actCard) {
+            const list = actCard.querySelector('ul') || actCard.querySelector('.schedule-list');
+            if (list) {
+                list.innerHTML = lines.map(l => `<li>${esc(l)}</li>`).join('');
+            }
+        }
+    }
+
+    // 7. УВЕДОМЛЕНИЯ
+    const notifs = JSON.parse(localStorage.getItem('siteNotifs') || '[]');
+    const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+    const fresh = notifs.find(n => !seen.includes(n.id));
+    if (fresh) {
+        const banner = document.createElement('div');
+        banner.id = 'notifBanner';
+        banner.style.cssText = 'position:fixed;top:60px;right:20px;z-index:9998;max-width:350px;background:rgba(15,15,15,0.95);border:1px solid rgba(var(--primary-rgb,255,0,51),0.4);border-right:4px solid var(--primary,#ff0033);border-radius:8px;padding:15px 40px 15px 15px;box-shadow:0 5px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px);animation:slideNotif 0.5s ease-out;';
+        banner.innerHTML = `
+            <span style="color:#ddd;font-size:0.85rem;line-height:1.4;">🔔 ${esc(fresh.text)}</span>
+            <button onclick="closeNotif()" style="position:absolute;top:8px;right:10px;background:none;border:none;color:var(--primary,#ff0033);font-size:1rem;cursor:pointer;">✕</button>
+        `;
+        document.body.appendChild(banner);
+        window.currentNotifId = fresh.id;
+        window.closeNotif = function() {
+            const s = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+            s.push(window.currentNotifId);
+            localStorage.setItem('seenNotifs', JSON.stringify(s));
+            banner.remove();
+        };
+        // Анимация
+        const style = document.createElement('style');
+        style.textContent = '@keyframes slideNotif{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}';
+        document.head.appendChild(style);
+    }
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+})();
+</script>
 </body>
 </html>
 <!-- ============================================================ -->
@@ -534,6 +647,35 @@ nav { padding: 20px 40px; display: flex; justify-content: space-between; align-i
 @keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 50%{opacity:0.5} 100%{transform:translateY(-10vh) scale(1);opacity:0} }
 </style>
 </head>
+<!-- Уведомления от админа -->
+<div id="notifBanner" style="display:none; position:fixed; top:60px; right:20px; z-index:9998; max-width:350px; background:rgba(15,15,15,0.95); border:1px solid rgba(var(--primary-rgb), 0.4); border-right:4px solid var(--primary, #ff0033); border-radius:8px; padding:15px 40px 15px 15px; box-shadow:0 5px 25px rgba(0,0,0,0.6); backdrop-filter:blur(10px); animation:slideNotif 0.5s ease-out;">
+    <span id="notifBannerText" style="color:#ddd; font-size:0.85rem; line-height:1.4;"></span>
+    <button onclick="closeNotif()" style="position:absolute; top:8px; right:10px; background:none; border:none; color:var(--primary, #ff0033); font-size:1rem; cursor:pointer;">✕</button>
+</div>
+
+<style>
+@keyframes slideNotif { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+</style>
+
+<script>
+// Система уведомлений от админа
+const siteNotifs = JSON.parse(localStorage.getItem('siteNotifs') || '[]');
+const seenNotifs = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+const freshNotif = siteNotifs.find(n => !seenNotifs.includes(n.id));
+
+if (freshNotif) {
+    document.getElementById('notifBanner').style.display = 'block';
+    document.getElementById('notifBannerText').textContent = '🔔 ' + freshNotif.text;
+    window.currentNotifId = freshNotif.id;
+}
+
+function closeNotif() {
+    const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+    if (window.currentNotifId) seen.push(window.currentNotifId);
+    localStorage.setItem('seenNotifs', JSON.stringify(seen));
+    document.getElementById('notifBanner').style.display = 'none';
+}
+</script>
 <body>
 <div class="theme-switcher">
     <div class="theme-btn active" data-set="red" title="Красная"></div>
@@ -557,20 +699,6 @@ const pc=document.getElementById('particles');for(let i=0;i<30;i++){const p=docu
     </form>
 </section>
 </script>
-<!-- === ОТЗЫВЫ ЧЕРЕЗ GITHUB (появляются при скролле) === -->
-<section class="rev-section" id="revSection">
-    <h2 class="rev-title">Оставить <span>отзыв</span></h2>
-    <form id="reviewForm">
-        <div class="rev-group">
-            <input type="text" id="revName" placeholder="Ваше имя" required maxlength="30">
-        </div>
-        <div class="rev-group">
-            <textarea id="revText" rows="2" placeholder="Ваш отзыв..." required maxlength="500"></textarea>
-        </div>
-        <button type="submit" class="rev-btn" id="revBtn">Отправить</button>
-        <div id="revStatus" style="margin-top:10px; min-height:16px; font-size:0.8rem;"></div>
-    </form>
-</section>
 
 <style>
 .rev-section {
@@ -624,53 +752,6 @@ const revObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.2 });
 revObserver.observe(revSection);
 
-// === ОТПРАВКА ОТЗЫВА НА GITHUB ===
-// 🔑 ЗАМЕНИ НА СВОИ ДАННЫЕ
-const GITHUB_TOKEN = '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';
-const GITHUB_REPO = '6m-class/6m-class';
-
-document.getElementById('reviewForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('revBtn');
-    const status = document.getElementById('revStatus');
-    const name = document.getElementById('revName').value.trim();
-    const text = document.getElementById('revText').value.trim();
-
-    btn.disabled = true;
-    btn.textContent = 'Отправка...';
-    status.textContent = '';
-
-    try {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json'
-            },
-            body: JSON.stringify({
-                title: `📝 Отзыв от ${name}`,
-                body: `**Имя:** ${name}\n\n**Отзыв:**\n${text}\n\n---\n*${new Date().toLocaleString('ru-RU')}*`
-            })
-        });
-
-        if (res.ok) {
-            status.textContent = '✅ Отзыв отправлен! Спасибо!';
-            status.style.color = 'var(--primary, #ff0033)';
-            this.reset();
-        } else {
-            const err = await res.json();
-            status.textContent = '❌ Ошибка: ' + (err.message || 'попробуй позже');
-            status.style.color = '#ff0033';
-        }
-    } catch (err) {
-        status.textContent = '❌ Нет соединения';
-        status.style.color = '#ff0033';
-    }
-
-    btn.disabled = false;
-    btn.textContent = 'Отправить';
-});
-</script>
 <script>
 // 1. Проверка: был ли пользователь уже на этой странице в текущей сессии?
 if (!sessionStorage.getItem('visitedIndex')) {

@@ -343,6 +343,43 @@ nav { padding: 20px 40px; display: flex; justify-content: space-between; align-i
 const themeBtns=document.querySelectorAll('.theme-btn');const savedTheme=localStorage.getItem('site-theme')||'red';document.documentElement.setAttribute('data-theme',savedTheme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===savedTheme));themeBtns.forEach(btn=>{btn.addEventListener('click',()=>{const theme=btn.dataset.set;document.documentElement.setAttribute('data-theme',theme);localStorage.setItem('site-theme',theme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===theme));});});
 const pc=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*4+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+5}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
 </script>
+<script>
+// ===== ЧТЕНИЕ РАСПИСАНИЯ ИЗ АДМИНКИ =====
+(function() {
+    // Тема
+    const theme = localStorage.getItem('site-theme') || 'red';
+    if (theme !== 'red') document.documentElement.setAttribute('data-theme', theme);
+
+    // Расписание по дням
+    const days = {
+        'Понедельник': 'schedMon',
+        'Вторник': 'schedTue',
+        'Среда': 'schedWed',
+        'Четверг': 'schedThu',
+        'Пятница': 'schedFri'
+    };
+
+    Object.entries(days).forEach(([dayName, key]) => {
+        const data = localStorage.getItem(key);
+        if (!data) return;
+        const lines = data.split('\n').filter(l => l.trim());
+
+        // Ищем секцию с этим днём
+        const allHeaders = document.querySelectorAll('h2, h3, .day-title');
+        allHeaders.forEach(h => {
+            if (h.textContent.includes(dayName)) {
+                const parent = h.closest('.day') || h.parentElement;
+                let list = parent.querySelector('ul') || parent.querySelector('ol');
+                if (!list) {
+                    list = document.createElement('ul');
+                    h.after(list);
+                }
+                list.innerHTML = lines.map(l => `<li>${l}</li>`).join('');
+            }
+        });
+    });
+})();
+</script>
 </body>
 </html>
 <!-- ============================================================ -->
