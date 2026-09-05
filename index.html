@@ -6,6 +6,10 @@
     <title>Самый лучший класс</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
+	:root { --primary:#ff0033; --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --border:rgba(255,0,51,0.3); --shadow:rgba(255,0,51,0.2); }
+[data-theme="blue"] { --primary:#00aaff; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.3); --shadow:rgba(0,170,255,0.2); }
+[data-theme="green"] { --primary:#00ff66; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.3); --shadow:rgba(0,255,102,0.2); }
+[data-theme="aero"] { --primary:#00ffff; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.3); --shadow:rgba(0,255,255,0.2); }
         /* Базовые настройки */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -135,6 +139,7 @@
             padding-bottom: 10px;
             display: inline-block;
         }
+	
 
         /* Стили для списка расписания */
         .schedule-list { list-style: none; margin-bottom: 20px; flex-grow: 1; }
@@ -218,6 +223,16 @@
                 <!-- Ссылка-заглушка, потом замените # на нужный файл -->
                 <a href="#" class="card-link">Все новости →</a>
             </div>
+			<div class="card">
+    <h3>Внеурочка</h3>
+    <ul class="schedule-list">
+        <li><span></span> Россия - мои горизонты - Чт</li>
+        <li><span></span> </li>
+        <li><span></span> </li>
+        <li><span></span> </li>
+    </ul>
+    <a href="activites.html" class="card-link">Все занятия →</a>
+</div>
 
         </div>
     </div>
@@ -538,23 +553,182 @@ const themeBtns=document.querySelectorAll('.theme-btn');const savedTheme=localSt
 const pc=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*4+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+5}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
 </script>
 <script>
-// Анимация только при ПЕРВОМ заходе
+
+    </form>
+</section>
+</script>
+<!-- === ОТЗЫВЫ ЧЕРЕЗ GITHUB (появляются при скролле) === -->
+<section class="rev-section" id="revSection">
+    <h2 class="rev-title">Оставить <span>отзыв</span></h2>
+    <form id="reviewForm">
+        <div class="rev-group">
+            <input type="text" id="revName" placeholder="Ваше имя" required maxlength="30">
+        </div>
+        <div class="rev-group">
+            <textarea id="revText" rows="2" placeholder="Ваш отзыв..." required maxlength="500"></textarea>
+        </div>
+        <button type="submit" class="rev-btn" id="revBtn">Отправить</button>
+        <div id="revStatus" style="margin-top:10px; min-height:16px; font-size:0.8rem;"></div>
+    </form>
+</section>
+
+<style>
+.rev-section {
+    margin: 80px auto 40px; width: 100%; max-width: 400px;
+    background: rgba(20,20,20,0.6); border: 1px solid var(--border, rgba(255,0,51,0.3));
+    border-radius: 12px; padding: 25px; text-align: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    opacity: 0; transform: translateY(40px);
+    transition: all 0.8s ease-out;
+}
+.rev-section.visible { opacity: 1; transform: translateY(0); }
+
+.rev-title {
+    font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 18px;
+    text-transform: uppercase; color: #fff;
+}
+.rev-title span { color: var(--primary, #ff0033); text-shadow: 0 0 10px var(--shadow, rgba(255,0,51,0.5)); }
+
+.rev-group { margin-bottom: 12px; }
+.rev-group input, .rev-group textarea {
+    width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 5px;
+    color: #fff; font-family: 'Montserrat', sans-serif; font-size: 0.9rem;
+    outline: none; resize: vertical; transition: 0.3s;
+}
+.rev-group input:focus, .rev-group textarea:focus {
+    border-color: var(--primary, #ff0033);
+    box-shadow: 0 0 10px var(--shadow, rgba(255,0,51,0.3));
+}
+.rev-btn {
+    width: 100%; padding: 10px; font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem; font-weight: 700; color: var(--primary, #ff0033);
+    text-transform: uppercase; background: transparent;
+    border: 2px solid var(--primary, #ff0033); border-radius: 5px;
+    cursor: pointer; transition: 0.3s;
+}
+.rev-btn:hover {
+    background: var(--primary, #ff0033); color: #000;
+    box-shadow: 0 0 20px var(--glow-strong, rgba(255,0,51,0.8));
+}
+.rev-btn:disabled { opacity: 0.5; cursor: wait; }
+</style>
+
+<script>
+// === ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ ===
+const revSection = document.getElementById('revSection');
+const revObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) revSection.classList.add('visible');
+    });
+}, { threshold: 0.2 });
+revObserver.observe(revSection);
+
+// === ОТПРАВКА ОТЗЫВА НА GITHUB ===
+// 🔑 ЗАМЕНИ НА СВОИ ДАННЫЕ
+const GITHUB_TOKEN = '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';
+const GITHUB_REPO = '6m-class/6m-class';
+
+document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('revBtn');
+    const status = document.getElementById('revStatus');
+    const name = document.getElementById('revName').value.trim();
+    const text = document.getElementById('revText').value.trim();
+
+    btn.disabled = true;
+    btn.textContent = 'Отправка...';
+    status.textContent = '';
+
+    try {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                title: `📝 Отзыв от ${name}`,
+                body: `**Имя:** ${name}\n\n**Отзыв:**\n${text}\n\n---\n*${new Date().toLocaleString('ru-RU')}*`
+            })
+        });
+
+        if (res.ok) {
+            status.textContent = '✅ Отзыв отправлен! Спасибо!';
+            status.style.color = 'var(--primary, #ff0033)';
+            this.reset();
+        } else {
+            const err = await res.json();
+            status.textContent = '❌ Ошибка: ' + (err.message || 'попробуй позже');
+            status.style.color = '#ff0033';
+        }
+    } catch (err) {
+        status.textContent = '❌ Нет соединения';
+        status.style.color = '#ff0033';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Отправить';
+});
+</script>
+<script>
+// 1. Проверка: был ли пользователь уже на этой странице в текущей сессии?
+if (!sessionStorage.getItem('visitedIndex')) {
+    // Первый вход: разрешаем анимацию
+    document.querySelector('.container').classList.add('animate-print');
+    sessionStorage.setItem('visitedIndex', 'true');
+} else {
+    // Повторный вход: показываем всё сразу без анимации
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .typewriter-line { width: 100% !important; border-right: none !important; animation: none !important; }
+        .line-1 { color: #fff !important; }
+        .line-2 { color: var(--primary, #ff0033) !important; text-shadow: 0 0 10px rgba(255,0,51,0.5) !important; }
+        .line-3 { color: #e0e0e0 !important; font-size: clamp(1rem, 2.5vw, 2rem) !important; }
+        .btn { opacity: 1 !important; transform: translateY(0) !important; animation: none !important; }
+    `;
+    document.head.appendChild(style);
+}
+
+// 2. Генерация частиц (оставляем как было)
+const particlesContainer = document.getElementById('particles');
+for (let i = 0; i < 50; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    const size = Math.random() * 5 + 2;
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.left = `${Math.random() * 100}vw`;
+    particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
+    particle.style.animationDelay = `${Math.random() * 5}s`;
+    particlesContainer.appendChild(particle);
+}
+</script>
+<script>
+// Анимация печати только при ПЕРВОМ заходе
 if (sessionStorage.getItem('visitedMain')) {
-    // Уже заходили → показываем ВСЁ сразу: текст, кнопку, расписание, новости, форму
+    // Уже заходили → показываем всё сразу, без анимации
     const s = document.createElement('style');
     s.innerHTML = `
         .typewriter-line { width: 100% !important; animation: none !important; border-right: none !important; }
         .btn { opacity: 1 !important; transform: translateY(0) !important; animation: none !important; }
         .extra-sections { opacity: 1 !important; animation: none !important; }
         .contact-section { opacity: 1 !important; transform: translateY(0) !important; }
+        .rev-section { opacity: 1 !important; transform: translateY(0) !important; }
     `;
     document.head.appendChild(s);
 } else {
-    // Первый заход → всё печатается и появляется красиво
+    // Первый заход → анимация работает как обычно
     sessionStorage.setItem('visitedMain', 'true');
 }
-</script></body>
+</script>
+</body>
 </html>
+
+
+
+
+
 
 
 
