@@ -225,20 +225,40 @@ async function loadSite() {
     }
 }
 async function loadSite() {
+    // Показываем статус загрузки
+    const statusEl = document.getElementById('poemLine1');
+    statusEl.textContent = 'Подключение к GitHub...';
+    
     try {
-        // Загрузка data.json с защитой от кэша
-        const timestamp = Date.now();
-        const res = await fetch(`${API}/contents/data.json?ref=main&_t=${timestamp}`, { 
-            cache: 'no-store',
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache'
+        // Шаг 1: Определяем ветку автоматически (main или master)
+        let branch = 'main';
+        try {
+            const branchRes = await fetch(`${API}/branches`, { cache: 'no-store' });
+            if (branchRes.ok) {
+                const branches = await branchRes.json();
+                const found = branches.find(b => b.name === 'main') || branches.find(b => b.name === 'master');
+                if (found) branch = found.name;
             }
-        });
+        } catch (e) {
+            console.warn('Не удалось определить ветку, используем main');
+        }
+        console.log('Используется ветка:', branch);
+
+        // Шаг 2: Загружаем data.json
+        const res = await fetch(`${API}/contents/data.json?ref=${branch}`, { cache: 'no-store' });
         
-        if (!res.ok) throw new Error('data.json not found');
+        if (res.status === 404) {
+            throw new Error('Файл data.json не найден. Создай его в корне репозитория!');
+        }
+        if (res.status === 403) {
+            throw new Error('Репозиторий приватный! Сделай его публичным в Settings.');
+        }
+        if (!res.ok) {
+            throw new Error(`Ошибка GitHub API: ${res.status}`);
+        }
+
         const file = await res.json();
-        const data = JSON.parse(atob(file.content));
+        const data = JSON.parse(decodeURIComponent(escape(atob(file.content))));
 
         // Тексты
         if (data.title) document.getElementById('mainTitle').textContent = data.title;
@@ -270,12 +290,12 @@ async function loadSite() {
         }
 
         // Новости из Issues
-        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=3&_t=${timestamp}`, { cache: 'no-store' });
+        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=3`, { cache: 'no-store' });
         const news = await newsRes.json();
         const newsContent = document.getElementById('newsContent');
         const newsEmpty = data.news_empty || 'Упс... Тут пока что ничего нету.';
 
-        if (news.length > 0) {
+        if (Array.isArray(news) && news.length > 0) {
             newsContent.innerHTML = news.map(n => `
                 <div class="news-item">
                     <div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div>
@@ -287,9 +307,9 @@ async function loadSite() {
         }
 
         // Уведомления из Issues
-        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=1&_t=${timestamp}`, { cache: 'no-store' });
+        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=1`, { cache: 'no-store' });
         const notifs = await notifRes.json();
-        if (notifs.length > 0) {
+        if (Array.isArray(notifs) && notifs.length > 0) {
             const last = notifs[0];
             const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
             if (!seen.includes(last.number)) {
@@ -310,13 +330,14 @@ async function loadSite() {
 
     } catch (err) {
         console.error('Ошибка загрузки:', err);
-        document.getElementById('poemLine1').textContent = 'Самый лучший в мире класс';
-        document.getElementById('poemLine2').textContent = 'это сказано про нас';
-        document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
+        // Показываем ошибку прямо на сайте
+        document.getElementById('poemLine1').textContent = '⚠️ Ошибка: ' + err.message;
+        document.getElementById('poemLine1').style.color = '#ff5555';
+        document.getElementById('poemLine1').style.fontSize = '1rem';
+        document.getElementById('poemLine2').textContent = '';
+        document.getElementById('poemLine3').textContent = '';
     }
 }
-loadSite();
-
 // Переключатель тем (локально)
 document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', () => {
