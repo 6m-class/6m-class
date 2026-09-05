@@ -5,167 +5,117 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Самый лучший класс</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root { --primary:#ff0033; --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --border:rgba(255,0,51,0.3); --shadow:rgba(255,0,51,0.2); }
 [data-theme="blue"] { --primary:#00aaff; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.3); --shadow:rgba(0,170,255,0.2); }
 [data-theme="green"] { --primary:#00ff66; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.3); --shadow:rgba(0,255,102,0.2); }
 [data-theme="aero"] { --primary:#00ffff; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.3); --shadow:rgba(0,255,255,0.2); }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    background-color: #050505; color: #ffffff; font-family: 'Montserrat', sans-serif;
-    overflow-x: hidden; min-height: 100vh; display: flex; justify-content: center; align-items: center;
-    position: relative; padding: 40px 20px;
-}
-
-/* Админ-ссылка */
-.admin-link { position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 8px 15px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 5px; color: var(--primary); text-decoration: none; font-size: 0.8rem; font-weight: 700; transition: 0.3s; backdrop-filter: blur(10px); }
-.admin-link:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--glow-strong); }
-
-/* Переключатель тем */
-.theme-switcher { position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px; }
-.theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s ease; opacity: 0.6; }
-.theme-btn:hover, .theme-btn.active { opacity: 1; transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px currentColor; }
-.theme-btn[data-set="red"] { background: #ff0033; color: #ff0033; }
-.theme-btn[data-set="blue"] { background: #00aaff; color: #00aaff; }
-.theme-btn[data-set="green"] { background: #00ff66; color: #00ff66; }
-.theme-btn[data-set="aero"] { background: #00ffff; color: #00ffff; }
-
-.background-glow {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80vw; height: 80vw; background: radial-gradient(circle, var(--glow) 0%, rgba(5,5,5,0) 70%);
-    z-index: -2; animation: pulseGlow 4s infinite alternate; pointer-events: none;
-}
-@keyframes pulseGlow { 0%{transform:translate(-50%,-50%) scale(1);opacity:.8} 100%{transform:translate(-50%,-50%) scale(1.2);opacity:1} }
-
-.container { text-align: center; z-index: 10; max-width: 1000px; width: 100%; display: flex; flex-direction: column; align-items: center; }
-
-h1 {
-    font-family: 'Orbitron', sans-serif; font-size: clamp(1.3rem, 4vw, 3.3rem); font-weight: 900;
-    text-transform: uppercase; line-height: 1.4; margin-bottom: 30px; color: #fff;
-    text-shadow: 0 0 10px var(--glow-strong), 0 0 20px var(--shadow);
-}
-
-.typewriter-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; min-height: 120px; }
-.typewriter-line { display: inline-block; font-size: clamp(1.2rem, 3vw, 2.5rem); font-weight: 700; white-space: nowrap; overflow: hidden; width: 0; border-right: 3px solid transparent; }
-
-.animate .line-1 { color: #fff; animation: typingLine1 2.5s steps(30,end) forwards, blinkCursor .75s step-end infinite 2.5s; }
-.animate .line-2 { color: var(--primary); text-shadow: 0 0 10px var(--shadow); animation: typingLine2 2s steps(25,end) 2.5s forwards, blinkCursorTheme .75s step-end infinite 4.5s; }
-.animate .line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); animation: typingLine3 2s steps(35,end) 4.5s forwards; border-right: none; }
-.animate .btn { animation: fadeInUp 1s ease-out 6.5s forwards; }
-
-.no-animate .typewriter-line { width: 100%; border-right: none; }
-.no-animate .line-1 { color: #fff; }
-.no-animate .line-2 { color: var(--primary); text-shadow: 0 0 10px var(--shadow); }
-.no-animate .line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); }
-.no-animate .btn { opacity: 1; transform: translateY(0); }
-
-.btn {
-    display: inline-block; margin-top: 40px; padding: 15px 40px; font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem; font-weight: 700; color: var(--primary); text-decoration: none; text-transform: uppercase;
-    border: 2px solid var(--primary); border-radius: 5px; background: transparent; cursor: pointer;
-    transition: all 0.3s ease; opacity: 0; transform: translateY(20px); box-shadow: 0 0 10px var(--shadow);
-}
-.btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--glow-strong), 0 0 40px var(--shadow); transform: scale(1.05); }
-
-.extra-sections { margin-top: 80px; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; opacity: 0; animation: fadeInUp 1s ease-out 7.5s forwards; }
-.no-animate .extra-sections { opacity: 1; animation: none; }
-.card { background: rgba(20,20,20,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 30px; text-align: left; transition: all 0.3s ease; display: flex; flex-direction: column; }
-.card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 0 25px var(--shadow); }
-.card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block; }
-.schedule-list { list-style: none; margin-bottom: 20px; flex-grow: 1; }
-.schedule-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; color: #ccc; }
-.schedule-list li span:first-child { color: var(--primary); font-weight: 700; margin-right: 10px; }
-.news-date { color: var(--primary); font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
-.news-text { color: #ddd; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
-.news-empty { color: #777; font-style: italic; padding: 20px 0; text-align: center; }
-.news-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.card-link { align-self: flex-start; color: #fff; text-decoration: none; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; padding: 8px 15px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; }
-.card-link:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--shadow); }
-
-/* Уведомления */
-.notif-popup { position: fixed; top: 80px; right: 20px; z-index: 2000; background: rgba(20,20,20,0.95); border: 1px solid var(--primary); border-radius: 10px; padding: 20px; max-width: 350px; box-shadow: 0 0 30px var(--glow-strong); animation: slideIn 0.5s ease-out; backdrop-filter: blur(10px); }
-.notif-popup h4 { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--primary); margin-bottom: 10px; text-transform: uppercase; }
-.notif-popup p { color: #fff; font-size: 0.95rem; line-height: 1.5; }
-.notif-popup .notif-date { color: #777; font-size: 0.75rem; margin-top: 10px; }
-.notif-popup .notif-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: #777; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
-.notif-popup .notif-close:hover { color: var(--primary); }
-@keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-.contact-section { margin-top: 100px; width: 100%; max-width: 600px; background: rgba(20,20,20,0.6); border: 1px solid var(--border); border-radius: 15px; padding: 40px; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.5); opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
-.contact-section.visible { opacity: 1; transform: translateY(0); }
-.no-animate .contact-section { opacity: 1; transform: translateY(0); }
-.contact-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; margin-bottom: 30px; text-transform: uppercase; color: #fff; }
-.contact-title span { color: var(--primary); text-shadow: 0 0 10px var(--shadow); }
-.form-group { margin-bottom: 20px; text-align: left; }
-.form-group label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-.form-group input, .form-group textarea { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; outline: none; resize: vertical; }
-.form-group input:focus, .form-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--shadow); }
-.btn-submit { width: 100%; padding: 15px; margin-top: 10px; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--primary); text-transform: uppercase; background: transparent; border: 2px solid var(--primary); border-radius: 5px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px var(--shadow); }
-.btn-submit:hover { background: var(--primary); color: #000; box-shadow: 0 0 25px var(--glow-strong); transform: translateY(-2px); }
-
-@keyframes fadeInUp { 0%{opacity:0;transform:translateY(30px)} 100%{opacity:1;transform:translateY(0)} }
-@keyframes typingLine1 { from{width:0;border-right-color:#fff} to{width:100%;border-right-color:#fff} }
-@keyframes typingLine2 { from{width:0;border-right-color:var(--primary)} to{width:100%;border-right-color:var(--primary)} }
-@keyframes typingLine3 { from{width:0} to{width:100%} }
-@keyframes blinkCursor { from,to{border-right-color:transparent} 50%{border-right-color:#fff} }
-@keyframes blinkCursorTheme { from,to{border-right-color:transparent} 50%{border-right-color:var(--primary)} }
-
-.particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
-.particle { position: absolute; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: floatUp linear infinite; opacity: 0; }
-@keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 20%{opacity:1} 80%{opacity:1} 100%{transform:translateY(-10vh) scale(1.5);opacity:0} }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;overflow-x:hidden;min-height:100vh;display:flex;justify-content:center;align-items:center;position:relative;padding:40px 20px}
+.admin-link{position:fixed;top:20px;right:20px;z-index:1000;padding:8px 15px;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:5px;color:var(--primary);text-decoration:none;font-size:.8rem;font-weight:700;transition:.3s;backdrop-filter:blur(10px)}
+.admin-link:hover{background:var(--primary);color:#000;box-shadow:0 0 15px var(--glow-strong)}
+.theme-switcher{position:fixed;top:20px;left:20px;z-index:1000;display:flex;gap:8px}
+.theme-btn{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);cursor:pointer;transition:.3s;opacity:.6}
+.theme-btn:hover,.theme-btn.active{opacity:1;transform:scale(1.2);border-color:#fff;box-shadow:0 0 10px currentColor}
+.theme-btn[data-set="red"]{background:#ff0033;color:#ff0033}
+.theme-btn[data-set="blue"]{background:#00aaff;color:#00aaff}
+.theme-btn[data-set="green"]{background:#00ff66;color:#00ff66}
+.theme-btn[data-set="aero"]{background:#00ffff;color:#00ffff}
+.background-glow{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80vw;height:80vw;background:radial-gradient(circle,var(--glow) 0%,rgba(5,5,5,0) 70%);z-index:-2;animation:pulseGlow 4s infinite alternate;pointer-events:none}
+@keyframes pulseGlow{0%{transform:translate(-50%,-50%) scale(1);opacity:.8}100%{transform:translate(-50%,-50%) scale(1.2);opacity:1}}
+.container{text-align:center;z-index:10;max-width:1000px;width:100%;display:flex;flex-direction:column;align-items:center}
+h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.3rem,4vw,3.3rem);font-weight:900;text-transform:uppercase;line-height:1.4;margin-bottom:30px;color:#fff;text-shadow:0 0 10px var(--glow-strong),0 0 20px var(--shadow)}
+.typewriter-wrapper{display:flex;flex-direction:column;align-items:center;gap:15px;min-height:120px}
+.typewriter-line{display:inline-block;font-size:clamp(1.2rem,3vw,2.5rem);font-weight:700;white-space:nowrap;overflow:hidden;width:0;border-right:3px solid transparent}
+.animate .line-1{color:#fff;animation:typingLine1 2.5s steps(30,end) forwards,blinkCursor .75s step-end infinite 2.5s}
+.animate .line-2{color:var(--primary);text-shadow:0 0 10px var(--shadow);animation:typingLine2 2s steps(25,end) 2.5s forwards,blinkCursorTheme .75s step-end infinite 4.5s}
+.animate .line-3{color:#e0e0e0;font-size:clamp(1rem,2.5vw,2rem);animation:typingLine3 2s steps(35,end) 4.5s forwards;border-right:none}
+.animate .btn{animation:fadeInUp 1s ease-out 6.5s forwards}
+.no-animate .typewriter-line{width:100%;border-right:none}
+.no-animate .line-1{color:#fff}
+.no-animate .line-2{color:var(--primary);text-shadow:0 0 10px var(--shadow)}
+.no-animate .line-3{color:#e0e0e0;font-size:clamp(1rem,2.5vw,2rem)}
+.no-animate .btn{opacity:1;transform:translateY(0)}
+.btn{display:inline-block;margin-top:40px;padding:15px 40px;font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:700;color:var(--primary);text-decoration:none;text-transform:uppercase;border:2px solid var(--primary);border-radius:5px;background:transparent;cursor:pointer;transition:.3s;opacity:0;transform:translateY(20px);box-shadow:0 0 10px var(--shadow)}
+.btn:hover{background:var(--primary);color:#000;box-shadow:0 0 20px var(--glow-strong),0 0 40px var(--shadow);transform:scale(1.05)}
+.extra-sections{margin-top:80px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;opacity:0;animation:fadeInUp 1s ease-out 7.5s forwards}
+.no-animate .extra-sections{opacity:1;animation:none}
+.card{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:10px;padding:30px;text-align:left;transition:.3s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-5px);border-color:var(--primary);box-shadow:0 0 25px var(--shadow)}
+.card h3{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:#fff;margin-bottom:20px;text-transform:uppercase;border-bottom:2px solid var(--primary);padding-bottom:10px;display:inline-block}
+.schedule-list{list-style:none;margin-bottom:20px;flex-grow:1}
+.schedule-list li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:.95rem;color:#ccc}
+.schedule-list li span:first-child{color:var(--primary);font-weight:700;margin-right:10px}
+.news-date{color:var(--primary);font-size:.8rem;font-weight:700;margin-bottom:5px;text-transform:uppercase}
+.news-text{color:#ddd;font-size:.95rem;line-height:1.5;margin-bottom:20px;flex-grow:1}
+.news-empty{color:#777;font-style:italic;padding:20px 0;text-align:center}
+.news-item{margin-bottom:15px;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.card-link{align-self:flex-start;color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:1px;transition:.3s;padding:8px 15px;border:1px solid rgba(255,255,255,0.2);border-radius:4px}
+.card-link:hover{border-color:var(--primary);color:var(--primary);box-shadow:0 0 10px var(--shadow)}
+.notif-popup{position:fixed;top:80px;right:20px;z-index:2000;background:rgba(20,20,20,0.95);border:1px solid var(--primary);border-radius:10px;padding:20px;max-width:350px;box-shadow:0 0 30px var(--glow-strong);animation:slideIn .5s ease-out;backdrop-filter:blur(10px)}
+.notif-popup h4{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--primary);margin-bottom:10px;text-transform:uppercase}
+.notif-popup p{color:#fff;font-size:.95rem;line-height:1.5}
+.notif-popup .notif-date{color:#777;font-size:.75rem;margin-top:10px}
+.notif-popup .notif-close{position:absolute;top:10px;right:12px;background:none;border:none;color:#777;cursor:pointer;font-size:1.2rem;transition:.3s}
+.notif-popup .notif-close:hover{color:var(--primary)}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+.contact-section{margin-top:100px;width:100%;max-width:600px;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:15px;padding:40px;text-align:center;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;transform:translateY(30px);transition:.8s ease-out}
+.contact-section.visible{opacity:1;transform:translateY(0)}
+.no-animate .contact-section{opacity:1;transform:translateY(0)}
+.contact-title{font-family:'Orbitron',sans-serif;font-size:1.8rem;margin-bottom:30px;text-transform:uppercase;color:#fff}
+.contact-title span{color:var(--primary);text-shadow:0 0 10px var(--shadow)}
+.form-group{margin-bottom:20px;text-align:left}
+.form-group label{display:block;font-size:.8rem;color:#aaa;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.form-group input,.form-group textarea{width:100%;padding:12px 15px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:5px;color:#fff;font-family:'Montserrat',sans-serif;font-size:1rem;transition:.3s;outline:none;resize:vertical}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 15px var(--shadow)}
+.btn-submit{width:100%;padding:15px;margin-top:10px;font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700;color:var(--primary);text-transform:uppercase;background:transparent;border:2px solid var(--primary);border-radius:5px;cursor:pointer;transition:.3s;box-shadow:0 0 10px var(--shadow)}
+.btn-submit:hover{background:var(--primary);color:#000;box-shadow:0 0 25px var(--glow-strong);transform:translateY(-2px)}
+@keyframes fadeInUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes typingLine1{from{width:0;border-right-color:#fff}to{width:100%;border-right-color:#fff}}
+@keyframes typingLine2{from{width:0;border-right-color:var(--primary)}to{width:100%;border-right-color:var(--primary)}}
+@keyframes typingLine3{from{width:0}to{width:100%}}
+@keyframes blinkCursor{from,to{border-right-color:transparent}50%{border-right-color:#fff}}
+@keyframes blinkCursorTheme{from,to{border-right-color:transparent}50%{border-right-color:var(--primary)}}
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
+.particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 10px var(--primary);animation:floatUp linear infinite;opacity:0}
+@keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(-10vh) scale(1.5);opacity:0}}
 </style>
 </head>
 <body>
-
 <a href="admin.html" class="admin-link">⚙️ Админ</a>
-
 <div class="theme-switcher">
-    <div class="theme-btn active" data-set="red" title="Красная"></div>
-    <div class="theme-btn" data-set="blue" title="Синяя"></div>
-    <div class="theme-btn" data-set="green" title="Зелёная"></div>
-    <div class="theme-btn" data-set="aero" title="Аэро"></div>
+    <div class="theme-btn active" data-set="red"></div>
+    <div class="theme-btn" data-set="blue"></div>
+    <div class="theme-btn" data-set="green"></div>
+    <div class="theme-btn" data-set="aero"></div>
 </div>
-
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
-
 <div class="container">
-    <h1 style="animation: fadeInUp 1s ease-out forwards;" id="mainTitle">НАШ КЛАСС</h1>
-    
+    <h1 id="mainTitle">НАШ КЛАСС</h1>
     <div class="typewriter-wrapper">
-        <div class="typewriter-line line-1" id="poemLine1">Самый лучший в мире класс</div>
-        <div class="typewriter-line line-2" id="poemLine2">это сказано про нас</div>
-        <div class="typewriter-line line-3" id="poemLine3">Мы — команда, мы — сила, мы — будущее!</div>
+        <div class="typewriter-line line-1" id="poemLine1">Загрузка...</div>
+        <div class="typewriter-line line-2" id="poemLine2"></div>
+        <div class="typewriter-line line-3" id="poemLine3"></div>
     </div>
-    
     <a href="class.html" class="btn" id="mainBtn">Наши ученики</a>
-
     <div class="extra-sections">
         <div class="card">
             <h3>Расписание</h3>
-            <ul class="schedule-list" id="scheduleList">
-                <li><span>⏳</span> Загрузка...</li>
-            </ul>
+            <ul class="schedule-list" id="scheduleList"><li><span>⏳</span> Загрузка...</li></ul>
             <a href="school.html" class="card-link">Полное расписание →</a>
         </div>
         <div class="card">
             <h3>Новости</h3>
-            <div id="newsContent">
-                <p class="news-empty">Загрузка...</p>
-            </div>
+            <div id="newsContent"><p class="news-empty">Загрузка...</p></div>
             <a href="news.html" class="card-link">Все новости →</a>
         </div>
         <div class="card">
             <h3>Внеурочка</h3>
-            <ul class="schedule-list" id="activitiesList">
-                <li><span>⏳</span> Загрузка...</li>
-            </ul>
+            <ul class="schedule-list" id="activitiesList"><li><span>⏳</span> Загрузка...</li></ul>
             <a href="activites.html" class="card-link">Все занятия →</a>
         </div>
     </div>
-
     <section class="contact-section" id="contactForm">
         <h2 class="contact-title">Написать <span>нам</span></h2>
         <form id="emailForm">
@@ -176,14 +126,11 @@ h1 {
         </form>
     </section>
 </div>
-
 <script>
-// ===== SUPABASE =====
-const SUPABASE_URL = 'https://ucphajwoywnqlafakrur.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjcGhhandveXducWxhZmFrcnVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2MTM0NjEsImV4cCI6MjEwNDE4OTQ2MX0.07-o36wUIlbyRHis_ph1tOhkcIvgj6EamgEs1gAV8Zo';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const REPO = '6m-class/6m-class';
+const API = `https://api.github.com/repos/${REPO}`;
 
-// ===== АНИМАЦИЯ ПЕЧАТИ =====
+// Анимация печати
 const container = document.querySelector('.container');
 if (!sessionStorage.getItem('visitedMain')) {
     container.classList.add('animate');
@@ -192,128 +139,117 @@ if (!sessionStorage.getItem('visitedMain')) {
     container.classList.add('no-animate');
 }
 
-// ===== ЗАГРУЗКА ИЗ SUPABASE =====
-async function loadSiteData() {
-    try {
-        // Тексты
-        const {data: texts} = await sb.from('site_texts').select('*').limit(1).single();
-        if (texts) {
-            if (texts.title) document.getElementById('mainTitle').textContent = texts.title;
-            if (texts.poem_line1) document.getElementById('poemLine1').textContent = texts.poem_line1;
-            if (texts.poem_line2) document.getElementById('poemLine2').textContent = texts.poem_line2;
-            if (texts.poem_line3) document.getElementById('poemLine3').textContent = texts.poem_line3;
-            if (texts.btn_text) document.getElementById('mainBtn').textContent = texts.btn_text;
-            if (texts.btn_link) document.getElementById('mainBtn').href = texts.btn_link;
-        }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-        // Расписание на главной
-        const {data: sched} = await sb.from('site_schedule').select('lessons').limit(1).single();
+async function loadSite() {
+    try {
+        // Загрузка data.json
+        const res = await fetch(`${API}/contents/data.json?ref=main`, { cache: 'no-store' });
+        if (!res.ok) throw new Error('data.json not found');
+        const file = await res.json();
+        const data = JSON.parse(atob(file.content));
+
+        // Тексты
+        if (data.title) document.getElementById('mainTitle').textContent = data.title;
+        if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
+        if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
+        if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
+        if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
+        if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
+
+        // Тема
+        const theme = data.theme || 'red';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+
+        // Расписание
         const schedList = document.getElementById('scheduleList');
-        if (sched && sched.lessons && sched.lessons.trim()) {
-            const lines = sched.lessons.split('\n').filter(l => l.trim());
-            schedList.innerHTML = lines.map(l => `<li><span>•</span> ${escapeHtml(l.trim())}</li>`).join('');
+        if (data.schedule && data.schedule.trim()) {
+            schedList.innerHTML = data.schedule.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
         } else {
             schedList.innerHTML = '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
         }
 
         // Внеурочка
-        const {data: act} = await sb.from('site_activities').select('content').limit(1).single();
         const actList = document.getElementById('activitiesList');
-        if (act && act.content && act.content.trim()) {
-            const lines = act.content.split('\n').filter(l => l.trim());
-            actList.innerHTML = lines.map(l => `<li><span>•</span> ${escapeHtml(l.trim())}</li>`).join('');
+        if (data.activities && data.activities.trim()) {
+            actList.innerHTML = data.activities.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
         } else {
             actList.innerHTML = '<li style="color:#777"><span>—</span> Нет занятий</li>';
         }
 
-        // Новости
-        const {data: news} = await sb.from('site_news').select('*').order('created_at', {ascending: false}).limit(3);
+        // Новости из Issues
+        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=3`, { cache: 'no-store' });
+        const news = await newsRes.json();
         const newsContent = document.getElementById('newsContent');
-        const newsEmptyText = texts?.news_empty || 'Упс... Тут пока что ничего нету.';
-        
-        if (news && news.length > 0) {
+        const newsEmpty = data.news_empty || 'Упс... Тут пока что ничего нету.';
+
+        if (news.length > 0) {
             newsContent.innerHTML = news.map(n => `
                 <div class="news-item">
                     <div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div>
-                    <div class="news-text"><b>${escapeHtml(n.title)}</b><br>${escapeHtml(n.text)}</div>
+                    <div class="news-text"><b>${esc(n.title)}</b><br>${esc(n.body || '')}</div>
                 </div>
             `).join('');
         } else {
-            newsContent.innerHTML = `<p class="news-empty">${escapeHtml(newsEmptyText)}</p>`;
+            newsContent.innerHTML = `<p class="news-empty">${esc(newsEmpty)}</p>`;
         }
 
-        // Тема (из Supabase)
-        const {data: themeData} = await sb.from('site_theme').select('theme').limit(1).single();
-        const globalTheme = themeData?.theme || 'red';
-        document.documentElement.setAttribute('data-theme', globalTheme);
-        document.querySelectorAll('.theme-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.set === globalTheme);
-        });
-
-        // Уведомления
-        const {data: notifs} = await sb.from('site_notifications').select('*').order('created_at', {ascending: false}).limit(1);
-        if (notifs && notifs.length > 0) {
-            const lastNotif = notifs[0];
-            const seenIds = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
-            if (!seenIds.includes(lastNotif.id)) {
-                showNotifPopup(lastNotif);
-                seenIds.push(lastNotif.id);
-                localStorage.setItem('seenNotifs', JSON.stringify(seenIds.slice(-20)));
+        // Уведомления из Issues
+        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=1`, { cache: 'no-store' });
+        const notifs = await notifRes.json();
+        if (notifs.length > 0) {
+            const last = notifs[0];
+            const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+            if (!seen.includes(last.number)) {
+                const popup = document.createElement('div');
+                popup.className = 'notif-popup';
+                popup.innerHTML = `
+                    <button class="notif-close" onclick="this.parentElement.remove()">✕</button>
+                    <h4>🔔 Уведомление</h4>
+                    <p>${esc(last.title)}</p>
+                    <div class="notif-date">${new Date(last.created_at).toLocaleString('ru-RU')}</div>
+                `;
+                document.body.appendChild(popup);
+                setTimeout(() => { if (popup.parentElement) popup.remove(); }, 15000);
+                seen.push(last.number);
+                localStorage.setItem('seenNotifs', JSON.stringify(seen.slice(-20)));
             }
         }
 
     } catch (err) {
         console.error('Ошибка загрузки:', err);
+        document.getElementById('poemLine1').textContent = 'Самый лучший в мире класс';
+        document.getElementById('poemLine2').textContent = 'это сказано про нас';
+        document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
     }
 }
 
-function escapeHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-}
+loadSite();
 
-function showNotifPopup(n) {
-    const popup = document.createElement('div');
-    popup.className = 'notif-popup';
-    popup.innerHTML = `
-        <button class="notif-close" onclick="this.parentElement.remove()">✕</button>
-        <h4>🔔 Уведомление</h4>
-        <p>${escapeHtml(n.text)}</p>
-        <div class="notif-date">${new Date(n.created_at).toLocaleString('ru-RU')}</div>
-    `;
-    document.body.appendChild(popup);
-    setTimeout(() => { if (popup.parentElement) popup.remove(); }, 15000);
-}
-
-loadSiteData();
-
-// ===== ПЕРЕКЛЮЧАТЕЛЬ ТЕМ (локально + синхронизация) =====
-const themeBtns = document.querySelectorAll('.theme-btn');
-themeBtns.forEach(btn => {
+// Переключатель тем (локально)
+document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        const theme = btn.dataset.set;
-        document.documentElement.setAttribute('data-theme', theme);
-        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+        document.documentElement.setAttribute('data-theme', btn.dataset.set);
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === btn.dataset.set));
     });
 });
 
-// ===== ЧАСТИЦЫ =====
+// Частицы
 const pc = document.getElementById('particles');
 for (let i = 0; i < 50; i++) {
     const p = document.createElement('div');
     p.classList.add('particle');
     const s = Math.random() * 5 + 2;
-    p.style.width = `${s}px`;
-    p.style.height = `${s}px`;
+    p.style.width = `${s}px`; p.style.height = `${s}px`;
     p.style.left = `${Math.random() * 100}vw`;
     p.style.animationDuration = `${Math.random() * 5 + 3}s`;
     p.style.animationDelay = `${Math.random() * 5}s`;
     pc.appendChild(p);
 }
 
-// ===== ФОРМА КОНТАКТОВ =====
-new IntersectionObserver((entries) => {
+// Форма контактов
+new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) document.getElementById('contactForm').classList.add('visible'); });
 }, { threshold: 0.2 }).observe(document.getElementById('contactForm'));
 
@@ -322,7 +258,6 @@ document.getElementById('emailForm').addEventListener('submit', function(e) {
     const n = document.getElementById('name').value;
     const em = document.getElementById('email').value;
     const m = document.getElementById('message').value;
-    // ЗАМЕНИ your-email@example.com НА РЕАЛЬНУЮ ПОЧТУ
     window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n\n${m}`)}`;
 });
 </script>
