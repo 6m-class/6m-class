@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Управление сайтом</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--primary:#ff0033;--primary-rgb:255,0,51;--bg:#0a0a0a;--card:#111;--border:rgba(255,255,255,0.08)}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -14,68 +13,65 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:50px 40px;width:100%;max-width:420px;text-align:center;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1)}
 .login-box h1{font-family:'Orbitron',sans-serif;font-size:1.6rem;margin-bottom:8px;text-transform:uppercase}
 .login-box h1 span{color:var(--primary)}
-.login-box p{color:#666;font-size:0.85rem;margin-bottom:25px}
-.login-box input{width:100%;padding:14px 18px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-size:1rem;outline:none;transition:0.3s;margin-bottom:12px}
+.login-box p{color:#666;font-size:.85rem;margin-bottom:25px}
+.login-box input{width:100%;padding:14px 18px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-size:1rem;outline:none;transition:.3s;margin-bottom:12px}
 .login-box input:focus{border-color:var(--primary);box-shadow:0 0 15px rgba(var(--primary-rgb),0.3)}
-.login-box button{width:100%;padding:14px;background:var(--primary);border:none;border-radius:8px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;cursor:pointer;transition:0.3s}
+.login-box button{width:100%;padding:14px;background:var(--primary);border:none;border-radius:8px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;cursor:pointer;transition:.3s}
 .login-box button:hover{box-shadow:0 0 25px rgba(var(--primary-rgb),0.6);transform:translateY(-2px)}
-.login-error{color:#ff5555;font-size:0.85rem;margin-top:10px;min-height:20px}
+.login-error{color:#ff5555;font-size:.85rem;margin-top:10px;min-height:20px}
 #adminPanel{display:none}
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.95);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:15px 30px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .topbar h2{font-family:'Orbitron',sans-serif;font-size:1.1rem;text-transform:uppercase}
 .topbar h2 span{color:var(--primary)}
 .topbar-right{display:flex;gap:10px;align-items:center}
-.topbar-btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:#aaa;font-size:0.8rem;cursor:pointer;transition:0.3s;text-decoration:none;font-weight:600}
+.topbar-btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:#aaa;font-size:.8rem;cursor:pointer;transition:.3s;text-decoration:none;font-weight:600}
 .topbar-btn:hover{border-color:var(--primary);color:var(--primary)}
 .topbar-btn.danger{border-color:rgba(255,80,80,0.3);color:#ff5555}
 .topbar-btn.danger:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
-.user-info{font-size:0.75rem;color:#666;margin-right:10px}
+.user-info{font-size:.75rem;color:#666;margin-right:10px}
 .container{max-width:1000px;margin:0 auto;padding:30px 20px}
 .tabs{display:flex;gap:5px;margin-bottom:30px;flex-wrap:wrap}
-.tab{padding:10px 20px;border-radius:8px;border:1px solid var(--border);background:transparent;color:#888;font-size:0.85rem;font-weight:600;cursor:pointer;transition:0.3s;text-transform:uppercase;letter-spacing:0.5px}
+.tab{padding:10px 20px;border-radius:8px;border:1px solid var(--border);background:transparent;color:#888;font-size:.85rem;font-weight:600;cursor:pointer;transition:.3s;text-transform:uppercase;letter-spacing:.5px}
 .tab:hover{border-color:rgba(var(--primary-rgb),0.4);color:#ccc}
 .tab.active{background:var(--primary);color:#000;border-color:var(--primary);font-weight:700}
-.section{display:none;animation:fadeIn 0.3s ease}
+.section{display:none;animation:fadeIn .3s ease}
 .section.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:25px;margin-bottom:20px}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .card-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--primary);text-transform:uppercase;letter-spacing:1px}
-.card-badge{font-size:0.7rem;padding:4px 10px;border-radius:20px;background:rgba(var(--primary-rgb),0.15);color:var(--primary);font-weight:700}
+.card-badge{font-size:.7rem;padding:4px 10px;border-radius:20px;background:rgba(var(--primary-rgb),0.15);color:var(--primary);font-weight:700}
 .field{margin-bottom:18px}
-.field label{display:block;font-size:0.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
-.field input,.field textarea,.field select{width:100%;padding:12px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-size:0.95rem;outline:none;transition:0.3s;resize:vertical}
+.field label{display:block;font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
+.field input,.field textarea,.field select{width:100%;padding:12px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-size:.95rem;outline:none;transition:.3s;resize:vertical}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 12px rgba(var(--primary-rgb),0.2)}
-.btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;cursor:pointer;transition:0.3s;letter-spacing:0.5px}
+.btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px}
 .btn-primary{background:var(--primary);color:#000}
 .btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
 .btn-outline{background:transparent;border:1px solid var(--border);color:#aaa}
 .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
 .btn-danger{background:transparent;border:1px solid rgba(255,80,80,0.3);color:#ff5555}
 .btn-danger:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
-.btn-sm{padding:8px 15px;font-size:0.75rem}
-.msg{margin-top:12px;font-size:0.85rem;min-height:20px}
+.btn-sm{padding:8px 15px;font-size:.75rem}
+.msg{margin-top:12px;font-size:.85rem;min-height:20px}
 .item-list{display:flex;flex-direction:column;gap:10px;margin-top:15px}
-.item{display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;transition:0.3s}
+.item{display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;transition:.3s}
 .item:hover{border-color:rgba(var(--primary-rgb),0.3)}
 .item-content{flex:1}
-.item-title{font-weight:700;font-size:0.95rem;margin-bottom:4px}
-.item-sub{font-size:0.8rem;color:#666}
+.item-title{font-weight:700;font-size:.95rem;margin-bottom:4px}
+.item-sub{font-size:.8rem;color:#666}
 .item-actions{display:flex;gap:8px;margin-left:15px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:30px}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
 .stat-num{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);font-weight:900}
-.stat-label{font-size:0.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px}
+.stat-label{font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px}
 .preview-box{background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:8px;padding:20px;margin-top:15px}
-.preview-label{font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.db-status{position:fixed;bottom:20px;right:20px;padding:8px 15px;background:rgba(0,255,102,0.1);border:1px solid #00ff66;border-radius:20px;font-size:0.75rem;color:#00ff66;z-index:1000}
-.db-status.err{background:rgba(255,0,51,0.1);border-color:#ff0033;color:#ff0033}
-@media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:0.75rem}.stats{grid-template-columns:1fr 1fr}}
+.preview-label{font-size:.7rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+@media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
-<!-- ===== ВХОД ===== -->
 <div id="loginScreen">
     <div class="login-box">
         <h1>Вход в <span>панель</span></h1>
@@ -86,7 +82,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
     </div>
 </div>
 
-<!-- ===== ПАНЕЛЬ ===== -->
 <div id="adminPanel">
     <div class="topbar">
         <h2>⚙️ <span id="panelTitle">Управление</span></h2>
@@ -96,7 +91,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <button class="topbar-btn danger" onclick="logout()">Выйти</button>
         </div>
     </div>
-
     <div class="container">
         <div class="stats" id="statsBlock">
             <div class="stat-card"><div class="stat-num" id="statNews">0</div><div class="stat-label">Новостей</div></div>
@@ -105,7 +99,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="stat-card"><div class="stat-num" id="statTheme">🔴</div><div class="stat-label">Тема</div></div>
         </div>
 
-        <div class="tabs" id="tabsContainer">
+        <div class="tabs">
             <div class="tab active" data-tab="texts" data-role="admin" onclick="switchTab('texts',this)">✏️ Тексты</div>
             <div class="tab" data-tab="news" data-role="mod" onclick="switchTab('news',this)">📰 Новости</div>
             <div class="tab" data-tab="schedule" data-role="admin" onclick="switchTab('schedule',this)">📅 Расписание</div>
@@ -119,19 +113,19 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         <div class="section active" id="sec-texts">
             <div class="card">
                 <div class="card-header"><div class="card-title">Главная страница — тексты</div></div>
-                <div class="field"><label>Заголовок</label><input type="text" id="editTitle" placeholder="НАШ КЛАСС"></div>
-                <div class="field"><label>Строка 1</label><input type="text" id="editPoem1" placeholder="Самый лучший в мире класс"></div>
-                <div class="field"><label>Строка 2</label><input type="text" id="editPoem2" placeholder="это сказано про нас"></div>
-                <div class="field"><label>Строка 3</label><input type="text" id="editPoem3" placeholder="Мы — команда, мы — сила, мы — будущее!"></div>
-                <div class="field"><label>Текст кнопки</label><input type="text" id="editBtnText" placeholder="Наша история"></div>
-                <div class="field"><label>Ссылка кнопки</label><input type="text" id="editBtnLink" placeholder="class.html"></div>
-                <button class="btn btn-primary" onclick="saveTexts()">Сохранить</button>
+                <div class="field"><label>Заголовок</label><input type="text" id="editTitle"></div>
+                <div class="field"><label>Строка 1</label><input type="text" id="editPoem1"></div>
+                <div class="field"><label>Строка 2</label><input type="text" id="editPoem2"></div>
+                <div class="field"><label>Строка 3</label><input type="text" id="editPoem3"></div>
+                <div class="field"><label>Текст кнопки</label><input type="text" id="editBtnText"></div>
+                <div class="field"><label>Ссылка кнопки</label><input type="text" id="editBtnLink"></div>
+                <button class="btn btn-primary" onclick="saveData()">💾 Сохранить в GitHub</button>
                 <div class="msg" id="msgTexts"></div>
             </div>
             <div class="card">
                 <div class="card-header"><div class="card-title">Карточка «Новости» — заглушка</div></div>
-                <div class="field"><label>Текст когда нет новостей</label><input type="text" id="editNewsEmpty" placeholder="Упс... Тут пока что ничего нету."></div>
-                <button class="btn btn-primary" onclick="saveNewsEmpty()">Сохранить</button>
+                <div class="field"><label>Текст когда нет новостей</label><input type="text" id="editNewsEmpty"></div>
+                <button class="btn btn-primary" onclick="saveData()">💾 Сохранить в GitHub</button>
                 <div class="msg" id="msgNewsEmpty"></div>
             </div>
         </div>
@@ -142,7 +136,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="card-header"><div class="card-title">Добавить новость</div><div class="card-badge" id="newsCount">0</div></div>
                 <div class="field"><label>Заголовок</label><input type="text" id="newsTitle" placeholder="Победа в олимпиаде!"></div>
                 <div class="field"><label>Текст</label><textarea id="newsText" rows="3" placeholder="Подробности..."></textarea></div>
-                <button class="btn btn-primary" onclick="addNews()">Опубликовать</button>
+                <button class="btn btn-primary" onclick="createIssue('новость')">📤 Опубликовать через GitHub</button>
                 <div class="msg" id="msgNews"></div>
             </div>
             <div class="card">
@@ -155,20 +149,10 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         <div class="section" id="sec-schedule">
             <div class="card">
                 <div class="card-header"><div class="card-title">Расписание на главной</div></div>
-                <p style="color:#666;font-size:0.85rem;margin-bottom:15px;">Каждая строка = один урок. Формат: <b>Название (время)</b></p>
+                <p style="color:#666;font-size:.85rem;margin-bottom:15px;">Каждая строка = один урок</p>
                 <div class="field"><label>Уроки (по одному на строку)</label><textarea id="editSchedule" rows="10"></textarea></div>
-                <button class="btn btn-primary" onclick="saveSchedule()">Сохранить расписание</button>
+                <button class="btn btn-primary" onclick="saveData()">💾 Сохранить в GitHub</button>
                 <div class="msg" id="msgSchedule"></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><div class="card-title">Страница schedule.html — полное расписание</div></div>
-                <div class="field"><label>Понедельник</label><textarea id="schedMon" rows="3"></textarea></div>
-                <div class="field"><label>Вторник</label><textarea id="schedTue" rows="3"></textarea></div>
-                <div class="field"><label>Среда</label><textarea id="schedWed" rows="3"></textarea></div>
-                <div class="field"><label>Четверг</label><textarea id="schedThu" rows="3"></textarea></div>
-                <div class="field"><label>Пятница</label><textarea id="schedFri" rows="3"></textarea></div>
-                <button class="btn btn-primary" onclick="saveFullSchedule()">Сохранить полное расписание</button>
-                <div class="msg" id="msgFullSchedule"></div>
             </div>
         </div>
 
@@ -176,9 +160,8 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         <div class="section" id="sec-activities">
             <div class="card">
                 <div class="card-header"><div class="card-title">Внеурочные занятия</div></div>
-                <p style="color:#666;font-size:0.85rem;margin-bottom:15px;">Формат: <b>🎯 Название — День</b></p>
                 <div class="field"><label>Занятия (по одному на строку)</label><textarea id="editActivities" rows="6"></textarea></div>
-                <button class="btn btn-primary" onclick="saveActivities()">Сохранить</button>
+                <button class="btn btn-primary" onclick="saveData()">💾 Сохранить в GitHub</button>
                 <div class="msg" id="msgActivities"></div>
             </div>
         </div>
@@ -188,7 +171,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="card">
                 <div class="card-header"><div class="card-title">Отправить уведомление</div><div class="card-badge" id="notifCount">0</div></div>
                 <div class="field"><label>Текст уведомления</label><textarea id="notifText" rows="2" placeholder="Завтра собрание в 15:00!"></textarea></div>
-                <button class="btn btn-primary" onclick="sendNotif()">Отправить всем</button>
+                <button class="btn btn-primary" onclick="createIssue('уведомление')">📤 Отправить через GitHub</button>
                 <div class="msg" id="msgNotif"></div>
             </div>
             <div class="card">
@@ -201,12 +184,12 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         <div class="section" id="sec-theme">
             <div class="card">
                 <div class="card-header"><div class="card-title">Цветовая тема сайта</div></div>
-                <p style="color:#666;font-size:0.85rem;margin-bottom:20px;">Тема применится для ВСЕХ посетителей</p>
+                <p style="color:#666;font-size:.85rem;margin-bottom:20px;">Тема применится для ВСЕХ посетителей</p>
                 <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:20px">
-                    <button class="btn btn-outline" onclick="setSiteTheme('red')" style="border-color:#ff0033;color:#ff0033">🔴 Красная</button>
-                    <button class="btn btn-outline" onclick="setSiteTheme('blue')" style="border-color:#00aaff;color:#00aaff">🔵 Синяя</button>
-                    <button class="btn btn-outline" onclick="setSiteTheme('green')" style="border-color:#00ff66;color:#00ff66">🟢 Зелёная</button>
-                    <button class="btn btn-outline" onclick="setSiteTheme('aero')" style="border-color:#00ffff;color:#00ffff">🩵 Аэро</button>
+                    <button class="btn btn-outline" onclick="setTheme('red')" style="border-color:#ff0033;color:#ff0033">🔴 Красная</button>
+                    <button class="btn btn-outline" onclick="setTheme('blue')" style="border-color:#00aaff;color:#00aaff">🔵 Синяя</button>
+                    <button class="btn btn-outline" onclick="setTheme('green')" style="border-color:#00ff66;color:#00ff66">🟢 Зелёная</button>
+                    <button class="btn btn-outline" onclick="setTheme('aero')" style="border-color:#00ffff;color:#00ffff">🩵 Аэро</button>
                 </div>
                 <div class="msg" id="msgTheme"></div>
                 <div class="preview-box"><div class="preview-label">Текущая тема</div><div id="currentThemeDisplay" style="font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--primary)"></div></div>
@@ -227,46 +210,24 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <button class="btn btn-outline" onclick="changePassword('mod')">Сменить пароль модератора</button>
                 <div class="msg" id="msgModPass"></div>
             </div>
-            <div class="card">
-                <div class="card-header"><div class="card-title">💣 Опасная зона</div></div>
-                <p style="color:#666;font-size:0.85rem;margin-bottom:15px">Необратимые действия!</p>
-                <div style="display:flex;gap:10px;flex-wrap:wrap">
-                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_news')">🗑 Новости</button>
-                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_notifications')">🗑 Уведомления</button>
-                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_schedule')">🗑 Расписание</button>
-                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_activities')">🗑 Внеурочка</button>
-                    <button class="btn btn-danger btn-sm" onclick="resetAll()">💣 СБРОСИТЬ ВСЁ</button>
-                </div>
-                <div class="msg" id="msgDanger"></div>
-            </div>
         </div>
     </div>
 </div>
 
-<div class="db-status" id="dbStatus">⏳ Подключение...</div>
-
 <script>
-// ===== SUPABASE =====
-const SUPABASE_URL = 'https://ucphajwoywnqlafakrur.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjcGhhandveXducWxhZmFrcnVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2MTM0NjEsImV4cCI6MjEwNDE4OTQ2MX0.07-o36wUIlbyRHis_ph1tOhkcIvgj6EamgEs1gAV8Zo';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// Проверка подключения
-sb.from('site_theme').select('theme').limit(1).then(r => {
-    const el = document.getElementById('dbStatus');
-    if (r.error) { el.textContent = '❌ Нет связи с БД'; el.classList.add('err'); }
-    else { el.textContent = '☁️ Supabase подключён'; setTimeout(() => el.style.display='none', 3000); }
-});
-
-// ===== ПАРОЛИ (локально) =====
+const REPO = '6m-class/6m-class';
+const API = `https://api.github.com/repos/${REPO}`;
 const DEFAULT_ADMIN = '1234';
 const DEFAULT_MOD = 'mod1234';
+let currentRole = '';
+let siteData = {};
+let dataSha = '';
+
 function getAdminPass(){return localStorage.getItem('adminPass')||DEFAULT_ADMIN}
 function getModPass(){return localStorage.getItem('modPass')||DEFAULT_MOD}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
-let currentRole = '';
-
-// ===== ВХОД =====
+// ВХОД
 function tryLogin(){
     const p=document.getElementById('loginPass').value;
     if(p===getAdminPass()){currentRole='admin';sessionStorage.setItem('adminAuth','admin');showPanel()}
@@ -280,20 +241,16 @@ function showPanel(){
     document.getElementById('panelTitle').textContent=isAdmin?'Админ-панель':'Модератор';
     document.getElementById('userInfo').textContent=isAdmin?'👑 Администратор':'🛡 Модератор';
     document.querySelectorAll('.tab').forEach(t=>{
-        const role=t.dataset.role;
-        t.style.display = role==='mod' ? 'block' : (isAdmin?'block':'none');
+        t.style.display=t.dataset.role==='mod'?'block':(isAdmin?'block':'none');
     });
     document.getElementById('statsBlock').style.display=isAdmin?'grid':'none';
-    const firstVisible=document.querySelector('.tab[style*="block"],.tab:not([style])');
-    if(firstVisible&&!document.querySelector('.tab.active[style*="block"]')){firstVisible.click()}
     loadAll();
 }
 function logout(){sessionStorage.removeItem('adminAuth');location.reload()}
-
 const sess=sessionStorage.getItem('adminAuth');
 if(sess==='admin'||sess==='mod'){currentRole=sess;showPanel()}
 
-// ===== ТАБЫ =====
+// ТАБЫ
 function switchTab(name,el){
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -301,168 +258,128 @@ function switchTab(name,el){
     document.getElementById('sec-'+name).classList.add('active');
 }
 
-// ===== ЗАГРУЗКА ИЗ SUPABASE =====
+// ЗАГРУЗКА ИЗ GITHUB
 async function loadAll(){
-    // Тексты
-    const {data:texts} = await sb.from('site_texts').select('*').limit(1).single();
-    if(texts){
-        document.getElementById('editTitle').value=texts.title||'';
-        document.getElementById('editPoem1').value=texts.poem_line1||'';
-        document.getElementById('editPoem2').value=texts.poem_line2||'';
-        document.getElementById('editPoem3').value=texts.poem_line3||'';
-        document.getElementById('editBtnText').value=texts.btn_text||'';
-        document.getElementById('editBtnLink').value=texts.btn_link||'';
-        document.getElementById('editNewsEmpty').value=texts.news_empty||'';
+    try {
+        // data.json
+        const res = await fetch(`${API}/contents/data.json?ref=main`, {cache:'no-store'});
+        const file = await res.json();
+        dataSha = file.sha;
+        siteData = JSON.parse(atob(file.content));
+
+        document.getElementById('editTitle').value = siteData.title || '';
+        document.getElementById('editPoem1').value = siteData.poem_line1 || '';
+        document.getElementById('editPoem2').value = siteData.poem_line2 || '';
+        document.getElementById('editPoem3').value = siteData.poem_line3 || '';
+        document.getElementById('editBtnText').value = siteData.btn_text || '';
+        document.getElementById('editBtnLink').value = siteData.btn_link || '';
+        document.getElementById('editNewsEmpty').value = siteData.news_empty || '';
+        document.getElementById('editSchedule').value = siteData.schedule || '';
+        document.getElementById('editActivities').value = siteData.activities || '';
+
+        const themes={red:'Красная 🔴',blue:'Синяя 🔵',green:'Зелёная 🟢',aero:'Аэро 🩵'};
+        document.getElementById('currentThemeDisplay').textContent = themes[siteData.theme] || 'Красная 🔴';
+
+        // Новости из Issues
+        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=50`);
+        const news = await newsRes.json();
+        document.getElementById('newsCount').textContent = news.length;
+        const nl = document.getElementById('newsList');
+        nl.innerHTML = news.length ? news.map(n=>`<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div></div><div class="item-actions"><a href="${n.html_url}" target="_blank" class="btn btn-outline btn-sm">↗</a></div></div>`).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
+
+        // Уведомления из Issues
+        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=50`);
+        const notifs = await notifRes.json();
+        document.getElementById('notifCount').textContent = notifs.length;
+        const nfl = document.getElementById('notifList');
+        nfl.innerHTML = notifs.length ? notifs.map(n=>`<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')}</div></div><div class="item-actions"><a href="${n.html_url}" target="_blank" class="btn btn-outline btn-sm">↗</a></div></div>`).join('') : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
+
+        updateStats(news.length, notifs.length);
+    } catch(err) {
+        console.error(err);
+        showMsg('msgTexts','❌ Ошибка загрузки: '+err.message,'#ff5555');
     }
-    // Расписание
-    const {data:sched} = await sb.from('site_schedule').select('*').limit(1).single();
-    if(sched) document.getElementById('editSchedule').value=sched.lessons||'';
-    const {data:schedFull} = await sb.from('site_schedule_full').select('*').limit(1).single();
-    if(schedFull){
-        document.getElementById('schedMon').value=schedFull.monday||'';
-        document.getElementById('schedTue').value=schedFull.tuesday||'';
-        document.getElementById('schedWed').value=schedFull.wednesday||'';
-        document.getElementById('schedThu').value=schedFull.thursday||'';
-        document.getElementById('schedFri').value=schedFull.friday||'';
-    }
-    // Внеурочка
-    const {data:act} = await sb.from('site_activities').select('*').limit(1).single();
-    if(act) document.getElementById('editActivities').value=act.content||'';
-    // Новости и уведомления
-    await renderNews();
-    await renderNotifs();
-    // Тема
-    const {data:theme} = await sb.from('site_theme').select('theme').limit(1).single();
-    const names={red:'Красная 🔴',blue:'Синяя 🔵',green:'Зелёная 🟢',aero:'Аэро 🩵'};
-    const currentTheme = theme?.theme || 'red';
-    document.getElementById('currentThemeDisplay').textContent=names[currentTheme]||currentTheme;
-    updateStats();
 }
 
-async function updateStats(){
-    const {count:newsCount} = await sb.from('site_news').select('*',{count:'exact',head:true});
-    const {count:notifCount} = await sb.from('site_notifications').select('*',{count:'exact',head:true});
-    const {data:sched} = await sb.from('site_schedule').select('lessons').limit(1).single();
-    const schedLines = (sched?.lessons||'').split('\n').filter(l=>l.trim()).length;
-    const {data:theme} = await sb.from('site_theme').select('theme').limit(1).single();
+function updateStats(nc, nfc){
+    const sched = (siteData.schedule||'').split('\n').filter(l=>l.trim()).length;
     const themes={red:'🔴',blue:'🔵',green:'🟢',aero:'🩵'};
-    document.getElementById('statNews').textContent=newsCount||0;
-    document.getElementById('statNotifs').textContent=notifCount||0;
-    document.getElementById('statSchedule').textContent=schedLines;
-    document.getElementById('statTheme').textContent=themes[theme?.theme||'red']||'🔴';
+    document.getElementById('statNews').textContent = nc;
+    document.getElementById('statNotifs').textContent = nfc;
+    document.getElementById('statSchedule').textContent = sched;
+    document.getElementById('statTheme').textContent = themes[siteData.theme]||'🔴';
 }
 
-// ===== ТЕКСТЫ =====
-async function saveTexts(){
-    const data = {
-        title: document.getElementById('editTitle').value.trim(),
-        poem_line1: document.getElementById('editPoem1').value.trim(),
-        poem_line2: document.getElementById('editPoem2').value.trim(),
-        poem_line3: document.getElementById('editPoem3').value.trim(),
-        btn_text: document.getElementById('editBtnText').value.trim(),
-        btn_link: document.getElementById('editBtnLink').value.trim()
-    };
-    const {error} = await sb.from('site_texts').update(data).eq('id',1);
-    if(error) showMsg('msgTexts','❌ '+error.message,'#ff5555');
-    else showMsg('msgTexts','✅ Тексты сохранены для всех!','#00ff66');
-}
-async function saveNewsEmpty(){
-    const t=document.getElementById('editNewsEmpty').value.trim();
-    const {error} = await sb.from('site_texts').update({news_empty:t}).eq('id',1);
-    if(error) showMsg('msgNewsEmpty','❌ '+error.message,'#ff5555');
-    else showMsg('msgNewsEmpty','✅ Сохранено!','#00ff66');
-}
+// СОХРАНЕНИЕ data.json ЧЕРЕЗ GITHUB
+async function saveData(){
+    siteData.title = document.getElementById('editTitle').value.trim();
+    siteData.poem_line1 = document.getElementById('editPoem1').value.trim();
+    siteData.poem_line2 = document.getElementById('editPoem2').value.trim();
+    siteData.poem_line3 = document.getElementById('editPoem3').value.trim();
+    siteData.btn_text = document.getElementById('editBtnText').value.trim();
+    siteData.btn_link = document.getElementById('editBtnLink').value.trim();
+    siteData.news_empty = document.getElementById('editNewsEmpty').value.trim();
+    siteData.schedule = document.getElementById('editSchedule').value.trim();
+    siteData.activities = document.getElementById('editActivities').value.trim();
 
-// ===== НОВОСТИ =====
-async function addNews(){
-    const t=document.getElementById('newsTitle').value.trim();
-    const x=document.getElementById('newsText').value.trim();
-    if(!t||!x){showMsg('msgNews','❌ Заполни оба поля','#ff5555');return}
-    const {error} = await sb.from('site_news').insert({title:t,text:x});
-    if(error) showMsg('msgNews','❌ '+error.message,'#ff5555');
-    else{
-        document.getElementById('newsTitle').value='';document.getElementById('newsText').value='';
-        showMsg('msgNews','✅ Новость опубликована!','#00ff66');
-        await renderNews();updateStats();
+    // Генерируем ссылку для редактирования файла на GitHub
+    const content = JSON.stringify(siteData, null, 2);
+    const encoded = btoa(unescape(encodeURIComponent(content)));
+    
+    // Открываем GitHub editor с предзаполненным содержимым
+    const editUrl = `https://github.com/${REPO}/edit/main/data.json`;
+    
+    // Копируем содержимое в буфер обмена
+    try {
+        await navigator.clipboard.writeText(content);
+        showMsg('msgTexts','✅ Скопировано! Откроется GitHub — вставь (Ctrl+V) и нажми "Commit changes"','#00ff66');
+    } catch(e) {
+        showMsg('msgTexts','⚠️ Скопируй вручную из консоли (F12). Откроется GitHub.','#ffaa00');
+        console.log('DATA.JSON CONTENT:', content);
     }
-}
-async function delNews(id){
-    await sb.from('site_news').delete().eq('id',id);
-    await renderNews();updateStats();
-}
-async function renderNews(){
-    const {data} = await sb.from('site_news').select('*').order('created_at',{ascending:false});
-    const n = data || [];
-    document.getElementById('newsCount').textContent=n.length;
-    const l=document.getElementById('newsList');
-    if(!n.length){l.innerHTML='<p style="color:#555;padding:10px">Новостей пока нет</p>';return}
-    l.innerHTML=n.map(x=>`<div class="item"><div class="item-content"><div class="item-title">${esc(x.title)}</div><div class="item-sub">${new Date(x.created_at).toLocaleDateString('ru-RU')}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delNews(${x.id})">✕</button></div></div>`).join('');
+    
+    setTimeout(() => window.open(editUrl, '_blank'), 1500);
 }
 
-// ===== РАСПИСАНИЕ =====
-async function saveSchedule(){
-    const v=document.getElementById('editSchedule').value.trim();
-    const {error} = await sb.from('site_schedule').update({lessons:v}).eq('id',1);
-    if(error) showMsg('msgSchedule','❌ '+error.message,'#ff5555');
-    else{showMsg('msgSchedule','✅ Расписание сохранено!','#00ff66');updateStats();}
-}
-async function saveFullSchedule(){
-    const data = {
-        monday: document.getElementById('schedMon').value.trim(),
-        tuesday: document.getElementById('schedTue').value.trim(),
-        wednesday: document.getElementById('schedWed').value.trim(),
-        thursday: document.getElementById('schedThu').value.trim(),
-        friday: document.getElementById('schedFri').value.trim()
-    };
-    const {error} = await sb.from('site_schedule_full').update(data).eq('id',1);
-    if(error) showMsg('msgFullSchedule','❌ '+error.message,'#ff5555');
-    else showMsg('msgFullSchedule','✅ Полное расписание сохранено!','#00ff66');
-}
-
-// ===== ВНЕУРОЧКА =====
-async function saveActivities(){
-    const v=document.getElementById('editActivities').value.trim();
-    const {error} = await sb.from('site_activities').update({content:v}).eq('id',1);
-    if(error) showMsg('msgActivities','❌ '+error.message,'#ff5555');
-    else showMsg('msgActivities','✅ Внеурочка сохранена!','#00ff66');
-}
-
-// ===== УВЕДОМЛЕНИЯ =====
-async function sendNotif(){
-    const t=document.getElementById('notifText').value.trim();
-    if(!t){showMsg('msgNotif','❌ Напиши текст','#ff5555');return}
-    const {error} = await sb.from('site_notifications').insert({text:t});
-    if(error) showMsg('msgNotif','❌ '+error.message,'#ff5555');
-    else{
-        document.getElementById('notifText').value='';
-        showMsg('msgNotif','✅ Уведомление отправлено всем!','#00ff66');
-        await renderNotifs();updateStats();
+// СОЗДАНИЕ ISSUE (новость / уведомление)
+function createIssue(label){
+    let title, body, msgId;
+    if(label === 'новость'){
+        title = document.getElementById('newsTitle').value.trim();
+        body = document.getElementById('newsText').value.trim();
+        msgId = 'msgNews';
+    } else {
+        title = document.getElementById('notifText').value.trim();
+        body = '';
+        msgId = 'msgNotif';
     }
-}
-async function delNotif(id){
-    await sb.from('site_notifications').delete().eq('id',id);
-    await renderNotifs();updateStats();
-}
-async function renderNotifs(){
-    const {data} = await sb.from('site_notifications').select('*').order('created_at',{ascending:false});
-    const n = data || [];
-    document.getElementById('notifCount').textContent=n.length;
-    const l=document.getElementById('notifList');
-    if(!n.length){l.innerHTML='<p style="color:#555;padding:10px">Уведомлений нет</p>';return}
-    l.innerHTML=n.map(x=>`<div class="item"><div class="item-content"><div class="item-title">${esc(x.text)}</div><div class="item-sub">${new Date(x.created_at).toLocaleString('ru-RU')}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delNotif(${x.id})">✕</button></div></div>`).join('');
+    if(!title){showMsg(msgId,'❌ Заполни заголовок','#ff5555');return}
+
+    const url = `https://github.com/${REPO}/issues/new?labels=${encodeURIComponent(label)}&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    window.open(url, '_blank');
+    showMsg(msgId,'✅ Откроется GitHub — нажми "Submit new issue"','#00ff66');
 }
 
-// ===== ТЕМА =====
-async function setSiteTheme(theme){
-    const {error} = await sb.from('site_theme').update({theme}).eq('id',1);
-    if(error){showMsg('msgTheme','❌ '+error.message,'#ff5555');return}
-    const names={red:'Красная 🔴',blue:'Синяя 🔵',green:'Зелёная 🟢',aero:'Аэро 🩵'};
-    document.getElementById('currentThemeDisplay').textContent=names[theme];
-    showMsg('msgTheme','✅ Тема изменена для всех!','#00ff66');
-    updateStats();
+// ТЕМА
+function setTheme(theme){
+    siteData.theme = theme;
+    const content = JSON.stringify(siteData, null, 2);
+    const editUrl = `https://github.com/${REPO}/edit/main/data.json`;
+    
+    try {
+        navigator.clipboard.writeText(content);
+        showMsg('msgTheme','✅ Скопировано! Откроется GitHub — вставь (Ctrl+V) и нажми "Commit changes"','#00ff66');
+    } catch(e) {
+        showMsg('msgTheme','⚠️ Скопируй из консоли (F12)','#ffaa00');
+        console.log('DATA.JSON CONTENT:', content);
+    }
+    
+    const themes={red:'Красная 🔴',blue:'Синяя 🔵',green:'Зелёная 🟢',aero:'Аэро 🩵'};
+    document.getElementById('currentThemeDisplay').textContent = themes[theme];
+    setTimeout(() => window.open(editUrl, '_blank'), 1500);
 }
 
-// ===== ПАРОЛИ =====
+// ПАРОЛИ
 function changePassword(role){
     const prefix=role==='admin'?'Admin':'Mod';
     const n=document.getElementById('new'+prefix+'Pass').value;
@@ -474,33 +391,10 @@ function changePassword(role){
     localStorage.setItem(role==='admin'?'adminPass':'modPass',n);
     document.getElementById('new'+prefix+'Pass').value='';
     document.getElementById('confirm'+prefix+'Pass').value='';
-    showMsg(msgId,'✅ Пароль '+((role==='admin')?'админа':'модератора')+' изменён!','#00ff66');
+    showMsg(msgId,'✅ Пароль изменён!','#00ff66');
 }
 
-// ===== ОПАСНАЯ ЗОНА =====
-async function clearTable(table){
-    if(!confirm('Удалить все записи из '+table+'?'))return;
-    await sb.from(table).delete().neq('id',0);
-    showMsg('msgDanger','✅ Очищено: '+table,'#00ff66');loadAll();
-}
-async function resetAll(){
-    if(!confirm('ТОЧНО сбросить ВСЁ?'))return;
-    if(!confirm('Это необратимо! Продолжить?'))return;
-    await Promise.all([
-        sb.from('site_news').delete().neq('id',0),
-        sb.from('site_notifications').delete().neq('id',0),
-        sb.from('site_schedule').update({lessons:''}).eq('id',1),
-        sb.from('site_activities').update({content:''}).eq('id',1),
-        sb.from('site_schedule_full').update({monday:'',tuesday:'',wednesday:'',thursday:'',friday:''}).eq('id',1),
-        sb.from('site_texts').update({title:'НАШ КЛАСС',poem_line1:'',poem_line2:'',poem_line3:'',btn_text:'',btn_link:'',news_empty:''}).eq('id',1),
-        sb.from('site_theme').update({theme:'red'}).eq('id',1)
-    ]);
-    showMsg('msgDanger','💣 Всё сброшено!','#ff5555');loadAll();
-}
-
-// ===== УТИЛИТЫ =====
-function showMsg(id,text,color){const el=document.getElementById(id);el.textContent=text;el.style.color=color;setTimeout(()=>{el.textContent=''},3000)}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function showMsg(id,text,color){const el=document.getElementById(id);el.textContent=text;el.style.color=color;setTimeout(()=>{el.textContent=''},5000)}
 </script>
 </body>
 </html>
