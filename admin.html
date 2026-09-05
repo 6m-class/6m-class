@@ -109,7 +109,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="tab" data-tab="settings" data-role="admin" onclick="switchTab('settings',this)">⚙️ Настройки</div>
         </div>
 
-        <!-- ТЕКСТЫ -->
         <div class="section active" id="sec-texts">
             <div class="card">
                 <div class="card-header"><div class="card-title">Главная страница — тексты</div></div>
@@ -130,7 +129,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- НОВОСТИ -->
         <div class="section" id="sec-news">
             <div class="card">
                 <div class="card-header"><div class="card-title">Добавить новость</div><div class="card-badge" id="newsCount">0</div></div>
@@ -145,7 +143,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- РАСПИСАНИЕ -->
         <div class="section" id="sec-schedule">
             <div class="card">
                 <div class="card-header"><div class="card-title">Расписание на главной</div></div>
@@ -156,7 +153,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- ВНЕУРОЧКА -->
         <div class="section" id="sec-activities">
             <div class="card">
                 <div class="card-header"><div class="card-title">Внеурочные занятия</div></div>
@@ -166,7 +162,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- УВЕДОМЛЕНИЯ -->
         <div class="section" id="sec-notifs">
             <div class="card">
                 <div class="card-header"><div class="card-title">Отправить уведомление</div><div class="card-badge" id="notifCount">0</div></div>
@@ -180,7 +175,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- ТЕМА -->
         <div class="section" id="sec-theme">
             <div class="card">
                 <div class="card-header"><div class="card-title">Цветовая тема сайта</div></div>
@@ -196,7 +190,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- НАСТРОЙКИ -->
         <div class="section" id="sec-settings">
             <div class="card">
                 <div class="card-header"><div class="card-title">Пароли</div></div>
@@ -227,7 +220,6 @@ function getAdminPass(){return localStorage.getItem('adminPass')||DEFAULT_ADMIN}
 function getModPass(){return localStorage.getItem('modPass')||DEFAULT_MOD}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
-// ВХОД
 function tryLogin(){
     const p=document.getElementById('loginPass').value;
     if(p===getAdminPass()){currentRole='admin';sessionStorage.setItem('adminAuth','admin');showPanel()}
@@ -250,7 +242,6 @@ function logout(){sessionStorage.removeItem('adminAuth');location.reload()}
 const sess=sessionStorage.getItem('adminAuth');
 if(sess==='admin'||sess==='mod'){currentRole=sess;showPanel()}
 
-// ТАБЫ
 function switchTab(name,el){
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -258,14 +249,12 @@ function switchTab(name,el){
     document.getElementById('sec-'+name).classList.add('active');
 }
 
-// ЗАГРУЗКА ИЗ GITHUB
 async function loadAll(){
     try {
-        // data.json
         const res = await fetch(`${API}/contents/data.json?ref=main`, {cache:'no-store'});
         const file = await res.json();
         dataSha = file.sha;
-        siteData = JSON.parse(atob(file.content));
+        siteData = JSON.parse(decodeURIComponent(escape(atob(file.content))));
 
         document.getElementById('editTitle').value = siteData.title || '';
         document.getElementById('editPoem1').value = siteData.poem_line1 || '';
@@ -280,15 +269,13 @@ async function loadAll(){
         const themes={red:'Красная 🔴',blue:'Синяя 🔵',green:'Зелёная 🟢',aero:'Аэро 🩵'};
         document.getElementById('currentThemeDisplay').textContent = themes[siteData.theme] || 'Красная 🔴';
 
-        // Новости из Issues
-        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=50`);
+        const newsRes = await fetch(`${API}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=50`);
         const news = await newsRes.json();
         document.getElementById('newsCount').textContent = news.length;
         const nl = document.getElementById('newsList');
         nl.innerHTML = news.length ? news.map(n=>`<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div></div><div class="item-actions"><a href="${n.html_url}" target="_blank" class="btn btn-outline btn-sm">↗</a></div></div>`).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
 
-        // Уведомления из Issues
-        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=50`);
+        const notifRes = await fetch(`${API}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=50`);
         const notifs = await notifRes.json();
         document.getElementById('notifCount').textContent = notifs.length;
         const nfl = document.getElementById('notifList');
@@ -310,7 +297,6 @@ function updateStats(nc, nfc){
     document.getElementById('statTheme').textContent = themes[siteData.theme]||'🔴';
 }
 
-// СОХРАНЕНИЕ data.json ЧЕРЕЗ GITHUB
 async function saveData(){
     siteData.title = document.getElementById('editTitle').value.trim();
     siteData.poem_line1 = document.getElementById('editPoem1').value.trim();
@@ -322,14 +308,9 @@ async function saveData(){
     siteData.schedule = document.getElementById('editSchedule').value.trim();
     siteData.activities = document.getElementById('editActivities').value.trim();
 
-    // Генерируем ссылку для редактирования файла на GitHub
     const content = JSON.stringify(siteData, null, 2);
-    const encoded = btoa(unescape(encodeURIComponent(content)));
-    
-    // Открываем GitHub editor с предзаполненным содержимым
     const editUrl = `https://github.com/${REPO}/edit/main/data.json`;
     
-    // Копируем содержимое в буфер обмена
     try {
         await navigator.clipboard.writeText(content);
         showMsg('msgTexts','✅ Скопировано! Откроется GitHub — вставь (Ctrl+V) и нажми "Commit changes"','#00ff66');
@@ -341,7 +322,6 @@ async function saveData(){
     setTimeout(() => window.open(editUrl, '_blank'), 1500);
 }
 
-// СОЗДАНИЕ ISSUE (новость / уведомление)
 function createIssue(label){
     let title, body, msgId;
     if(label === 'новость'){
@@ -360,7 +340,6 @@ function createIssue(label){
     showMsg(msgId,'✅ Откроется GitHub — нажми "Submit new issue"','#00ff66');
 }
 
-// ТЕМА
 function setTheme(theme){
     siteData.theme = theme;
     const content = JSON.stringify(siteData, null, 2);
@@ -379,7 +358,6 @@ function setTheme(theme){
     setTimeout(() => window.open(editUrl, '_blank'), 1500);
 }
 
-// ПАРОЛИ
 function changePassword(role){
     const prefix=role==='admin'?'Admin':'Mod';
     const n=document.getElementById('new'+prefix+'Pass').value;
