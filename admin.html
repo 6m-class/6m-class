@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Управление сайтом</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--primary:#ff0033;--primary-rgb:255,0,51;--bg:#0a0a0a;--card:#111;--border:rgba(255,255,255,0.08)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh}
-
-/* ВХОД */
 #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh}
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:50px 40px;width:100%;max-width:420px;text-align:center;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1)}
 .login-box h1{font-family:'Orbitron',sans-serif;font-size:1.6rem;margin-bottom:8px;text-transform:uppercase}
@@ -21,11 +20,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .login-box button{width:100%;padding:14px;background:var(--primary);border:none;border-radius:8px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;cursor:pointer;transition:0.3s}
 .login-box button:hover{box-shadow:0 0 25px rgba(var(--primary-rgb),0.6);transform:translateY(-2px)}
 .login-error{color:#ff5555;font-size:0.85rem;margin-top:10px;min-height:20px}
-.role-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;margin-top:10px}
-.role-admin{background:rgba(var(--primary-rgb),0.2);color:var(--primary)}
-.role-mod{background:rgba(0,170,255,0.2);color:#00aaff}
-
-/* ПАНЕЛЬ */
 #adminPanel{display:none}
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.95);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:15px 30px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .topbar h2{font-family:'Orbitron',sans-serif;font-size:1.1rem;text-transform:uppercase}
@@ -36,29 +30,22 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .topbar-btn.danger{border-color:rgba(255,80,80,0.3);color:#ff5555}
 .topbar-btn.danger:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
 .user-info{font-size:0.75rem;color:#666;margin-right:10px}
-
 .container{max-width:1000px;margin:0 auto;padding:30px 20px}
-
 .tabs{display:flex;gap:5px;margin-bottom:30px;flex-wrap:wrap}
 .tab{padding:10px 20px;border-radius:8px;border:1px solid var(--border);background:transparent;color:#888;font-size:0.85rem;font-weight:600;cursor:pointer;transition:0.3s;text-transform:uppercase;letter-spacing:0.5px}
 .tab:hover{border-color:rgba(var(--primary-rgb),0.4);color:#ccc}
 .tab.active{background:var(--primary);color:#000;border-color:var(--primary);font-weight:700}
-.tab.mod-only{display:none}
-
 .section{display:none;animation:fadeIn 0.3s ease}
 .section.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:25px;margin-bottom:20px}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .card-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--primary);text-transform:uppercase;letter-spacing:1px}
 .card-badge{font-size:0.7rem;padding:4px 10px;border-radius:20px;background:rgba(var(--primary-rgb),0.15);color:var(--primary);font-weight:700}
-
 .field{margin-bottom:18px}
 .field label{display:block;font-size:0.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
 .field input,.field textarea,.field select{width:100%;padding:12px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-size:0.95rem;outline:none;transition:0.3s;resize:vertical}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 12px rgba(var(--primary-rgb),0.2)}
-
 .btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;cursor:pointer;transition:0.3s;letter-spacing:0.5px}
 .btn-primary{background:var(--primary);color:#000}
 .btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
@@ -67,9 +54,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .btn-danger{background:transparent;border:1px solid rgba(255,80,80,0.3);color:#ff5555}
 .btn-danger:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
 .btn-sm{padding:8px 15px;font-size:0.75rem}
-
 .msg{margin-top:12px;font-size:0.85rem;min-height:20px}
-
 .item-list{display:flex;flex-direction:column;gap:10px;margin-top:15px}
 .item{display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;transition:0.3s}
 .item:hover{border-color:rgba(var(--primary-rgb),0.3)}
@@ -77,21 +62,15 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .item-title{font-weight:700;font-size:0.95rem;margin-bottom:4px}
 .item-sub{font-size:0.8rem;color:#666}
 .item-actions{display:flex;gap:8px;margin-left:15px}
-
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:30px}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
 .stat-num{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);font-weight:900}
 .stat-label{font-size:0.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px}
-
 .preview-box{background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:8px;padding:20px;margin-top:15px}
 .preview-label{font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-
-@media(max-width:600px){
-    .topbar{padding:12px 15px}
-    .tabs{gap:3px}
-    .tab{padding:8px 12px;font-size:0.75rem}
-    .stats{grid-template-columns:1fr 1fr}
-}
+.db-status{position:fixed;bottom:20px;right:20px;padding:8px 15px;background:rgba(0,255,102,0.1);border:1px solid #00ff66;border-radius:20px;font-size:0.75rem;color:#00ff66;z-index:1000}
+.db-status.err{background:rgba(255,0,51,0.1);border-color:#ff0033;color:#ff0033}
+@media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:0.75rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -119,7 +98,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
     </div>
 
     <div class="container">
-        <!-- Статистика -->
         <div class="stats" id="statsBlock">
             <div class="stat-card"><div class="stat-num" id="statNews">0</div><div class="stat-label">Новостей</div></div>
             <div class="stat-card"><div class="stat-num" id="statNotifs">0</div><div class="stat-label">Уведомлений</div></div>
@@ -127,7 +105,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="stat-card"><div class="stat-num" id="statTheme">🔴</div><div class="stat-label">Тема</div></div>
         </div>
 
-        <!-- Табы -->
         <div class="tabs" id="tabsContainer">
             <div class="tab active" data-tab="texts" data-role="admin" onclick="switchTab('texts',this)">✏️ Тексты</div>
             <div class="tab" data-tab="news" data-role="mod" onclick="switchTab('news',this)">📰 Новости</div>
@@ -138,13 +115,15 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="tab" data-tab="settings" data-role="admin" onclick="switchTab('settings',this)">⚙️ Настройки</div>
         </div>
 
-        <!-- === ТЕКСТЫ (только админ) === -->
+        <!-- ТЕКСТЫ -->
         <div class="section active" id="sec-texts">
             <div class="card">
                 <div class="card-header"><div class="card-title">Главная страница — тексты</div></div>
-                <div class="field"><label>Заголовок (HTML разрешён)</label><input type="text" id="editTitle" placeholder="САМЫЙ ЛУЧШИЙ КЛАСС"></div>
-                <div class="field"><label>Подзаголовок / Поэма</label><textarea id="editPoem" rows="3" placeholder="Самый лучший в мире класс..."></textarea></div>
-                <div class="field"><label>Текст кнопки «О нас»</label><input type="text" id="editBtnText" placeholder="Наши ученики"></div>
+                <div class="field"><label>Заголовок</label><input type="text" id="editTitle" placeholder="НАШ КЛАСС"></div>
+                <div class="field"><label>Строка 1</label><input type="text" id="editPoem1" placeholder="Самый лучший в мире класс"></div>
+                <div class="field"><label>Строка 2</label><input type="text" id="editPoem2" placeholder="это сказано про нас"></div>
+                <div class="field"><label>Строка 3</label><input type="text" id="editPoem3" placeholder="Мы — команда, мы — сила, мы — будущее!"></div>
+                <div class="field"><label>Текст кнопки</label><input type="text" id="editBtnText" placeholder="Наша история"></div>
                 <div class="field"><label>Ссылка кнопки</label><input type="text" id="editBtnLink" placeholder="class.html"></div>
                 <button class="btn btn-primary" onclick="saveTexts()">Сохранить</button>
                 <div class="msg" id="msgTexts"></div>
@@ -157,7 +136,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- === НОВОСТИ (админ + модер) === -->
+        <!-- НОВОСТИ -->
         <div class="section" id="sec-news">
             <div class="card">
                 <div class="card-header"><div class="card-title">Добавить новость</div><div class="card-badge" id="newsCount">0</div></div>
@@ -172,19 +151,18 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- === РАСПИСАНИЕ (только админ) === -->
+        <!-- РАСПИСАНИЕ -->
         <div class="section" id="sec-schedule">
             <div class="card">
                 <div class="card-header"><div class="card-title">Расписание на главной</div></div>
                 <p style="color:#666;font-size:0.85rem;margin-bottom:15px;">Каждая строка = один урок. Формат: <b>Название (время)</b></p>
-                <div class="field"><label>Уроки (по одному на строку)</label><textarea id="editSchedule" rows="10" placeholder="Разговоры о важном (8:30 - 9:15)&#10;Математика (9:30 - 10:15)"></textarea></div>
+                <div class="field"><label>Уроки (по одному на строку)</label><textarea id="editSchedule" rows="10"></textarea></div>
                 <button class="btn btn-primary" onclick="saveSchedule()">Сохранить расписание</button>
                 <div class="msg" id="msgSchedule"></div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="card-title">Страница school.html — полное расписание</div></div>
-                <p style="color:#666;font-size:0.85rem;margin-bottom:15px;">Полное расписание по дням недели. Каждый день — отдельный блок.</p>
-                <div class="field"><label>Понедельник</label><textarea id="schedMon" rows="3" placeholder="1. Математика (8:30-9:15)"></textarea></div>
+                <div class="card-header"><div class="card-title">Страница schedule.html — полное расписание</div></div>
+                <div class="field"><label>Понедельник</label><textarea id="schedMon" rows="3"></textarea></div>
                 <div class="field"><label>Вторник</label><textarea id="schedTue" rows="3"></textarea></div>
                 <div class="field"><label>Среда</label><textarea id="schedWed" rows="3"></textarea></div>
                 <div class="field"><label>Четверг</label><textarea id="schedThu" rows="3"></textarea></div>
@@ -194,18 +172,18 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- === ВНЕУРОЧКА (только админ) === -->
+        <!-- ВНЕУРОЧКА -->
         <div class="section" id="sec-activities">
             <div class="card">
                 <div class="card-header"><div class="card-title">Внеурочные занятия</div></div>
-                <p style="color:#666;font-size:0.85rem;margin-bottom:15px;">Каждая строка = одно занятие. Формат: <b>🎯 Название — День</b></p>
-                <div class="field"><label>Занятия (по одному на строку)</label><textarea id="editActivities" rows="6" placeholder="🇷🇺 Россия - мои горизонты - Чт&#10;⚽ Футбол - Вт, Чт"></textarea></div>
+                <p style="color:#666;font-size:0.85rem;margin-bottom:15px;">Формат: <b>🎯 Название — День</b></p>
+                <div class="field"><label>Занятия (по одному на строку)</label><textarea id="editActivities" rows="6"></textarea></div>
                 <button class="btn btn-primary" onclick="saveActivities()">Сохранить</button>
                 <div class="msg" id="msgActivities"></div>
             </div>
         </div>
 
-        <!-- === УВЕДОМЛЕНИЯ (админ + модер) === -->
+        <!-- УВЕДОМЛЕНИЯ -->
         <div class="section" id="sec-notifs">
             <div class="card">
                 <div class="card-header"><div class="card-title">Отправить уведомление</div><div class="card-badge" id="notifCount">0</div></div>
@@ -219,7 +197,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- === ТЕМА (только админ) === -->
+        <!-- ТЕМА -->
         <div class="section" id="sec-theme">
             <div class="card">
                 <div class="card-header"><div class="card-title">Цветовая тема сайта</div></div>
@@ -235,17 +213,17 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
-        <!-- === НАСТРОЙКИ (только админ) === -->
+        <!-- НАСТРОЙКИ -->
         <div class="section" id="sec-settings">
             <div class="card">
                 <div class="card-header"><div class="card-title">Пароли</div></div>
-                <div class="field"><label>Новый пароль админа</label><input type="password" id="newAdminPass" placeholder="Новый пароль"></div>
-                <div class="field"><label>Подтвердите</label><input type="password" id="confirmAdminPass" placeholder="Повторите"></div>
+                <div class="field"><label>Новый пароль админа</label><input type="password" id="newAdminPass"></div>
+                <div class="field"><label>Подтвердите</label><input type="password" id="confirmAdminPass"></div>
                 <button class="btn btn-primary" onclick="changePassword('admin')" style="margin-bottom:20px">Сменить пароль админа</button>
                 <div class="msg" id="msgAdminPass"></div>
                 <hr style="border:none;border-top:1px solid var(--border);margin:20px 0">
-                <div class="field"><label>Новый пароль модератора</label><input type="password" id="newModPass" placeholder="Новый пароль"></div>
-                <div class="field"><label>Подтвердите</label><input type="password" id="confirmModPass" placeholder="Повторите"></div>
+                <div class="field"><label>Новый пароль модератора</label><input type="password" id="newModPass"></div>
+                <div class="field"><label>Подтвердите</label><input type="password" id="confirmModPass"></div>
                 <button class="btn btn-outline" onclick="changePassword('mod')">Сменить пароль модератора</button>
                 <div class="msg" id="msgModPass"></div>
             </div>
@@ -253,11 +231,10 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="card-header"><div class="card-title">💣 Опасная зона</div></div>
                 <p style="color:#666;font-size:0.85rem;margin-bottom:15px">Необратимые действия!</p>
                 <div style="display:flex;gap:10px;flex-wrap:wrap">
-                    <button class="btn btn-danger btn-sm" onclick="clearKey('siteNews')">🗑 Новости</button>
-                    <button class="btn btn-danger btn-sm" onclick="clearKey('siteNotifs')">🗑 Уведомления</button>
-                    <button class="btn btn-danger btn-sm" onclick="clearKey('seenNotifs')">🗑 Прочитанные</button>
-                    <button class="btn btn-danger btn-sm" onclick="clearKey('siteSchedule')">🗑 Расписание</button>
-                    <button class="btn btn-danger btn-sm" onclick="clearKey('siteActivities')">🗑 Внеурочка</button>
+                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_news')">🗑 Новости</button>
+                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_notifications')">🗑 Уведомления</button>
+                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_schedule')">🗑 Расписание</button>
+                    <button class="btn btn-danger btn-sm" onclick="clearTable('site_activities')">🗑 Внеурочка</button>
                     <button class="btn btn-danger btn-sm" onclick="resetAll()">💣 СБРОСИТЬ ВСЁ</button>
                 </div>
                 <div class="msg" id="msgDanger"></div>
@@ -266,8 +243,22 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
     </div>
 </div>
 
+<div class="db-status" id="dbStatus">⏳ Подключение...</div>
+
 <script>
-// ===== ПАРОЛИ =====
+// ===== SUPABASE =====
+const SUPABASE_URL = 'https://ucphajwoywnqlafakrur.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjcGhhandveXducWxhZmFrcnVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2MTM0NjEsImV4cCI6MjEwNDE4OTQ2MX0.07-o36wUIlbyRHis_ph1tOhkcIvgj6EamgEs1gAV8Zo';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Проверка подключения
+sb.from('site_theme').select('theme').limit(1).then(r => {
+    const el = document.getElementById('dbStatus');
+    if (r.error) { el.textContent = '❌ Нет связи с БД'; el.classList.add('err'); }
+    else { el.textContent = '☁️ Supabase подключён'; setTimeout(() => el.style.display='none', 3000); }
+});
+
+// ===== ПАРОЛИ (локально) =====
 const DEFAULT_ADMIN = '1234';
 const DEFAULT_MOD = 'mod1234';
 function getAdminPass(){return localStorage.getItem('adminPass')||DEFAULT_ADMIN}
@@ -285,27 +276,20 @@ function tryLogin(){
 function showPanel(){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminPanel').style.display='block';
-    // Настройка интерфейса под роль
     const isAdmin=currentRole==='admin';
     document.getElementById('panelTitle').textContent=isAdmin?'Админ-панель':'Модератор';
     document.getElementById('userInfo').textContent=isAdmin?'👑 Администратор':'🛡 Модератор';
-    document.getElementById('userInfo').className='user-info '+(isAdmin?'role-admin':'role-mod');
-    // Показать/скрыть табы
     document.querySelectorAll('.tab').forEach(t=>{
         const role=t.dataset.role;
-        if(role==='mod'){t.style.display='block'} // mod = доступно обоим
-        else{t.style.display=isAdmin?'block':'none'}
+        t.style.display = role==='mod' ? 'block' : (isAdmin?'block':'none');
     });
-    // Статистика видна только админу
     document.getElementById('statsBlock').style.display=isAdmin?'grid':'none';
-    // Первый доступный таб
     const firstVisible=document.querySelector('.tab[style*="block"],.tab:not([style])');
     if(firstVisible&&!document.querySelector('.tab.active[style*="block"]')){firstVisible.click()}
     loadAll();
 }
 function logout(){sessionStorage.removeItem('adminAuth');location.reload()}
 
-// Проверка сессии
 const sess=sessionStorage.getItem('adminAuth');
 if(sess==='admin'||sess==='mod'){currentRole=sess;showPanel()}
 
@@ -317,134 +301,161 @@ function switchTab(name,el){
     document.getElementById('sec-'+name).classList.add('active');
 }
 
-// ===== ЗАГРУЗКА =====
-function loadAll(){
+// ===== ЗАГРУЗКА ИЗ SUPABASE =====
+async function loadAll(){
     // Тексты
-    document.getElementById('editTitle').value=localStorage.getItem('siteTitle')||'';
-    document.getElementById('editPoem').value=localStorage.getItem('sitePoem')||'';
-    document.getElementById('editBtnText').value=localStorage.getItem('siteBtnText')||'';
-    document.getElementById('editBtnLink').value=localStorage.getItem('siteBtnLink')||'';
-    document.getElementById('editNewsEmpty').value=localStorage.getItem('siteNewsEmpty')||'';
+    const {data:texts} = await sb.from('site_texts').select('*').limit(1).single();
+    if(texts){
+        document.getElementById('editTitle').value=texts.title||'';
+        document.getElementById('editPoem1').value=texts.poem_line1||'';
+        document.getElementById('editPoem2').value=texts.poem_line2||'';
+        document.getElementById('editPoem3').value=texts.poem_line3||'';
+        document.getElementById('editBtnText').value=texts.btn_text||'';
+        document.getElementById('editBtnLink').value=texts.btn_link||'';
+        document.getElementById('editNewsEmpty').value=texts.news_empty||'';
+    }
     // Расписание
-    document.getElementById('editSchedule').value=localStorage.getItem('siteSchedule')||'';
-    document.getElementById('schedMon').value=localStorage.getItem('schedMon')||'';
-    document.getElementById('schedTue').value=localStorage.getItem('schedTue')||'';
-    document.getElementById('schedWed').value=localStorage.getItem('schedWed')||'';
-    document.getElementById('schedThu').value=localStorage.getItem('schedThu')||'';
-    document.getElementById('schedFri').value=localStorage.getItem('schedFri')||'';
+    const {data:sched} = await sb.from('site_schedule').select('*').limit(1).single();
+    if(sched) document.getElementById('editSchedule').value=sched.lessons||'';
+    const {data:schedFull} = await sb.from('site_schedule_full').select('*').limit(1).single();
+    if(schedFull){
+        document.getElementById('schedMon').value=schedFull.monday||'';
+        document.getElementById('schedTue').value=schedFull.tuesday||'';
+        document.getElementById('schedWed').value=schedFull.wednesday||'';
+        document.getElementById('schedThu').value=schedFull.thursday||'';
+        document.getElementById('schedFri').value=schedFull.friday||'';
+    }
     // Внеурочка
-    document.getElementById('editActivities').value=localStorage.getItem('siteActivities')||'';
+    const {data:act} = await sb.from('site_activities').select('*').limit(1).single();
+    if(act) document.getElementById('editActivities').value=act.content||'';
     // Новости и уведомления
-    renderNews();renderNotifs();
+    await renderNews();
+    await renderNotifs();
     // Тема
-    const theme=localStorage.getItem('site-theme')||'red';
+    const {data:theme} = await sb.from('site_theme').select('theme').limit(1).single();
     const names={red:'Красная 🔴',blue:'Синяя 🔵',green:'Зелёная 🟢',aero:'Аэро 🩵'};
-    document.getElementById('currentThemeDisplay').textContent=names[theme]||theme;
+    const currentTheme = theme?.theme || 'red';
+    document.getElementById('currentThemeDisplay').textContent=names[currentTheme]||currentTheme;
     updateStats();
 }
 
-function updateStats(){
-    const news=JSON.parse(localStorage.getItem('siteNews')||'[]');
-    const notifs=JSON.parse(localStorage.getItem('siteNotifs')||'[]');
-    const sched=(localStorage.getItem('siteSchedule')||'').split('\n').filter(l=>l.trim()).length;
+async function updateStats(){
+    const {count:newsCount} = await sb.from('site_news').select('*',{count:'exact',head:true});
+    const {count:notifCount} = await sb.from('site_notifications').select('*',{count:'exact',head:true});
+    const {data:sched} = await sb.from('site_schedule').select('lessons').limit(1).single();
+    const schedLines = (sched?.lessons||'').split('\n').filter(l=>l.trim()).length;
+    const {data:theme} = await sb.from('site_theme').select('theme').limit(1).single();
     const themes={red:'🔴',blue:'🔵',green:'🟢',aero:'🩵'};
-    document.getElementById('statNews').textContent=news.length;
-    document.getElementById('statNotifs').textContent=notifs.length;
-    document.getElementById('statSchedule').textContent=sched;
-    document.getElementById('statTheme').textContent=themes[localStorage.getItem('site-theme')||'red']||'🔴';
+    document.getElementById('statNews').textContent=newsCount||0;
+    document.getElementById('statNotifs').textContent=notifCount||0;
+    document.getElementById('statSchedule').textContent=schedLines;
+    document.getElementById('statTheme').textContent=themes[theme?.theme||'red']||'🔴';
 }
 
 // ===== ТЕКСТЫ =====
-function saveTexts(){
-    const t=document.getElementById('editTitle').value.trim();
-    const p=document.getElementById('editPoem').value.trim();
-    const bt=document.getElementById('editBtnText').value.trim();
-    const bl=document.getElementById('editBtnLink').value.trim();
-    if(t)localStorage.setItem('siteTitle',t);
-    if(p)localStorage.setItem('sitePoem',p);
-    if(bt)localStorage.setItem('siteBtnText',bt);
-    if(bl)localStorage.setItem('siteBtnLink',bl);
-    showMsg('msgTexts','✅ Тексты сохранены!','#00ff66');
+async function saveTexts(){
+    const data = {
+        title: document.getElementById('editTitle').value.trim(),
+        poem_line1: document.getElementById('editPoem1').value.trim(),
+        poem_line2: document.getElementById('editPoem2').value.trim(),
+        poem_line3: document.getElementById('editPoem3').value.trim(),
+        btn_text: document.getElementById('editBtnText').value.trim(),
+        btn_link: document.getElementById('editBtnLink').value.trim()
+    };
+    const {error} = await sb.from('site_texts').update(data).eq('id',1);
+    if(error) showMsg('msgTexts','❌ '+error.message,'#ff5555');
+    else showMsg('msgTexts','✅ Тексты сохранены для всех!','#00ff66');
 }
-function saveNewsEmpty(){
+async function saveNewsEmpty(){
     const t=document.getElementById('editNewsEmpty').value.trim();
-    if(t)localStorage.setItem('siteNewsEmpty',t);
-    showMsg('msgNewsEmpty','✅ Сохранено!','#00ff66');
+    const {error} = await sb.from('site_texts').update({news_empty:t}).eq('id',1);
+    if(error) showMsg('msgNewsEmpty','❌ '+error.message,'#ff5555');
+    else showMsg('msgNewsEmpty','✅ Сохранено!','#00ff66');
 }
 
 // ===== НОВОСТИ =====
-function getNews(){return JSON.parse(localStorage.getItem('siteNews')||'[]')}
-function addNews(){
+async function addNews(){
     const t=document.getElementById('newsTitle').value.trim();
     const x=document.getElementById('newsText').value.trim();
     if(!t||!x){showMsg('msgNews','❌ Заполни оба поля','#ff5555');return}
-    const n=getNews();
-    n.unshift({title:t,text:x,date:new Date().toLocaleDateString('ru-RU'),id:Date.now()});
-    localStorage.setItem('siteNews',JSON.stringify(n));
-    document.getElementById('newsTitle').value='';document.getElementById('newsText').value='';
-    showMsg('msgNews','✅ Новость опубликована!','#00ff66');
-    renderNews();updateStats();
+    const {error} = await sb.from('site_news').insert({title:t,text:x});
+    if(error) showMsg('msgNews','❌ '+error.message,'#ff5555');
+    else{
+        document.getElementById('newsTitle').value='';document.getElementById('newsText').value='';
+        showMsg('msgNews','✅ Новость опубликована!','#00ff66');
+        await renderNews();updateStats();
+    }
 }
-function delNews(id){
-    let n=getNews();n=n.filter(x=>x.id!==id);
-    localStorage.setItem('siteNews',JSON.stringify(n));
-    renderNews();updateStats();
+async function delNews(id){
+    await sb.from('site_news').delete().eq('id',id);
+    await renderNews();updateStats();
 }
-function renderNews(){
-    const n=getNews();
+async function renderNews(){
+    const {data} = await sb.from('site_news').select('*').order('created_at',{ascending:false});
+    const n = data || [];
     document.getElementById('newsCount').textContent=n.length;
     const l=document.getElementById('newsList');
     if(!n.length){l.innerHTML='<p style="color:#555;padding:10px">Новостей пока нет</p>';return}
-    l.innerHTML=n.map(x=>`<div class="item"><div class="item-content"><div class="item-title">${esc(x.title)}</div><div class="item-sub">${x.date}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delNews(${x.id})">✕</button></div></div>`).join('');
+    l.innerHTML=n.map(x=>`<div class="item"><div class="item-content"><div class="item-title">${esc(x.title)}</div><div class="item-sub">${new Date(x.created_at).toLocaleDateString('ru-RU')}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delNews(${x.id})">✕</button></div></div>`).join('');
 }
 
 // ===== РАСПИСАНИЕ =====
-function saveSchedule(){
-    localStorage.setItem('siteSchedule',document.getElementById('editSchedule').value.trim());
-    showMsg('msgSchedule','✅ Расписание сохранено!','#00ff66');updateStats();
+async function saveSchedule(){
+    const v=document.getElementById('editSchedule').value.trim();
+    const {error} = await sb.from('site_schedule').update({lessons:v}).eq('id',1);
+    if(error) showMsg('msgSchedule','❌ '+error.message,'#ff5555');
+    else{showMsg('msgSchedule','✅ Расписание сохранено!','#00ff66');updateStats();}
 }
-function saveFullSchedule(){
-    ['Mon','Tue','Wed','Thu','Fri'].forEach(d=>{
-        const v=document.getElementById('sched'+d).value.trim();
-        if(v)localStorage.setItem('sched'+d,v);
-    });
-    showMsg('msgFullSchedule','✅ Полное расписание сохранено!','#00ff66');
+async function saveFullSchedule(){
+    const data = {
+        monday: document.getElementById('schedMon').value.trim(),
+        tuesday: document.getElementById('schedTue').value.trim(),
+        wednesday: document.getElementById('schedWed').value.trim(),
+        thursday: document.getElementById('schedThu').value.trim(),
+        friday: document.getElementById('schedFri').value.trim()
+    };
+    const {error} = await sb.from('site_schedule_full').update(data).eq('id',1);
+    if(error) showMsg('msgFullSchedule','❌ '+error.message,'#ff5555');
+    else showMsg('msgFullSchedule','✅ Полное расписание сохранено!','#00ff66');
 }
 
 // ===== ВНЕУРОЧКА =====
-function saveActivities(){
-    localStorage.setItem('siteActivities',document.getElementById('editActivities').value.trim());
-    showMsg('msgActivities','✅ Внеурочка сохранена!','#00ff66');
+async function saveActivities(){
+    const v=document.getElementById('editActivities').value.trim();
+    const {error} = await sb.from('site_activities').update({content:v}).eq('id',1);
+    if(error) showMsg('msgActivities','❌ '+error.message,'#ff5555');
+    else showMsg('msgActivities','✅ Внеурочка сохранена!','#00ff66');
 }
 
 // ===== УВЕДОМЛЕНИЯ =====
-function getNotifs(){return JSON.parse(localStorage.getItem('siteNotifs')||'[]')}
-function sendNotif(){
+async function sendNotif(){
     const t=document.getElementById('notifText').value.trim();
     if(!t){showMsg('msgNotif','❌ Напиши текст','#ff5555');return}
-    const n=getNotifs();
-    n.unshift({text:t,date:new Date().toLocaleString('ru-RU'),id:Date.now()});
-    localStorage.setItem('siteNotifs',JSON.stringify(n));
-    document.getElementById('notifText').value='';
-    showMsg('msgNotif','✅ Уведомление отправлено!','#00ff66');
-    renderNotifs();updateStats();
+    const {error} = await sb.from('site_notifications').insert({text:t});
+    if(error) showMsg('msgNotif','❌ '+error.message,'#ff5555');
+    else{
+        document.getElementById('notifText').value='';
+        showMsg('msgNotif','✅ Уведомление отправлено всем!','#00ff66');
+        await renderNotifs();updateStats();
+    }
 }
-function delNotif(id){
-    let n=getNotifs();n=n.filter(x=>x.id!==id);
-    localStorage.setItem('siteNotifs',JSON.stringify(n));
-    renderNotifs();updateStats();
+async function delNotif(id){
+    await sb.from('site_notifications').delete().eq('id',id);
+    await renderNotifs();updateStats();
 }
-function renderNotifs(){
-    const n=getNotifs();
+async function renderNotifs(){
+    const {data} = await sb.from('site_notifications').select('*').order('created_at',{ascending:false});
+    const n = data || [];
     document.getElementById('notifCount').textContent=n.length;
     const l=document.getElementById('notifList');
     if(!n.length){l.innerHTML='<p style="color:#555;padding:10px">Уведомлений нет</p>';return}
-    l.innerHTML=n.map(x=>`<div class="item"><div class="item-content"><div class="item-title">${esc(x.text)}</div><div class="item-sub">${x.date}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delNotif(${x.id})">✕</button></div></div>`).join('');
+    l.innerHTML=n.map(x=>`<div class="item"><div class="item-content"><div class="item-title">${esc(x.text)}</div><div class="item-sub">${new Date(x.created_at).toLocaleString('ru-RU')}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delNotif(${x.id})">✕</button></div></div>`).join('');
 }
 
 // ===== ТЕМА =====
-function setSiteTheme(theme){
-    localStorage.setItem('site-theme',theme);
+async function setSiteTheme(theme){
+    const {error} = await sb.from('site_theme').update({theme}).eq('id',1);
+    if(error){showMsg('msgTheme','❌ '+error.message,'#ff5555');return}
     const names={red:'Красная 🔴',blue:'Синяя 🔵',green:'Зелёная 🟢',aero:'Аэро 🩵'};
     document.getElementById('currentThemeDisplay').textContent=names[theme];
     showMsg('msgTheme','✅ Тема изменена для всех!','#00ff66');
@@ -467,15 +478,23 @@ function changePassword(role){
 }
 
 // ===== ОПАСНАЯ ЗОНА =====
-function clearKey(key){
-    if(!confirm('Удалить '+key+'?'))return;
-    localStorage.removeItem(key);
-    showMsg('msgDanger','✅ Удалено: '+key,'#00ff66');loadAll();
+async function clearTable(table){
+    if(!confirm('Удалить все записи из '+table+'?'))return;
+    await sb.from(table).delete().neq('id',0);
+    showMsg('msgDanger','✅ Очищено: '+table,'#00ff66');loadAll();
 }
-function resetAll(){
+async function resetAll(){
     if(!confirm('ТОЧНО сбросить ВСЁ?'))return;
     if(!confirm('Это необратимо! Продолжить?'))return;
-    ['siteTitle','sitePoem','siteBtnText','siteBtnLink','siteNewsEmpty','siteNews','siteNotifs','seenNotifs','siteSchedule','siteActivities','schedMon','schedTue','schedWed','schedThu','schedFri','site-theme'].forEach(k=>localStorage.removeItem(k));
+    await Promise.all([
+        sb.from('site_news').delete().neq('id',0),
+        sb.from('site_notifications').delete().neq('id',0),
+        sb.from('site_schedule').update({lessons:''}).eq('id',1),
+        sb.from('site_activities').update({content:''}).eq('id',1),
+        sb.from('site_schedule_full').update({monday:'',tuesday:'',wednesday:'',thursday:'',friday:''}).eq('id',1),
+        sb.from('site_texts').update({title:'НАШ КЛАСС',poem_line1:'',poem_line2:'',poem_line3:'',btn_text:'',btn_link:'',news_empty:''}).eq('id',1),
+        sb.from('site_theme').update({theme:'red'}).eq('id',1)
+    ]);
     showMsg('msgDanger','💣 Всё сброшено!','#ff5555');loadAll();
 }
 

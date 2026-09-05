@@ -1,290 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Самый лучший класс</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-	:root { --primary:#ff0033; --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --border:rgba(255,0,51,0.3); --shadow:rgba(255,0,51,0.2); }
-[data-theme="blue"] { --primary:#00aaff; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.3); --shadow:rgba(0,170,255,0.2); }
-[data-theme="green"] { --primary:#00ff66; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.3); --shadow:rgba(0,255,102,0.2); }
-[data-theme="aero"] { --primary:#00ffff; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.3); --shadow:rgba(0,255,255,0.2); }
-        /* Базовые настройки */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background-color: #050505;
-            color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh; /* Изменили height на min-height, чтобы контент поместился */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 40px 20px; /* Добавили отступы, чтобы контент не прилипал к краям на мобильных */
-        }
-
-        /* Анимированный фон (красное свечение) */
-        .background-glow {
-            position: fixed; /* Фиксируем фон, чтобы он не скроллился */
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80vw; height: 80vw;
-            background: radial-gradient(circle, rgba(255, 0, 51, 0.15) 0%, rgba(5, 5, 5, 0) 70%);
-            z-index: -2;
-            animation: pulseGlow 4s infinite alternate;
-            pointer-events: none;
-        }
-
-        @keyframes pulseGlow {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-        }
-
-        /* Контейнер для контента */
-        .container {
-            text-align: center;
-            z-index: 10;
-            max-width: 1000px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Главный заголовок */
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.3rem, 4vw, 3.3rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            line-height: 1.4;
-            margin-bottom: 30px;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255, 0, 51, 0.8), 0 0 20px rgba(255, 0, 51, 0.5);
-            animation: fadeInUp 1s ease-out forwards;
-        }
-
-        .highlight { color: #ff0033; text-shadow: 0 0 15px #ff0033, 0 0 30px #ff0033; }
-
-        /* Эффект печати */
-        .typewriter-wrapper {
-            display: flex; flex-direction: column; align-items: center; gap: 15px; min-height: 120px;
-        }
-        .typewriter-line {
-            display: inline-block; font-size: clamp(1.2rem, 3vw, 2.5rem); font-weight: 700;
-            white-space: nowrap; overflow: hidden; width: 0; border-right: 3px solid transparent;
-        }
-        .line-1 { color: #ffffff; animation: typingLine1 2.5s steps(30, end) forwards, blinkCursor 0.75s step-end infinite 2.5s; }
-        .line-2 { color: #ff0033; text-shadow: 0 0 10px rgba(255, 0, 51, 0.5); animation: typingLine2 2s steps(25, end) 2.5s forwards, blinkCursorRed 0.75s step-end infinite 4.5s; }
-        .line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); animation: typingLine3 2s steps(35, end) 4.5s forwards; border-right: none; }
-
-        /* Кнопка "Наша история" */
-        .btn {
-            display: inline-block; margin-top: 40px; padding: 15px 40px;
-            font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700;
-            color: #ff0033; text-decoration: none; text-transform: uppercase;
-            border: 2px solid #ff0033; border-radius: 5px; background: transparent;
-            cursor: pointer; transition: all 0.3s ease;
-            opacity: 0; transform: translateY(20px);
-            box-shadow: 0 0 10px rgba(255, 0, 51, 0.2);
-            animation: fadeInUp 1s ease-out 6.5s forwards;
-        }
-        .btn:hover {
-            background: #ff0033; color: #000;
-            box-shadow: 0 0 20px rgba(255, 0, 51, 0.8), 0 0 40px rgba(255, 0, 51, 0.4);
-            transform: scale(1.05);
-        }
-
-        /* --- НОВЫЕ СЕКЦИИ (Расписание и Новости) --- */
-        .extra-sections {
-            margin-top: 80px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 7.5s forwards; /* Появляются после главной кнопки */
-        }
-
-        .card {
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 0, 51, 0.3);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: left;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: #ff0033;
-            box-shadow: 0 0 25px rgba(255, 0, 51, 0.2);
-        }
-
-        .card h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            color: #fff;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #ff0033;
-            padding-bottom: 10px;
-            display: inline-block;
-        }
-	
-
-        /* Стили для списка расписания */
-        .schedule-list { list-style: none; margin-bottom: 20px; flex-grow: 1; }
-        .schedule-list li {
-            display: flex; justify-content: space-between;
-            padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.95rem; color: #ccc;
-        }
-        .schedule-list li span:first-child { color: #ff0033; font-weight: 700; margin-right: 10px;}
-
-        /* Стили для новости */
-        .news-date { color: #ff0033; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase;}
-        .news-text { color: #ddd; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1;}
-
-        /* Маленькая кнопка внутри карточек */
-        .card-link {
-            align-self: flex-start;
-            color: #fff; text-decoration: none; font-weight: 700; font-size: 0.9rem;
-            text-transform: uppercase; letter-spacing: 1px;
-            transition: 0.3s; padding: 8px 15px;
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
-        }
-        .card-link:hover { border-color: #ff0033; color: #ff0033; box-shadow: 0 0 10px rgba(255,0,51,0.3); }
-
-        /* Анимации */
-        @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
-        @keyframes typingLine1 { from { width: 0; border-right-color: #fff; } to { width: 100%; border-right-color: #fff; } }
-        @keyframes typingLine2 { from { width: 0; border-right-color: #ff0033; } to { width: 100%; border-right-color: #ff0033; } }
-        @keyframes typingLine3 { from { width: 0; } to { width: 100%; } }
-        @keyframes blinkCursor { from, to { border-right-color: transparent; } 50% { border-right-color: #fff; } }
-        @keyframes blinkCursorRed { from, to { border-right-color: transparent; } 50% { border-right-color: #ff0033; } }
-
-        /* Частицы */
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
-        .particle { position: absolute; background: #ff0033; border-radius: 50%; box-shadow: 0 0 10px #ff0033; animation: floatUp linear infinite; opacity: 0; }
-        @keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
-    </style>
-</head>
-<a href="admin.html" style="position:fixed; top:20px; right:20px; z-index:9999; color:rgba(255,255,255,0.4); text-decoration:none; font-size:0.75rem; padding:6px 14px; border:1px solid rgba(255,255,255,0.15); border-radius:4px; transition:0.3s;">⚙️ Админ</a>
-<body>
-    <div class="background-glow"></div>
-    <div class="particles" id="particles"></div>
-
-    <div class="container">
-        <h1></h1>
-        
-        <div class="typewriter-wrapper">
-            <div class="typewriter-line line-1">Самый лучший в мире класс</div>
-            <div class="typewriter-line line-2">это сказано про нас</div>
-            <div class="typewriter-line line-3">Мы, внуки Пифагора!</div>
-        </div>
-
-        <!-- Главная кнопка -->
-        <a href="class.html" class="btn">Наши ученики</a>
-
-        <!-- НОВЫЙ БЛОК: Расписание и Новости -->
-        <div class="extra-sections">
-            
-            <!-- Карточка Расписания -->
-            <div class="card">
-                <h3>Расписание</h3>
-                <ul class="schedule-list">
-                    <li><span>1.</span> Разговоры о важном (8:30 - 9:15) </li>
-                    <li><span>2.</span> Математика (9:30 - 10:15) </li>
-                    <li><span>6.</span> Русский язык (10:35 - 11:20) </li>
-                    <li><span>4.</span> Технология (11:40 - 12:25) </li>
-                    <li><span>5.</span> Технология (12:35 - 13:20)</li>
-                    <li><span>6.</span> Изобразительное искусство (13:30 - 14:15) </li>
-                    <li><span>7.</span> Литература (14:20 - 15:05) </li>
-                </ul>
-                <!-- Ссылка-заглушка, потом замените # на нужный файл -->
-                <a href="school.html" class="card-link">Полное расписание →</a>
-            </div>
-
-            <!-- Карточка Новостей -->
-            <div class="card">
-                <h3>Новости</h3>
-                <div class="news-item">
-                    <div class="news-date"> </div>
-                    <p class="news-text">Упс... Тут пока что ничего нету.</p>
-                </div>
-                <!-- Ссылка-заглушка, потом замените # на нужный файл -->
-                <a href="news.html" class="card-link">Все новости →</a>
-            </div>
-			<div class="card">
-    <h3>Внеурочка</h3>
-    <ul class="schedule-list">
-        <li><span></span> Россия - мои горизонты - Чт</li>
-        <li><span></span> </li>
-        <li><span></span> </li>
-        <li><span></span> </li>
-    </ul>
-    <a href="activites.html" class="card-link">Все занятия →</a>
-</div>
-
-        </div>
-    </div>
-
-    <script>
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-            const size = Math.random() * 5 + 2;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.left = `${Math.random() * 100}vw`;
-            particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
-            particle.style.animationDelay = `${Math.random() * 5}s`;
-            particlesContainer.appendChild(particle);
-        }
-    </script>
-</body>
-</html>
-<!-- ============================================================ -->
-<!-- === НАЧАЛО INDEX.HTML === -->
-<!-- ============================================================ -->
-<!DOCTYPE html>
-<html lang="ru">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Самый лучший класс</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* === СИСТЕМА ТЕМ (CSS ПЕРЕМЕННЫЕ) === */
-:root {
-    --primary: #ff0033;
-    --glow: rgba(255, 0, 51, 0.15);
-    --glow-strong: rgba(255, 0, 51, 0.8);
-    --border: rgba(255, 0, 51, 0.3);
-    --shadow: rgba(255, 0, 51, 0.2);
-}
-[data-theme="blue"] {
-    --primary: #00aaff; --glow: rgba(0,170,255,0.15);
-    --glow-strong: rgba(0,170,255,0.8); --border: rgba(0,170,255,0.3); --shadow: rgba(0,170,255,0.2);
-}
-[data-theme="green"] {
-    --primary: #00ff66; --glow: rgba(0,255,102,0.15);
-    --glow-strong: rgba(0,255,102,0.8); --border: rgba(0,255,102,0.3); --shadow: rgba(0,255,102,0.2);
-}
-[data-theme="aero"] {
-    --primary: #00ffff; --glow: rgba(0,255,255,0.15);
-    --glow-strong: rgba(0,255,255,0.8); --border: rgba(0,255,255,0.3); --shadow: rgba(0,255,255,0.2);
-}
+:root { --primary:#ff0033; --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --border:rgba(255,0,51,0.3); --shadow:rgba(255,0,51,0.2); }
+[data-theme="blue"] { --primary:#00aaff; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.3); --shadow:rgba(0,170,255,0.2); }
+[data-theme="green"] { --primary:#00ff66; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.3); --shadow:rgba(0,255,102,0.2); }
+[data-theme="aero"] { --primary:#00ffff; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.3); --shadow:rgba(0,255,255,0.2); }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -293,14 +19,13 @@ body {
     position: relative; padding: 40px 20px;
 }
 
-/* === ПЕРЕКЛЮЧАТЕЛЬ ТЕМ (КРУЖОЧКИ ВВЕРХУ СЛЕВА) === */
-.theme-switcher {
-    position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px;
-}
-.theme-btn {
-    width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);
-    cursor: pointer; transition: all 0.3s ease; opacity: 0.6;
-}
+/* Админ-ссылка */
+.admin-link { position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 8px 15px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 5px; color: var(--primary); text-decoration: none; font-size: 0.8rem; font-weight: 700; transition: 0.3s; backdrop-filter: blur(10px); }
+.admin-link:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--glow-strong); }
+
+/* Переключатель тем */
+.theme-switcher { position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px; }
+.theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s ease; opacity: 0.6; }
 .theme-btn:hover, .theme-btn.active { opacity: 1; transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px currentColor; }
 .theme-btn[data-set="red"] { background: #ff0033; color: #ff0033; }
 .theme-btn[data-set="blue"] { background: #00aaff; color: #00aaff; }
@@ -309,38 +34,43 @@ body {
 
 .background-glow {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80vw; height: 80vw;
-    background: radial-gradient(circle, var(--glow) 0%, rgba(5,5,5,0) 70%);
+    width: 80vw; height: 80vw; background: radial-gradient(circle, var(--glow) 0%, rgba(5,5,5,0) 70%);
     z-index: -2; animation: pulseGlow 4s infinite alternate; pointer-events: none;
 }
 @keyframes pulseGlow { 0%{transform:translate(-50%,-50%) scale(1);opacity:.8} 100%{transform:translate(-50%,-50%) scale(1.2);opacity:1} }
 
-.container { text-align: center; z-index: 10; padding: 20px; max-width: 1000px; display: flex; flex-direction: column; align-items: center; }
+.container { text-align: center; z-index: 10; max-width: 1000px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
 h1 {
     font-family: 'Orbitron', sans-serif; font-size: clamp(1.3rem, 4vw, 3.3rem); font-weight: 900;
     text-transform: uppercase; line-height: 1.4; margin-bottom: 30px; color: #fff;
     text-shadow: 0 0 10px var(--glow-strong), 0 0 20px var(--shadow);
-    animation: fadeInUp 1s ease-out forwards;
 }
-.highlight { color: var(--primary); text-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary); }
 
 .typewriter-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; min-height: 120px; }
 .typewriter-line { display: inline-block; font-size: clamp(1.2rem, 3vw, 2.5rem); font-weight: 700; white-space: nowrap; overflow: hidden; width: 0; border-right: 3px solid transparent; }
-.line-1 { color: #fff; animation: typingLine1 2.5s steps(30,end) forwards, blinkCursor .75s step-end infinite 2.5s; }
-.line-2 { color: var(--primary); text-shadow: 0 0 10px var(--shadow); animation: typingLine2 2s steps(25,end) 2.5s forwards, blinkCursorTheme .75s step-end infinite 4.5s; }
-.line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); animation: typingLine3 2s steps(35,end) 4.5s forwards; border-right: none; }
+
+.animate .line-1 { color: #fff; animation: typingLine1 2.5s steps(30,end) forwards, blinkCursor .75s step-end infinite 2.5s; }
+.animate .line-2 { color: var(--primary); text-shadow: 0 0 10px var(--shadow); animation: typingLine2 2s steps(25,end) 2.5s forwards, blinkCursorTheme .75s step-end infinite 4.5s; }
+.animate .line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); animation: typingLine3 2s steps(35,end) 4.5s forwards; border-right: none; }
+.animate .btn { animation: fadeInUp 1s ease-out 6.5s forwards; }
+
+.no-animate .typewriter-line { width: 100%; border-right: none; }
+.no-animate .line-1 { color: #fff; }
+.no-animate .line-2 { color: var(--primary); text-shadow: 0 0 10px var(--shadow); }
+.no-animate .line-3 { color: #e0e0e0; font-size: clamp(1rem, 2.5vw, 2rem); }
+.no-animate .btn { opacity: 1; transform: translateY(0); }
 
 .btn {
     display: inline-block; margin-top: 40px; padding: 15px 40px; font-family: 'Orbitron', sans-serif;
     font-size: 1.2rem; font-weight: 700; color: var(--primary); text-decoration: none; text-transform: uppercase;
     border: 2px solid var(--primary); border-radius: 5px; background: transparent; cursor: pointer;
-    transition: all 0.3s ease; opacity: 0; transform: translateY(20px);
-    box-shadow: 0 0 10px var(--shadow); animation: fadeInUp 1s ease-out 6.5s forwards;
+    transition: all 0.3s ease; opacity: 0; transform: translateY(20px); box-shadow: 0 0 10px var(--shadow);
 }
 .btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--glow-strong), 0 0 40px var(--shadow); transform: scale(1.05); }
 
-/* Карточки расписания и новостей */
 .extra-sections { margin-top: 80px; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; opacity: 0; animation: fadeInUp 1s ease-out 7.5s forwards; }
+.no-animate .extra-sections { opacity: 1; animation: none; }
 .card { background: rgba(20,20,20,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 30px; text-align: left; transition: all 0.3s ease; display: flex; flex-direction: column; }
 .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 0 25px var(--shadow); }
 .card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block; }
@@ -349,12 +79,23 @@ h1 {
 .schedule-list li span:first-child { color: var(--primary); font-weight: 700; margin-right: 10px; }
 .news-date { color: var(--primary); font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
 .news-text { color: #ddd; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
+.news-empty { color: #777; font-style: italic; padding: 20px 0; text-align: center; }
+.news-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .card-link { align-self: flex-start; color: #fff; text-decoration: none; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; padding: 8px 15px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; }
 .card-link:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--shadow); }
 
-/* Контактная форма */
+/* Уведомления */
+.notif-popup { position: fixed; top: 80px; right: 20px; z-index: 2000; background: rgba(20,20,20,0.95); border: 1px solid var(--primary); border-radius: 10px; padding: 20px; max-width: 350px; box-shadow: 0 0 30px var(--glow-strong); animation: slideIn 0.5s ease-out; backdrop-filter: blur(10px); }
+.notif-popup h4 { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--primary); margin-bottom: 10px; text-transform: uppercase; }
+.notif-popup p { color: #fff; font-size: 0.95rem; line-height: 1.5; }
+.notif-popup .notif-date { color: #777; font-size: 0.75rem; margin-top: 10px; }
+.notif-popup .notif-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: #777; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+.notif-popup .notif-close:hover { color: var(--primary); }
+@keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
 .contact-section { margin-top: 100px; width: 100%; max-width: 600px; background: rgba(20,20,20,0.6); border: 1px solid var(--border); border-radius: 15px; padding: 40px; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.5); opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
 .contact-section.visible { opacity: 1; transform: translateY(0); }
+.no-animate .contact-section { opacity: 1; transform: translateY(0); }
 .contact-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; margin-bottom: 30px; text-transform: uppercase; color: #fff; }
 .contact-title span { color: var(--primary); text-shadow: 0 0 10px var(--shadow); }
 .form-group { margin-bottom: 20px; text-align: left; }
@@ -377,7 +118,9 @@ h1 {
 </style>
 </head>
 <body>
-<!-- Переключатель тем -->
+
+<a href="admin.html" class="admin-link">⚙️ Админ</a>
+
 <div class="theme-switcher">
     <div class="theme-btn active" data-set="red" title="Красная"></div>
     <div class="theme-btn" data-set="blue" title="Синяя"></div>
@@ -387,431 +130,201 @@ h1 {
 
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
+
+<div class="container">
+    <h1 style="animation: fadeInUp 1s ease-out forwards;" id="mainTitle">НАШ КЛАСС</h1>
+    
+    <div class="typewriter-wrapper">
+        <div class="typewriter-line line-1" id="poemLine1">Самый лучший в мире класс</div>
+        <div class="typewriter-line line-2" id="poemLine2">это сказано про нас</div>
+        <div class="typewriter-line line-3" id="poemLine3">Мы — команда, мы — сила, мы — будущее!</div>
+    </div>
+    
+    <a href="class.html" class="btn" id="mainBtn">Наши ученики</a>
+
+    <div class="extra-sections">
+        <div class="card">
+            <h3>Расписание</h3>
+            <ul class="schedule-list" id="scheduleList">
+                <li><span>⏳</span> Загрузка...</li>
+            </ul>
+            <a href="school.html" class="card-link">Полное расписание →</a>
+        </div>
+        <div class="card">
+            <h3>Новости</h3>
+            <div id="newsContent">
+                <p class="news-empty">Загрузка...</p>
+            </div>
+            <a href="news.html" class="card-link">Все новости →</a>
+        </div>
+        <div class="card">
+            <h3>Внеурочка</h3>
+            <ul class="schedule-list" id="activitiesList">
+                <li><span>⏳</span> Загрузка...</li>
+            </ul>
+            <a href="activites.html" class="card-link">Все занятия →</a>
+        </div>
+    </div>
+
+    <section class="contact-section" id="contactForm">
+        <h2 class="contact-title">Написать <span>нам</span></h2>
+        <form id="emailForm">
+            <div class="form-group"><label for="name">Ваше имя</label><input type="text" id="name" placeholder="Как к вам обращаться?" required></div>
+            <div class="form-group"><label for="email">Email</label><input type="email" id="email" placeholder="Для обратной связи" required></div>
+            <div class="form-group"><label for="message">Сообщение</label><textarea id="message" rows="4" placeholder="Текст письма..." required></textarea></div>
+            <button type="submit" class="btn-submit">Отправить письмо</button>
+        </form>
+    </section>
+</div>
+
 <script>
+// ===== SUPABASE =====
+const SUPABASE_URL = 'https://ucphajwoywnqlafakrur.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjcGhhandveXducWxhZmFrcnVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2MTM0NjEsImV4cCI6MjEwNDE4OTQ2MX0.07-o36wUIlbyRHis_ph1tOhkcIvgj6EamgEs1gAV8Zo';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-
-// === СИСТЕМА ТЕМ ===
-const themeBtns = document.querySelectorAll('.theme-btn');
-const savedTheme = localStorage.getItem('site-theme') || 'red';
-document.documentElement.setAttribute('data-theme', savedTheme);
-themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === savedTheme));
-themeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const theme = btn.dataset.set;
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('site-theme', theme);
-        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === theme));
-    });
-});
-
-// Частицы
-const pc = document.getElementById('particles');
-for (let i = 0; i < 50; i++) {
-    const p = document.createElement('div'); p.classList.add('particle');
-    const s = Math.random() * 5 + 2;
-    p.style.width = `${s}px`; p.style.height = `${s}px`;
-    p.style.left = `${Math.random() * 100}vw`;
-    p.style.animationDuration = `${Math.random() * 5 + 3}s`;
-    p.style.animationDelay = `${Math.random() * 5}s`;
-    pc.appendChild(p);
-}
-
-// Анимация формы при скролле
-new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) document.getElementById('contactForm').classList.add('visible'); });
-}, { threshold: 0.2 }).observe(document.getElementById('contactForm'));
-
-// Mailto (ЗАМЕНИТЕ your-email@example.com НА РЕАЛЬНУЮ ПОЧТУ)
-document.getElementById('emailForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const n = document.getElementById('name').value;
-    const em = document.getElementById('email').value;
-    const m = document.getElementById('message').value;
-    window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n\n${m}`)}`;
-});
-// === СИСТЕМА ТЕМ ===
-const themeBtns = document.querySelectorAll('.theme-btn');
-const savedTheme = localStorage.getItem('site-theme') || 'red';
-document.documentElement.setAttribute('data-theme', savedTheme);
-themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === savedTheme));
-themeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const theme = btn.dataset.set;
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('site-theme', theme);
-        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === theme));
-    });
-});
-
-// === УПРАВЛЕНИЕ АНИМАЦИЕЙ ПЕЧАТИ ===
+// ===== АНИМАЦИЯ ПЕЧАТИ =====
 const container = document.querySelector('.container');
-const hasVisited = sessionStorage.getItem('hasVisitedIndex');
-
-if (!hasVisited) {
-    // Первый визит в этой сессии → запускаем анимацию
+if (!sessionStorage.getItem('visitedMain')) {
     container.classList.add('animate');
-    sessionStorage.setItem('hasVisitedIndex', 'true');
+    sessionStorage.setItem('visitedMain', 'true');
 } else {
-    // Повторный визит → показываем контент мгновенно
     container.classList.add('no-animate');
 }
 
-// === ЧАСТИЦЫ ===
+// ===== ЗАГРУЗКА ИЗ SUPABASE =====
+async function loadSiteData() {
+    try {
+        // Тексты
+        const {data: texts} = await sb.from('site_texts').select('*').limit(1).single();
+        if (texts) {
+            if (texts.title) document.getElementById('mainTitle').textContent = texts.title;
+            if (texts.poem_line1) document.getElementById('poemLine1').textContent = texts.poem_line1;
+            if (texts.poem_line2) document.getElementById('poemLine2').textContent = texts.poem_line2;
+            if (texts.poem_line3) document.getElementById('poemLine3').textContent = texts.poem_line3;
+            if (texts.btn_text) document.getElementById('mainBtn').textContent = texts.btn_text;
+            if (texts.btn_link) document.getElementById('mainBtn').href = texts.btn_link;
+        }
+
+        // Расписание на главной
+        const {data: sched} = await sb.from('site_schedule').select('lessons').limit(1).single();
+        const schedList = document.getElementById('scheduleList');
+        if (sched && sched.lessons && sched.lessons.trim()) {
+            const lines = sched.lessons.split('\n').filter(l => l.trim());
+            schedList.innerHTML = lines.map(l => `<li><span>•</span> ${escapeHtml(l.trim())}</li>`).join('');
+        } else {
+            schedList.innerHTML = '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
+        }
+
+        // Внеурочка
+        const {data: act} = await sb.from('site_activities').select('content').limit(1).single();
+        const actList = document.getElementById('activitiesList');
+        if (act && act.content && act.content.trim()) {
+            const lines = act.content.split('\n').filter(l => l.trim());
+            actList.innerHTML = lines.map(l => `<li><span>•</span> ${escapeHtml(l.trim())}</li>`).join('');
+        } else {
+            actList.innerHTML = '<li style="color:#777"><span>—</span> Нет занятий</li>';
+        }
+
+        // Новости
+        const {data: news} = await sb.from('site_news').select('*').order('created_at', {ascending: false}).limit(3);
+        const newsContent = document.getElementById('newsContent');
+        const newsEmptyText = texts?.news_empty || 'Упс... Тут пока что ничего нету.';
+        
+        if (news && news.length > 0) {
+            newsContent.innerHTML = news.map(n => `
+                <div class="news-item">
+                    <div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div>
+                    <div class="news-text"><b>${escapeHtml(n.title)}</b><br>${escapeHtml(n.text)}</div>
+                </div>
+            `).join('');
+        } else {
+            newsContent.innerHTML = `<p class="news-empty">${escapeHtml(newsEmptyText)}</p>`;
+        }
+
+        // Тема (из Supabase)
+        const {data: themeData} = await sb.from('site_theme').select('theme').limit(1).single();
+        const globalTheme = themeData?.theme || 'red';
+        document.documentElement.setAttribute('data-theme', globalTheme);
+        document.querySelectorAll('.theme-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.set === globalTheme);
+        });
+
+        // Уведомления
+        const {data: notifs} = await sb.from('site_notifications').select('*').order('created_at', {ascending: false}).limit(1);
+        if (notifs && notifs.length > 0) {
+            const lastNotif = notifs[0];
+            const seenIds = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+            if (!seenIds.includes(lastNotif.id)) {
+                showNotifPopup(lastNotif);
+                seenIds.push(lastNotif.id);
+                localStorage.setItem('seenNotifs', JSON.stringify(seenIds.slice(-20)));
+            }
+        }
+
+    } catch (err) {
+        console.error('Ошибка загрузки:', err);
+    }
+}
+
+function escapeHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+function showNotifPopup(n) {
+    const popup = document.createElement('div');
+    popup.className = 'notif-popup';
+    popup.innerHTML = `
+        <button class="notif-close" onclick="this.parentElement.remove()">✕</button>
+        <h4>🔔 Уведомление</h4>
+        <p>${escapeHtml(n.text)}</p>
+        <div class="notif-date">${new Date(n.created_at).toLocaleString('ru-RU')}</div>
+    `;
+    document.body.appendChild(popup);
+    setTimeout(() => { if (popup.parentElement) popup.remove(); }, 15000);
+}
+
+loadSiteData();
+
+// ===== ПЕРЕКЛЮЧАТЕЛЬ ТЕМ (локально + синхронизация) =====
+const themeBtns = document.querySelectorAll('.theme-btn');
+themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const theme = btn.dataset.set;
+        document.documentElement.setAttribute('data-theme', theme);
+        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+    });
+});
+
+// ===== ЧАСТИЦЫ =====
 const pc = document.getElementById('particles');
 for (let i = 0; i < 50; i++) {
     const p = document.createElement('div');
     p.classList.add('particle');
     const s = Math.random() * 5 + 2;
-    p.style.width = `${s}px`; p.style.height = `${s}px`;
+    p.style.width = `${s}px`;
+    p.style.height = `${s}px`;
     p.style.left = `${Math.random() * 100}vw`;
     p.style.animationDuration = `${Math.random() * 5 + 3}s`;
     p.style.animationDelay = `${Math.random() * 5}s`;
     pc.appendChild(p);
 }
-</script>
-<script>
-// ===== ЧТЕНИЕ ДАННЫХ ИЗ АДМИНКИ =====
-(function() {
-    // 1. ТЕМА
-    const theme = localStorage.getItem('site-theme') || 'red';
-    if (theme !== 'red') document.documentElement.setAttribute('data-theme', theme);
 
-    // 2. ЗАГОЛОВОК И ПОЭМА
-    const siteTitle = localStorage.getItem('siteTitle');
-    const sitePoem = localStorage.getItem('sitePoem');
-    if (siteTitle) {
-        const h1 = document.querySelector('h1');
-        if (h1) h1.innerHTML = siteTitle;
-    }
-    if (sitePoem) {
-        // Ищем элемент с поэмой (подзаголовок)
-        const poemEl = document.querySelector('.poem') || document.querySelector('.tagline') || document.querySelector('h1 + p');
-        if (poemEl) poemEl.innerHTML = sitePoem.replace(/\n/g, '<br>');
-    }
+// ===== ФОРМА КОНТАКТОВ =====
+new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) document.getElementById('contactForm').classList.add('visible'); });
+}, { threshold: 0.2 }).observe(document.getElementById('contactForm'));
 
-    // 3. КНОПКА
-    const btnText = localStorage.getItem('siteBtnText');
-    const btnLink = localStorage.getItem('siteBtnLink');
-    if (btnText || btnLink) {
-        const btn = document.querySelector('.btn') || document.querySelector('a[href="class.html"]');
-        if (btn) {
-            if (btnText) btn.textContent = btnText;
-            if (btnLink) btn.href = btnLink;
-        }
-    }
-
-    // 4. РАСПИСАНИЕ
-    const sched = localStorage.getItem('siteSchedule');
-    if (sched) {
-        const lines = sched.split('\n').filter(l => l.trim());
-        // Ищем список расписания
-        const list = document.querySelector('.schedule-list') || document.querySelector('.card ul');
-        if (list) {
-            list.innerHTML = lines.map((l, i) => `<li><span>${i + 1}.</span> ${esc(l)}</li>`).join('');
-        }
-    }
-
-    // 5. НОВОСТИ
-    const news = JSON.parse(localStorage.getItem('siteNews') || '[]');
-    const newsEmpty = localStorage.getItem('siteNewsEmpty');
-    const newsCards = document.querySelectorAll('.card');
-    let newsCard = null;
-    newsCards.forEach(c => {
-        const h = c.querySelector('h3');
-        if (h && h.textContent.includes('Новости')) newsCard = c;
-    });
-    if (newsCard) {
-        const content = newsCard.querySelector('p') || newsCard.querySelector('.schedule-list');
-        const link = newsCard.querySelector('a');
-        if (news.length > 0) {
-            // Показываем последние 3 новости
-            const html = news.slice(0, 3).map(n =>
-                `<li><span>📰</span> ${esc(n.title)}</li>`
-            ).join('');
-            if (content) content.outerHTML = `<ul class="schedule-list">${html}</ul>`;
-        } else if (newsEmpty && content) {
-            content.textContent = newsEmpty;
-        }
-        if (link) link.href = 'news.html';
-    }
-
-    // 6. ВНЕУРОЧКА
-    const activities = localStorage.getItem('siteActivities');
-    if (activities) {
-        const lines = activities.split('\n').filter(l => l.trim());
-        let actCard = null;
-        newsCards.forEach(c => {
-            const h = c.querySelector('h3');
-            if (h && h.textContent.includes('Внеурочка')) actCard = c;
-        });
-        if (actCard) {
-            const list = actCard.querySelector('ul') || actCard.querySelector('.schedule-list');
-            if (list) {
-                list.innerHTML = lines.map(l => `<li>${esc(l)}</li>`).join('');
-            }
-        }
-    }
-
-    // 7. УВЕДОМЛЕНИЯ
-    const notifs = JSON.parse(localStorage.getItem('siteNotifs') || '[]');
-    const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
-    const fresh = notifs.find(n => !seen.includes(n.id));
-    if (fresh) {
-        const banner = document.createElement('div');
-        banner.id = 'notifBanner';
-        banner.style.cssText = 'position:fixed;top:60px;right:20px;z-index:9998;max-width:350px;background:rgba(15,15,15,0.95);border:1px solid rgba(var(--primary-rgb,255,0,51),0.4);border-right:4px solid var(--primary,#ff0033);border-radius:8px;padding:15px 40px 15px 15px;box-shadow:0 5px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px);animation:slideNotif 0.5s ease-out;';
-        banner.innerHTML = `
-            <span style="color:#ddd;font-size:0.85rem;line-height:1.4;">🔔 ${esc(fresh.text)}</span>
-            <button onclick="closeNotif()" style="position:absolute;top:8px;right:10px;background:none;border:none;color:var(--primary,#ff0033);font-size:1rem;cursor:pointer;">✕</button>
-        `;
-        document.body.appendChild(banner);
-        window.currentNotifId = fresh.id;
-        window.closeNotif = function() {
-            const s = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
-            s.push(window.currentNotifId);
-            localStorage.setItem('seenNotifs', JSON.stringify(s));
-            banner.remove();
-        };
-        // Анимация
-        const style = document.createElement('style');
-        style.textContent = '@keyframes slideNotif{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}';
-        document.head.appendChild(style);
-    }
-
-    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-})();
+document.getElementById('emailForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const n = document.getElementById('name').value;
+    const em = document.getElementById('email').value;
+    const m = document.getElementById('message').value;
+    // ЗАМЕНИ your-email@example.com НА РЕАЛЬНУЮ ПОЧТУ
+    window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n\n${m}`)}`;
+});
 </script>
 </body>
 </html>
-<!-- ============================================================ -->
-<!-- === КОНЕЦ INDEX.HTML === -->
-<!-- ============================================================ -->
-
-
-<!-- ============================================================ -->
-<!-- === НАЧАЛО CLASS.HTML === -->
-<!-- ============================================================ -->
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Наша Команда | Самый лучший класс</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-<style>
-:root { --primary:#ff0033; --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --border:rgba(255,0,51,0.3); --shadow:rgba(255,0,51,0.2); }
-[data-theme="blue"] { --primary:#00aaff; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.3); --shadow:rgba(0,170,255,0.2); }
-[data-theme="green"] { --primary:#00ff66; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.3); --shadow:rgba(0,255,102,0.2); }
-[data-theme="aero"] { --primary:#00ffff; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.3); --shadow:rgba(0,255,255,0.2); }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background-color: #050505; color: #ffffff; font-family: 'Montserrat', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
-
-.theme-switcher { position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px; }
-.theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s ease; opacity: 0.6; }
-.theme-btn:hover, .theme-btn.active { opacity: 1; transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px currentColor; }
-.theme-btn[data-set="red"] { background: #ff0033; color: #ff0033; }
-.theme-btn[data-set="blue"] { background: #00aaff; color: #00aaff; }
-.theme-btn[data-set="green"] { background: #00ff66; color: #00ff66; }
-.theme-btn[data-set="aero"] { background: #00ffff; color: #00ffff; }
-
-.background-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 0%, var(--glow) 0%, rgba(5,5,5,0) 60%); z-index: -2; pointer-events: none; }
-
-nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-.logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 10px var(--shadow); text-decoration: none; }
-.back-btn { color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.9rem; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; transition: 0.3s; }
-.back-btn:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--shadow); }
-
-.container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
-.teacher-section { text-align: center; margin-bottom: 80px; padding: 40px; background: rgba(20,20,20,0.5); border: 1px solid var(--border); border-radius: 15px; box-shadow: 0 0 30px rgba(0,0,0,0.5); animation: fadeIn 1s ease-out; }
-.section-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
-.section-title span { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
-.teacher-card { display: inline-flex; flex-direction: column; align-items: center; gap: 20px; }
-.teacher-photo { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: 0 0 20px var(--shadow); transition: transform 0.3s; }
-.teacher-photo:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--glow-strong); }
-.teacher-name { font-size: 1.5rem; font-weight: 700; }
-.teacher-role { color: #aaa; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
-
-.students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
-.student-card { background: rgba(20,20,20,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; position: relative; }
-.student-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 10px 30px var(--shadow); }
-.student-img-wrapper { width: 100%; height: 250px; overflow: hidden; position: relative; }
-.student-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; filter: grayscale(80%); }
-.student-card:hover .student-img { transform: scale(1.1); filter: grayscale(0%); }
-.student-info { padding: 15px; text-align: center; background: #0a0a0a; border-top: 2px solid var(--primary); }
-.student-name { font-weight: 700; font-size: 1.1rem; color: #fff; }
-
-@keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-.particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-.particle { position: absolute; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); animation: floatUp linear infinite; opacity: 0; }
-@keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 50%{opacity:0.5} 100%{transform:translateY(-10vh) scale(1);opacity:0} }
-</style>
-</head>
-<!-- Уведомления от админа -->
-<div id="notifBanner" style="display:none; position:fixed; top:60px; right:20px; z-index:9998; max-width:350px; background:rgba(15,15,15,0.95); border:1px solid rgba(var(--primary-rgb), 0.4); border-right:4px solid var(--primary, #ff0033); border-radius:8px; padding:15px 40px 15px 15px; box-shadow:0 5px 25px rgba(0,0,0,0.6); backdrop-filter:blur(10px); animation:slideNotif 0.5s ease-out;">
-    <span id="notifBannerText" style="color:#ddd; font-size:0.85rem; line-height:1.4;"></span>
-    <button onclick="closeNotif()" style="position:absolute; top:8px; right:10px; background:none; border:none; color:var(--primary, #ff0033); font-size:1rem; cursor:pointer;">✕</button>
-</div>
-
-<style>
-@keyframes slideNotif { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
-</style>
-
-<script>
-// Система уведомлений от админа
-const siteNotifs = JSON.parse(localStorage.getItem('siteNotifs') || '[]');
-const seenNotifs = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
-const freshNotif = siteNotifs.find(n => !seenNotifs.includes(n.id));
-
-if (freshNotif) {
-    document.getElementById('notifBanner').style.display = 'block';
-    document.getElementById('notifBannerText').textContent = '🔔 ' + freshNotif.text;
-    window.currentNotifId = freshNotif.id;
-}
-
-function closeNotif() {
-    const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
-    if (window.currentNotifId) seen.push(window.currentNotifId);
-    localStorage.setItem('seenNotifs', JSON.stringify(seen));
-    document.getElementById('notifBanner').style.display = 'none';
-}
-</script>
-<body>
-<div class="theme-switcher">
-    <div class="theme-btn active" data-set="red" title="Красная"></div>
-    <div class="theme-btn" data-set="blue" title="Синяя"></div>
-    <div class="theme-btn" data-set="green" title="Зелёная"></div>
-    <div class="theme-btn" data-set="aero" title="Аэро"></div>
-</div>
-<div class="background-glow"></div>
-<div class="particles" id="particles"></div>
-<nav>
-
-
-    </div>
-</div>
-<script>
-const themeBtns=document.querySelectorAll('.theme-btn');const savedTheme=localStorage.getItem('site-theme')||'red';document.documentElement.setAttribute('data-theme',savedTheme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===savedTheme));themeBtns.forEach(btn=>{btn.addEventListener('click',()=>{const theme=btn.dataset.set;document.documentElement.setAttribute('data-theme',theme);localStorage.setItem('site-theme',theme);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===theme));});});
-const pc=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*4+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+5}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
-</script>
-<script>
-
-    </form>
-</section>
-</script>
-
-<style>
-.rev-section {
-    margin: 80px auto 40px; width: 100%; max-width: 400px;
-    background: rgba(20,20,20,0.6); border: 1px solid var(--border, rgba(255,0,51,0.3));
-    border-radius: 12px; padding: 25px; text-align: center;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    opacity: 0; transform: translateY(40px);
-    transition: all 0.8s ease-out;
-}
-.rev-section.visible { opacity: 1; transform: translateY(0); }
-
-.rev-title {
-    font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 18px;
-    text-transform: uppercase; color: #fff;
-}
-.rev-title span { color: var(--primary, #ff0033); text-shadow: 0 0 10px var(--shadow, rgba(255,0,51,0.5)); }
-
-.rev-group { margin-bottom: 12px; }
-.rev-group input, .rev-group textarea {
-    width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 5px;
-    color: #fff; font-family: 'Montserrat', sans-serif; font-size: 0.9rem;
-    outline: none; resize: vertical; transition: 0.3s;
-}
-.rev-group input:focus, .rev-group textarea:focus {
-    border-color: var(--primary, #ff0033);
-    box-shadow: 0 0 10px var(--shadow, rgba(255,0,51,0.3));
-}
-.rev-btn {
-    width: 100%; padding: 10px; font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem; font-weight: 700; color: var(--primary, #ff0033);
-    text-transform: uppercase; background: transparent;
-    border: 2px solid var(--primary, #ff0033); border-radius: 5px;
-    cursor: pointer; transition: 0.3s;
-}
-.rev-btn:hover {
-    background: var(--primary, #ff0033); color: #000;
-    box-shadow: 0 0 20px var(--glow-strong, rgba(255,0,51,0.8));
-}
-.rev-btn:disabled { opacity: 0.5; cursor: wait; }
-</style>
-
-<script>
-// === ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ ===
-const revSection = document.getElementById('revSection');
-const revObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-        if (e.isIntersecting) revSection.classList.add('visible');
-    });
-}, { threshold: 0.2 });
-revObserver.observe(revSection);
-
-<script>
-// 1. Проверка: был ли пользователь уже на этой странице в текущей сессии?
-if (!sessionStorage.getItem('visitedIndex')) {
-    // Первый вход: разрешаем анимацию
-    document.querySelector('.container').classList.add('animate-print');
-    sessionStorage.setItem('visitedIndex', 'true');
-} else {
-    // Повторный вход: показываем всё сразу без анимации
-    const style = document.createElement('style');
-    style.innerHTML = `
-        .typewriter-line { width: 100% !important; border-right: none !important; animation: none !important; }
-        .line-1 { color: #fff !important; }
-        .line-2 { color: var(--primary, #ff0033) !important; text-shadow: 0 0 10px rgba(255,0,51,0.5) !important; }
-        .line-3 { color: #e0e0e0 !important; font-size: clamp(1rem, 2.5vw, 2rem) !important; }
-        .btn { opacity: 1 !important; transform: translateY(0) !important; animation: none !important; }
-    `;
-    document.head.appendChild(style);
-}
-
-// 2. Генерация частиц (оставляем как было)
-const particlesContainer = document.getElementById('particles');
-for (let i = 0; i < 50; i++) {
-    const particle = document.createElement('div');
-    particle.classList.add('particle');
-    const size = Math.random() * 5 + 2;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-    particle.style.left = `${Math.random() * 100}vw`;
-    particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
-    particle.style.animationDelay = `${Math.random() * 5}s`;
-    particlesContainer.appendChild(particle);
-}
-</script>
-<script>
-// Анимация печати только при ПЕРВОМ заходе
-if (sessionStorage.getItem('visitedMain')) {
-    // Уже заходили → показываем всё сразу, без анимации
-    const s = document.createElement('style');
-    s.innerHTML = `
-        .typewriter-line { width: 100% !important; animation: none !important; border-right: none !important; }
-        .btn { opacity: 1 !important; transform: translateY(0) !important; animation: none !important; }
-        .extra-sections { opacity: 1 !important; animation: none !important; }
-        .contact-section { opacity: 1 !important; transform: translateY(0) !important; }
-        .rev-section { opacity: 1 !important; transform: translateY(0) !important; }
-    `;
-    document.head.appendChild(s);
-} else {
-    // Первый заход → анимация работает как обычно
-    sessionStorage.setItem('visitedMain', 'true');
-}
-</script>
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
