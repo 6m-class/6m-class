@@ -130,7 +130,6 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.3rem,4vw,3.3rem);font-wei
 const REPO = '6m-class/6m-class';
 const API = `https://api.github.com/repos/${REPO}`;
 
-// Анимация печати
 const container = document.querySelector('.container');
 if (!sessionStorage.getItem('visitedMain')) {
     container.classList.add('animate');
@@ -142,95 +141,10 @@ if (!sessionStorage.getItem('visitedMain')) {
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 async function loadSite() {
-    try {
-        // Загрузка data.json
-        const res = await fetch(`${API}/contents/data.json?ref=main`, { cache: 'no-store' });
-        if (!res.ok) throw new Error('data.json not found');
-        const file = await res.json();
-        const data = JSON.parse(atob(file.content));
-
-        // Тексты
-        if (data.title) document.getElementById('mainTitle').textContent = data.title;
-        if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
-        if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
-        if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
-        if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
-        if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
-
-        // Тема
-        const theme = data.theme || 'red';
-        document.documentElement.setAttribute('data-theme', theme);
-        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === theme));
-
-        // Расписание
-        const schedList = document.getElementById('scheduleList');
-        if (data.schedule && data.schedule.trim()) {
-            schedList.innerHTML = data.schedule.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
-        } else {
-            schedList.innerHTML = '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
-        }
-
-        // Внеурочка
-        const actList = document.getElementById('activitiesList');
-        if (data.activities && data.activities.trim()) {
-            actList.innerHTML = data.activities.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
-        } else {
-            actList.innerHTML = '<li style="color:#777"><span>—</span> Нет занятий</li>';
-        }
-
-        // Новости из Issues
-        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=3`, { cache: 'no-store' });
-        const news = await newsRes.json();
-        const newsContent = document.getElementById('newsContent');
-        const newsEmpty = data.news_empty || 'Упс... Тут пока что ничего нету.';
-
-        if (news.length > 0) {
-            newsContent.innerHTML = news.map(n => `
-                <div class="news-item">
-                    <div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div>
-                    <div class="news-text"><b>${esc(n.title)}</b><br>${esc(n.body || '')}</div>
-                </div>
-            `).join('');
-        } else {
-            newsContent.innerHTML = `<p class="news-empty">${esc(newsEmpty)}</p>`;
-        }
-
-        // Уведомления из Issues
-        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=1`, { cache: 'no-store' });
-        const notifs = await notifRes.json();
-        if (notifs.length > 0) {
-            const last = notifs[0];
-            const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
-            if (!seen.includes(last.number)) {
-                const popup = document.createElement('div');
-                popup.className = 'notif-popup';
-                popup.innerHTML = `
-                    <button class="notif-close" onclick="this.parentElement.remove()">✕</button>
-                    <h4>🔔 Уведомление</h4>
-                    <p>${esc(last.title)}</p>
-                    <div class="notif-date">${new Date(last.created_at).toLocaleString('ru-RU')}</div>
-                `;
-                document.body.appendChild(popup);
-                setTimeout(() => { if (popup.parentElement) popup.remove(); }, 15000);
-                seen.push(last.number);
-                localStorage.setItem('seenNotifs', JSON.stringify(seen.slice(-20)));
-            }
-        }
-
-    } catch (err) {
-        console.error('Ошибка загрузки:', err);
-        document.getElementById('poemLine1').textContent = 'Самый лучший в мире класс';
-        document.getElementById('poemLine2').textContent = 'это сказано про нас';
-        document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
-    }
-}
-async function loadSite() {
-    // Показываем статус загрузки
     const statusEl = document.getElementById('poemLine1');
     statusEl.textContent = 'Подключение к GitHub...';
     
     try {
-        // Шаг 1: Определяем ветку автоматически (main или master)
         let branch = 'main';
         try {
             const branchRes = await fetch(`${API}/branches`, { cache: 'no-store' });
@@ -239,28 +153,17 @@ async function loadSite() {
                 const found = branches.find(b => b.name === 'main') || branches.find(b => b.name === 'master');
                 if (found) branch = found.name;
             }
-        } catch (e) {
-            console.warn('Не удалось определить ветку, используем main');
-        }
-        console.log('Используется ветка:', branch);
+        } catch (e) {}
 
-        // Шаг 2: Загружаем data.json
         const res = await fetch(`${API}/contents/data.json?ref=${branch}`, { cache: 'no-store' });
         
-        if (res.status === 404) {
-            throw new Error('Файл data.json не найден. Создай его в корне репозитория!');
-        }
-        if (res.status === 403) {
-            throw new Error('Репозиторий приватный! Сделай его публичным в Settings.');
-        }
-        if (!res.ok) {
-            throw new Error(`Ошибка GitHub API: ${res.status}`);
-        }
+        if (res.status === 404) throw new Error('Файл data.json не найден');
+        if (res.status === 403) throw new Error('Репозиторий приватный');
+        if (!res.ok) throw new Error(`Ошибка GitHub: ${res.status}`);
 
         const file = await res.json();
         const data = JSON.parse(decodeURIComponent(escape(atob(file.content))));
 
-        // Тексты
         if (data.title) document.getElementById('mainTitle').textContent = data.title;
         if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
         if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
@@ -268,12 +171,10 @@ async function loadSite() {
         if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
         if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
 
-        // Тема
         const theme = data.theme || 'red';
         document.documentElement.setAttribute('data-theme', theme);
         document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === theme));
 
-        // Расписание
         const schedList = document.getElementById('scheduleList');
         if (data.schedule && data.schedule.trim()) {
             schedList.innerHTML = data.schedule.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
@@ -281,7 +182,6 @@ async function loadSite() {
             schedList.innerHTML = '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
         }
 
-        // Внеурочка
         const actList = document.getElementById('activitiesList');
         if (data.activities && data.activities.trim()) {
             actList.innerHTML = data.activities.split('\n').filter(l => l.trim()).map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('');
@@ -289,8 +189,7 @@ async function loadSite() {
             actList.innerHTML = '<li style="color:#777"><span>—</span> Нет занятий</li>';
         }
 
-        // Новости из Issues
-        const newsRes = await fetch(`${API}/issues?labels=новость&state=open&sort=created&direction=desc&per_page=3`, { cache: 'no-store' });
+        const newsRes = await fetch(`${API}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=3`, { cache: 'no-store' });
         const news = await newsRes.json();
         const newsContent = document.getElementById('newsContent');
         const newsEmpty = data.news_empty || 'Упс... Тут пока что ничего нету.';
@@ -306,8 +205,7 @@ async function loadSite() {
             newsContent.innerHTML = `<p class="news-empty">${esc(newsEmpty)}</p>`;
         }
 
-        // Уведомления из Issues
-        const notifRes = await fetch(`${API}/issues?labels=уведомление&state=open&sort=created&direction=desc&per_page=1`, { cache: 'no-store' });
+        const notifRes = await fetch(`${API}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=1`, { cache: 'no-store' });
         const notifs = await notifRes.json();
         if (Array.isArray(notifs) && notifs.length > 0) {
             const last = notifs[0];
@@ -329,16 +227,17 @@ async function loadSite() {
         }
 
     } catch (err) {
-        console.error('Ошибка загрузки:', err);
-        // Показываем ошибку прямо на сайте
-        document.getElementById('poemLine1').textContent = '⚠️ Ошибка: ' + err.message;
+        console.error('Ошибка:', err);
+        document.getElementById('poemLine1').textContent = '⚠️ ' + err.message;
         document.getElementById('poemLine1').style.color = '#ff5555';
         document.getElementById('poemLine1').style.fontSize = '1rem';
         document.getElementById('poemLine2').textContent = '';
         document.getElementById('poemLine3').textContent = '';
     }
 }
-// Переключатель тем (локально)
+
+loadSite();
+
 document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.documentElement.setAttribute('data-theme', btn.dataset.set);
@@ -346,7 +245,6 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
     });
 });
 
-// Частицы
 const pc = document.getElementById('particles');
 for (let i = 0; i < 50; i++) {
     const p = document.createElement('div');
@@ -359,7 +257,6 @@ for (let i = 0; i < 50; i++) {
     pc.appendChild(p);
 }
 
-// Форма контактов
 new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) document.getElementById('contactForm').classList.add('visible'); });
 }, { threshold: 0.2 }).observe(document.getElementById('contactForm'));
