@@ -312,15 +312,3 @@ for (let i = 0; i < 50; i++) {
     pc.appendChild(p);
 }
 
-// ===== ФОРМА КОНТАКТОВ =====
-new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) document.getElementById('contactForm').classList.add('visible'); });
-}, { threshold: 0.2 }).observe(document.getElementById('contactForm'));
-
-document.getElementById('emailForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const n = document.getElementById('name').value;
-    const em = document.getElementById('email').value;
-    const m = document.getElementById('message').value;
-    // ЗАМЕНИ your-email@example.com НА РЕАЛЬНУЮ ПОЧТУ
-    window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n
