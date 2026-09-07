@@ -146,21 +146,21 @@ h1 {
         <div class="card">
             <h3>Расписание</h3>
             <ul class="schedule-list" id="scheduleList">
-                <li><span>⏳</span> Загрузка...</li>
+                <li><span>Расписание уроков</span> </li>
             </ul>
             <a href="school.html" class="card-link">Полное расписание →</a>
         </div>
         <div class="card">
             <h3>Новости</h3>
             <div id="newsContent">
-                <p class="news-empty">Загрузка...</p>
+                <p class="">Упс... Тут пока что ничего нет</p>
             </div>
             <a href="news.html" class="card-link">Все новости →</a>
         </div>
         <div class="card">
             <h3>Внеурочка</h3>
             <ul class="schedule-list" id="activitiesList">
-                <li><span>⏳</span> Загрузка...</li>
+                <li><span></span> Внеурочная деятельность нашего класса</li>
             </ul>
             <a href="activites.html" class="card-link">Все занятия →</a>
         </div>
@@ -323,8 +323,4 @@ document.getElementById('emailForm').addEventListener('submit', function(e) {
     const em = document.getElementById('email').value;
     const m = document.getElementById('message').value;
     // ЗАМЕНИ your-email@example.com НА РЕАЛЬНУЮ ПОЧТУ
-    window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n\n${m}`)}`;
-});
-</script>
-</body>
-</html>
+    window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(`От ${n} (${em})`)}&body=${encodeURIComponent(`Имя: ${n}\nEmail: ${em}\n
