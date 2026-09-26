@@ -12,10 +12,5 @@
   "teacher_photo": "photos/teacher_1790438309688.jpg",
   "teacher_name": "Карпетян Артур Арменович",
   "teacher_role": "Классный руководитель",
-  "students": [
-    {
-      "name": "Харламик",
-      "photo": "photos/student_1790439588019.jpg"
-    }
-  ]
+  "students": []
 }
