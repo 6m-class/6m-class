@@ -50,7 +50,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px}
 .btn-primary{background:var(--primary);color:#000}
 .btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-outline{background:transparent;border:1px solid var(--border);color:#aaa}
 .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
 .btn-danger{background:transparent;border:1px solid rgba(255,80,80,0.3);color:#ff5555}
@@ -74,6 +74,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 </style>
 </head>
 <body>
+
 <div id="connectScreen">
     <div class="login-box">
         <h1><span>Protect Token</span></h1>
@@ -88,6 +89,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         </div>
     </div>
 </div>
+
 <div id="adminPanel">
     <div class="topbar">
         <h2>⚙️ <span>Админ-панель 6М</span></h2>
@@ -104,6 +106,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="stat-card"><div class="stat-num" id="statSchedule">0</div><div class="stat-label">Уроков</div></div>
             <div class="stat-card"><div class="stat-num" id="statTheme">🔴</div><div class="stat-label">Тема</div></div>
         </div>
+
         <div class="tabs">
             <div class="tab active" onclick="switchTab('texts',this)">✏️ Тексты</div>
             <div class="tab" onclick="switchTab('news',this)">📰 Новости</div>
@@ -113,6 +116,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="tab" onclick="switchTab('theme',this)">🎨 Тема</div>
             <div class="tab" onclick="switchTab('settings',this)">⚙️ Настройки</div>
         </div>
+
         <div class="section active" id="sec-texts">
             <div class="card">
                 <div class="card-header"><div class="card-title">Главная страница — тексты</div></div>
@@ -127,6 +131,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="msg" id="msgTexts"></div>
             </div>
         </div>
+
         <div class="section" id="sec-news">
             <div class="card">
                 <div class="card-header"><div class="card-title">Добавить новость</div><div class="card-badge" id="newsCount">0</div></div>
@@ -140,23 +145,26 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="item-list" id="newsList"></div>
             </div>
         </div>
+
         <div class="section" id="sec-schedule">
             <div class="card">
                 <div class="card-header"><div class="card-title">Расписание на главной</div></div>
                 <p style="color:#666;font-size:.85rem;margin-bottom:15px;">Каждая строка = один урок</p>
                 <div class="field"><label>Уроки (по одному на строку)</label><textarea id="editSchedule" rows="10"></textarea></div>
-                <button class="btn btn-primary" id="btnSaveSched" onclick="saveAll('Обновлено расписание')">💾 Сохранить</button>
+                <button class="btn btn-primary" id="btnSaveSchedule" onclick="saveAll('Обновлено расписание')">💾 Сохранить</button>
                 <div class="msg" id="msgSchedule"></div>
             </div>
         </div>
+
         <div class="section" id="sec-activities">
             <div class="card">
                 <div class="card-header"><div class="card-title">Внеурочные занятия</div></div>
                 <div class="field"><label>Занятия (по одному на строку)</label><textarea id="editActivities" rows="6"></textarea></div>
-                <button class="btn btn-primary" id="btnSaveAct" onclick="saveAll('Обновлена внеурочка')">💾 Сохранить</button>
+                <button class="btn btn-primary" id="btnSaveActivities" onclick="saveAll('Обновлена внеурочка')">💾 Сохранить</button>
                 <div class="msg" id="msgActivities"></div>
             </div>
         </div>
+
         <div class="section" id="sec-notifs">
             <div class="card">
                 <div class="card-header"><div class="card-title">Отправить уведомление</div><div class="card-badge" id="notifCount">0</div></div>
@@ -169,6 +177,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="item-list" id="notifList"></div>
             </div>
         </div>
+
         <div class="section" id="sec-theme">
             <div class="card">
                 <div class="card-header"><div class="card-title">Цветовая тема сайта</div></div>
@@ -182,6 +191,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="msg" id="msgTheme"></div>
             </div>
         </div>
+
         <div class="section" id="sec-settings">
             <div class="card">
                 <div class="card-header"><div class="card-title">Подключение</div></div>
@@ -193,7 +203,9 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         </div>
     </div>
 </div>
+
 <div class="db-status" id="dbStatus">⏳ Подключение...</div>
+
 <script>
 const REPO = '6m-class/6m-class';
 let TOKEN = localStorage.getItem('gh_token') || '';
@@ -201,7 +213,6 @@ let USER = localStorage.getItem('gh_user') || '';
 let BRANCH = 'main';
 let siteData = {};
 let dataSha = '';
-let isSaving = false;
 
 async function api(path, opts = {}) {
     const url = path.includes('?') ? path + '&t=' + Date.now() : path + '?t=' + Date.now();
@@ -227,13 +238,21 @@ async function api(path, opts = {}) {
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function showMsg(id, text, color) { const el = document.getElementById(id); el.textContent = text; el.style.color = color; setTimeout(() => { el.textContent = ''; }, 5000); }
 
-function lockBtn(id, lock) {
+// Блокировка кнопки во время сохранения
+function lockBtn(id, text) {
     const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.disabled = lock;
-    btn.style.opacity = lock ? '0.5' : '';
-    btn.textContent = lock ? '⏳ Сохранение...' : btn.dataset.originalText || btn.textContent;
-    if (!lock && btn.dataset.originalText) btn.textContent = btn.dataset.originalText;
+    if (!btn) return () => {};
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = text || '⏳ Сохранение...';
+    return () => { btn.disabled = false; btn.textContent = orig; };
+}
+
+// Очистка кэша сайта (чтобы главная страница подхватила новые данные)
+function clearSiteCache() {
+    localStorage.removeItem('site_data_cache');
+    localStorage.removeItem('cache_issues_новость');
+    localStorage.removeItem('cache_issues_уведомление');
 }
 
 // ===== ПОДКЛЮЧЕНИЕ =====
@@ -268,7 +287,7 @@ async function showPanel() {
     try {
         await detectBranch();
         await loadAll();
-        st.textContent = '☁️ GitHub: ' + USER;
+        st.textContent = '☁️ GitHub подключён: ' + USER;
         setTimeout(() => st.style.display = 'none', 3000);
     } catch (e) {
         st.textContent = '❌ ' + e.message;
@@ -315,12 +334,9 @@ async function loadAll() {
 
 // ===== СОХРАНЕНИЕ data.json =====
 async function saveAll(msg) {
-    if (isSaving) return;
-    isSaving = true;
-    
-    const btnIds = ['btnSaveTexts', 'btnSaveSched', 'btnSaveAct'];
-    btnIds.forEach(id => { const b = document.getElementById(id); if (b) b.dataset.originalText = b.textContent; });
-    btnIds.forEach(id => lockBtn(id, true));
+    const unlock = lockBtn('btnSaveTexts');
+    const unlock2 = lockBtn('btnSaveSchedule');
+    const unlock3 = lockBtn('btnSaveActivities');
 
     siteData.title = document.getElementById('editTitle').value.trim();
     siteData.poem_line1 = document.getElementById('editPoem1').value.trim();
@@ -334,22 +350,17 @@ async function saveAll(msg) {
 
     try {
         await pushData(msg);
-        showMsg('msgTexts', '✅ Сохранено! Сайт обновится через 1-2 мин', '#00ff66');
-        showMsg('msgSchedule', '✅ Сохранено! Сайт обновится через 1-2 мин', '#00ff66');
-        showMsg('msgActivities', '✅ Сохранено! Сайт обновится через 1-2 мин', '#00ff66');
-        
-        // Чистим кэш сайта чтобы при открытии сразу были новые данные
-        localStorage.removeItem('site_data_cache');
-        localStorage.removeItem('gh_branch_cache');
-        
+        clearSiteCache(); // Чистим кэш — сайт подхватит новые данные
+        showMsg('msgTexts', '✅ Сохранено! Сайт обновится', '#00ff66');
+        showMsg('msgSchedule', '✅ Сохранено! Сайт обновится', '#00ff66');
+        showMsg('msgActivities', '✅ Сохранено! Сайт обновится', '#00ff66');
         setTimeout(() => loadAll(), 1000);
     } catch (e) {
         showMsg('msgTexts', '❌ ' + e.message, '#ff5555');
         showMsg('msgSchedule', '❌ ' + e.message, '#ff5555');
         showMsg('msgActivities', '❌ ' + e.message, '#ff5555');
     } finally {
-        isSaving = false;
-        btnIds.forEach(id => lockBtn(id, false));
+        unlock(); unlock2(); unlock3();
     }
 }
 
@@ -362,7 +373,7 @@ async function pushData(msg) {
         });
         dataSha = r.content.sha;
     } catch (e) {
-        if (e.status === 409 || (e.message && e.message.includes('409'))) {
+        if (e.status === 409) {
             // Конфликт SHA — перезагружаем и повторяем
             const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
             dataSha = file.sha;
@@ -371,68 +382,59 @@ async function pushData(msg) {
                 body: JSON.stringify({ message: `${msg} (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
             });
             dataSha = r.content.sha;
-        } else if (e.status === 403 || (e.message && e.message.includes('403'))) {
-            throw new Error('Недостаточно прав: токен без доступа Contents (режим модератора)');
         } else {
+            if (e.status === 403) throw new Error('Недостаточно прав: токен без доступа Contents');
             throw e;
         }
     }
 }
 
 async function setTheme(theme) {
-    if (isSaving) return;
-    isSaving = true;
     siteData.theme = theme;
     try {
         await pushData('Смена темы на ' + theme);
+        clearSiteCache();
         showMsg('msgTheme', '✅ Тема изменена для всех!', '#00ff66');
-        localStorage.removeItem('site_data_cache');
         loadAll();
     } catch (e) { showMsg('msgTheme', '❌ ' + e.message, '#ff5555'); }
-    finally { isSaving = false; }
 }
 
 // ===== НОВОСТИ / УВЕДОМЛЕНИЯ =====
 async function addNews() {
-    if (isSaving) return;
-    isSaving = true;
-    lockBtn('btnAddNews', true);
     const t = document.getElementById('newsTitle').value.trim();
     const x = document.getElementById('newsText').value.trim();
-    if (!t || !x) { showMsg('msgNews', '❌ Заполни оба поля', '#ff5555'); isSaving = false; lockBtn('btnAddNews', false); return; }
+    if (!t || !x) { showMsg('msgNews', '❌ Заполни оба поля', '#ff5555'); return; }
+    const unlock = lockBtn('btnAddNews');
     try {
         await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: x, labels: ['новость'] }) });
         document.getElementById('newsTitle').value = '';
         document.getElementById('newsText').value = '';
+        clearSiteCache();
         showMsg('msgNews', '✅ Новость опубликована!', '#00ff66');
-        localStorage.removeItem('news_cache');
         loadAll();
     } catch (e) { showMsg('msgNews', '❌ ' + e.message, '#ff5555'); }
-    finally { isSaving = false; lockBtn('btnAddNews', false); }
+    finally { unlock(); }
 }
 
 async function addNotif() {
-    if (isSaving) return;
-    isSaving = true;
-    lockBtn('btnAddNotif', true);
     const t = document.getElementById('notifText').value.trim();
-    if (!t) { showMsg('msgNotif', '❌ Напиши текст', '#ff5555'); isSaving = false; lockBtn('btnAddNotif', false); return; }
+    if (!t) { showMsg('msgNotif', '❌ Напиши текст', '#ff5555'); return; }
+    const unlock = lockBtn('btnAddNotif');
     try {
         await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: '', labels: ['уведомление'] }) });
         document.getElementById('notifText').value = '';
-        showMsg('msgNotif', '✅ Уведомление отправлено всем!', '#00ff66');
-        localStorage.removeItem('notifs_cache');
+        clearSiteCache();
+        showMsg('msgNotif', '✅ Уведомление отправлено!', '#00ff66');
         loadAll();
     } catch (e) { showMsg('msgNotif', '❌ ' + e.message, '#ff5555'); }
-    finally { isSaving = false; lockBtn('btnAddNotif', false); }
+    finally { unlock(); }
 }
 
 async function closeIssue(num, type) {
     if (!confirm('Удалить запись?')) return;
     try {
         await api(`/repos/${REPO}/issues/${num}`, { method: 'PATCH', body: JSON.stringify({ state: 'closed' }) });
-        localStorage.removeItem('news_cache');
-        localStorage.removeItem('notifs_cache');
+        clearSiteCache();
         loadAll();
     } catch (e) { alert('❌ ' + e.message); }
 }
@@ -455,9 +457,11 @@ function switchTab(name, el) {
         } catch (e) {
             localStorage.removeItem('gh_token');
             TOKEN = '';
+            document.getElementById('dbStatus').style.display = 'none';
         }
+    } else {
+        document.getElementById('dbStatus').style.display = 'none';
     }
-    if (!TOKEN) document.getElementById('dbStatus').style.display = 'none';
 })();
 </script>
 </body>

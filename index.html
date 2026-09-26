@@ -108,6 +108,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 </div>
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
+
 <div class="gate" id="gate">
     <div class="gate-card">
         <div class="gate-head">
@@ -128,6 +129,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
         </div>
     </div>
 </div>
+
 <div class="container" id="siteContainer">
     <div class="typewriter-wrapper">
         <div class="typewriter-line line-1" id="poemLine1">Загрузка...</div>
@@ -153,11 +155,14 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
         </div>
     </div>
 </div>
+
 <script>
 const REPO = '6m-class/6m-class';
 const API = `https://api.github.com/repos/${REPO}`;
+const container = document.getElementById('siteContainer');
+const gate = document.getElementById('gate');
 
-// ===== КАПЧА =====
+// ===== ЭКРАН "Я НЕ РОБОТ" =====
 function startSite() {
     if (!sessionStorage.getItem('visitedMain')) {
         container.classList.add('animate');
@@ -166,12 +171,17 @@ function startSite() {
         container.classList.add('no-animate');
     }
 }
+
 function openGate() {
     gate.classList.add('hidden');
     setTimeout(() => gate.remove(), 700);
     startSite();
 }
-if (sessionStorage.getItem('captchaPassed') === '1') { openGate(); }
+
+if (sessionStorage.getItem('captchaPassed') === '1') {
+    openGate();
+}
+
 function runCaptcha() {
     const box = document.getElementById('captchaBox');
     if (box.classList.contains('checking') || box.classList.contains('verified')) return;
@@ -186,129 +196,104 @@ function runCaptcha() {
     }, 1500);
 }
 
-const container = document.getElementById('siteContainer');
-const gate = document.getElementById('gate');
-
 // ===== УТИЛИТЫ =====
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-// Запрос с таймаутом
-function fetchTimeout(url, ms = 8000) {
-    return Promise.race([
-        fetch(url, { cache: 'no-store' }),
-        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
-    ]);
+// Таймаут-обёртка для fetch
+function fetchWithTimeout(url, opts = {}, ms = 8000) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(timer));
 }
 
-// Кэш в localStorage
-function getCache(key) {
-    try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; }
-}
-function setCache(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
-}
+// ===== ЗАГРУЗКА data.json (БЕЗ API — через GitHub Pages) =====
+async function loadDataJson() {
+    // Способ 1: относительный URL (GitHub Pages) — без лимита, без API
+    try {
+        const r = await fetchWithTimeout(`data.json?v=${Date.now()}`, { cache: 'no-store' }, 5000);
+        if (r.ok) return await r.json();
+    } catch (e) {}
 
-// Дефолтные данные
-const DEFAULT_DATA = {
-    title: "Самый лучший класс",
-    poem_line1: "Самый лучший в мире класс",
-    poem_line2: "это сказано про нас",
-    poem_line3: "Мы, внуки Пифагора!",
-    btn_text: "Наши ученики",
-    btn_link: "class.html",
-    news_empty: "Упс... Тут пока что ничего нету.",
-    schedule: "",
-    activities: "",
-    theme: "red"
-};
+    // Способ 2: jsdelivr CDN (быстрый, без лимита)
+    try {
+        const r = await fetchWithTimeout(`https://cdn.jsdelivr.net/gh/${REPO}@latest/data.json?v=${Date.now()}`, { cache: 'no-store' }, 5000);
+        if (r.ok) return await r.json();
+    } catch (e) {}
 
-// ===== ОПРЕДЕЛЕНИЕ ВЕТКИ =====
-async function getBranch() {
-    // Кэш ветки на 1 час
-    const cached = getCache('gh_branch_cache');
-    if (cached && Date.now() - cached.time < 3600000) return cached.branch;
-    
-    // Пытаемся через raw (не считается API-запросом)
-    for (const br of ['main', 'master']) {
-        try {
-            const r = await fetchTimeout(`https://raw.githubusercontent.com/${REPO}/${br}/data.json?v=${Date.now()}`, 5000);
-            if (r.ok) {
-                setCache('gh_branch_cache', { branch: br, time: Date.now() });
-                return br;
-            }
-        } catch {}
+    // Способ 3: raw.githubusercontent.com
+    try {
+        const r = await fetchWithTimeout(`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`, { cache: 'no-store' }, 5000);
+        if (r.ok) return await r.json();
+    } catch (e) {}
+
+    // Способ 4: raw master
+    try {
+        const r = await fetchWithTimeout(`https://raw.githubusercontent.com/${REPO}/master/data.json?v=${Date.now()}`, { cache: 'no-store' }, 5000);
+        if (r.ok) return await r.json();
+    } catch (e) {}
+
+    // Способ 5: кэш в localStorage
+    const cached = localStorage.getItem('site_data_cache');
+    if (cached) {
+        try { return JSON.parse(cached); } catch (e) {}
     }
-    // Фолбэк: пробуем локальный файл (GitHub Pages)
-    return 'main';
+
+    // Способ 6: дефолт
+    return null;
 }
 
-// ===== ЗАГРУЗКА data.json =====
-async function loadData() {
-    const branch = await getBranch();
-    
-    // 1. Пробуем raw.githubusercontent.com (нет лимита API)
-    try {
-        const r = await fetchTimeout(`https://raw.githubusercontent.com/${REPO}/${branch}/data.json?v=${Date.now()}`, 8000);
-        if (r.ok) {
-            const data = await r.json();
-            setCache('site_data_cache', { data, time: Date.now() });
-            return data;
-        }
-    } catch {}
-    
-    // 2. Пробуем локальный файл (если сайт на GitHub Pages)
-    try {
-        const r = await fetchTimeout(`data.json?v=${Date.now()}`, 5000);
-        if (r.ok) {
-            const data = await r.json();
-            setCache('site_data_cache', { data, time: Date.now() });
-            return data;
-        }
-    } catch {}
-    
-    // 3. Пробуем через GitHub API (с лимитом)
-    try {
-        const r = await fetchTimeout(`${API}/contents/data.json?ref=${branch}&t=${Date.now()}`, 8000);
-        if (r.ok) {
-            const file = await r.json();
-            const data = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
-            setCache('site_data_cache', { data, time: Date.now() });
-            return data;
-        }
-    } catch {}
-    
-    // 4. Фолбэк: кэш из localStorage
-    const cached = getCache('site_data_cache');
-    if (cached && cached.data) return cached.data;
-    
-    // 5. Фолбэк: дефолтные данные
-    return DEFAULT_DATA;
-}
-
-// ===== ЗАГРУЗКА НОВОСТЕЙ И УВЕДОМЛЕНИЙ =====
-async function loadIssues(label, cacheKey) {
+// ===== ЗАГРУЗКА НОВОСТЕЙ (GitHub Issues с кэшем) =====
+async function loadIssues(label) {
     // Кэш 10 минут
-    const cached = getCache(cacheKey);
-    if (cached && Date.now() - cached.time < 600000) return cached.data;
-    
+    const cacheKey = `cache_issues_${label}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        try {
+            const obj = JSON.parse(cached);
+            if (Date.now() - obj.time < 600000) return obj.data;
+        } catch (e) {}
+    }
+
     try {
-        const r = await fetchTimeout(`${API}/issues?labels=${encodeURIComponent(label)}&state=open&sort=created&direction=desc&per_page=30&t=${Date.now()}`, 8000);
-        if (r.ok) {
-            const data = await r.json();
-            if (Array.isArray(data)) {
-                setCache(cacheKey, { data, time: Date.now() });
-                return data;
-            }
+        const r = await fetchWithTimeout(
+            `${API}/issues?labels=${encodeURIComponent(label)}&state=open&sort=created&direction=desc&per_page=30&t=${Date.now()}`,
+            { cache: 'no-store' },
+            8000
+        );
+        if (!r.ok) throw new Error(r.status);
+        const data = await r.json();
+        const filtered = Array.isArray(data) ? data.filter(i => !i.pull_request) : [];
+        localStorage.setItem(cacheKey, JSON.stringify({ time: Date.now(), data: filtered }));
+        return filtered;
+    } catch (e) {
+        // Возврат кэша даже если просрочен
+        if (cached) {
+            try { return JSON.parse(cached).data; } catch (err) {}
         }
-    } catch {}
-    
-    // Фолбэк: кэш
-    if (cached && cached.data) return cached.data;
-    return [];
+        return [];
+    }
 }
 
 // ===== РЕНДЕР =====
 function renderData(data) {
+    if (!data) {
+        // Дефолтные данные
+        data = {
+            poem_line1: 'Самый лучший в мире класс',
+            poem_line2: 'это сказано про нас',
+            poem_line3: 'Мы, внуки Пифагора!',
+            btn_text: 'Наши ученики',
+            btn_link: 'class.html',
+            news_empty: 'Упс... Тут пока что ничего нету.',
+            schedule: '',
+            activities: '',
+            theme: 'red'
+        };
+    }
+
+    // Кэшируем
+    localStorage.setItem('site_data_cache', JSON.stringify(data));
+
     if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
     if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
     if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
@@ -321,20 +306,26 @@ function renderData(data) {
 
     const sched = (data.schedule || '').split('\n').filter(l => l.trim());
     document.getElementById('schedBadge').textContent = sched.length + ' уроков';
-    document.getElementById('scheduleList').innerHTML = sched.length ? sched.map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('') : '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
+    document.getElementById('scheduleList').innerHTML = sched.length
+        ? sched.map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('')
+        : '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
 
     const act = (data.activities || '').split('\n').filter(l => l.trim());
     document.getElementById('actBadge').textContent = act.length + ' занят.';
-    document.getElementById('activitiesList').innerHTML = act.length ? act.map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('') : '<li style="color:#777"><span>—</span> Нет занятий</li>';
+    document.getElementById('activitiesList').innerHTML = act.length
+        ? act.map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('')
+        : '<li style="color:#777"><span>—</span> Нет занятий</li>';
 }
 
 function renderNews(news, data) {
     document.getElementById('newsBadge').textContent = news.length;
-    const nc = document.getElementById('newsContent');
+    const newsContent = document.getElementById('newsContent');
     if (news.length > 0) {
-        nc.innerHTML = news.map(n => `<div class="news-item"><div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div><div class="news-text"><b>${esc(n.title)}</b><br>${esc(n.body || '')}</div></div>`).join('');
+        newsContent.innerHTML = news.slice(0, 3).map(n =>
+            `<div class="news-item"><div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div><div class="news-text"><b>${esc(n.title)}</b><br>${esc(n.body || '')}</div></div>`
+        ).join('');
     } else {
-        nc.innerHTML = `<p class="news-empty">${esc(data.news_empty || 'Упс... Тут пока что ничего нету.')}</p>`;
+        newsContent.innerHTML = `<p class="news-empty">${esc((data && data.news_empty) || 'Упс... Тут пока что ничего нету.')}</p>`;
     }
 }
 
@@ -355,21 +346,21 @@ function renderNotifs(notifs) {
 }
 
 // ===== ГЛАВНАЯ ЗАГРУЗКА =====
-let lastDataSha = '';
-let refreshTimer = null;
+let currentData = null;
 
 async function loadSite() {
     // Параллельно: data.json + новости + уведомления
-    const [dataResult, newsResult, notifsResult] = await Promise.allSettled([
-        loadData(),
-        loadIssues('новость', 'news_cache'),
-        loadIssues('уведомление', 'notifs_cache')
+    const [dataRes, newsRes, notifRes] = await Promise.allSettled([
+        loadDataJson(),
+        loadIssues('новость'),
+        loadIssues('уведомление')
     ]);
-    
-    const data = dataResult.status === 'fulfilled' ? dataResult.value : (getCache('site_data_cache')?.data || DEFAULT_DATA);
-    const news = newsResult.status === 'fulfilled' ? newsResult.value : (getCache('news_cache')?.data || []);
-    const notifs = notifsResult.status === 'fulfilled' ? notifsResult.value : (getCache('notifs_cache')?.data || []);
-    
+
+    const data = dataRes.status === 'fulfilled' ? dataRes.value : null;
+    const news = newsRes.status === 'fulfilled' ? newsRes.value : [];
+    const notifs = notifRes.status === 'fulfilled' ? notifRes.value : [];
+
+    currentData = data;
     renderData(data);
     renderNews(news, data);
     renderNotifs(notifs);
@@ -377,15 +368,13 @@ async function loadSite() {
 
 loadSite();
 
-// Автообновление раз в 60 секунд
-refreshTimer = setInterval(loadSite, 60000);
-
-// Перезагрузка при возврате на вкладку
+// Автообновление: раз в 60 сек + при возврате на вкладку
+let refreshTimer = setInterval(loadSite, 60000);
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) loadSite();
 });
 
-// ===== ТЕМЫ =====
+// ===== ТЕМЫ (локально, мгновенно) =====
 document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.documentElement.setAttribute('data-theme', btn.dataset.set);
@@ -394,7 +383,7 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
 });
 
 // ===== ЧАСТИЦЫ =====
-const isMobile = window.innerWidth < 768;
+const isMobile = window.innerWidth < 600;
 const pc = document.getElementById('particles');
 const count = isMobile ? 20 : 50;
 for (let i = 0; i < count; i++) {
