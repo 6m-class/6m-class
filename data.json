@@ -57,5 +57,10 @@
     }
   ],
   "activities_title": "Внеурочные занятия нашего класса",
-  "activities_subtitle": ""
+  "activities_subtitle": "",
+  "teacher": {
+    "name": "Карапетян Артур Арменович",
+    "role": "Классный руководитель",
+    "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/teacher_1790451683391.jpg"
+  }
 }
