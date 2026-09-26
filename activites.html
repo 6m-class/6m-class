@@ -56,10 +56,10 @@ h1 { font-family:'Orbitron',sans-serif; font-size:clamp(2rem,5vw,3rem); text-ali
 </div>
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
-<nav><a href="index.html" class="back-btn">← На главную</a></nav>
+<nav><a href="index.html" class="back-btn">&larr; На главную</a></nav>
 <div class="container">
-    <h1>Внеурочные <span class="highlight">занятия</span></h1>
-    <p class="subtitle">Расписание внеурочной деятельности нашего класса</p>
+    <h1 id="pageTitle">Внеурочные <span class="highlight">занятия</span></h1>
+    <p class="subtitle" id="pageSubtitle">Расписание внеурочной деятельности нашего класса</p>
     <div class="activities-grid" id="activitiesGrid">
         <div class="loading">Загрузка...</div>
     </div>
@@ -83,19 +83,57 @@ for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('par
 
 // Загрузка data.json
 async function loadData(){
-    const urls=[`data.json?v=${Date.now()}`,`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,`https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`];
+    const urls=[
+        `data.json?v=${Date.now()}`,
+        `https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,
+        `https://raw.githubusercontent.com/${REPO}/master/data.json?v=${Date.now()}`,
+        `https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`
+    ];
     for(const url of urls){
-        try{const c=new AbortController();const t=setTimeout(()=>c.abort(),8000);const r=await fetch(url,{cache:'no-store',signal:c.signal});clearTimeout(t);if(r.ok)return await r.json();}catch(e){continue;}
+        try{
+            const c=new AbortController();
+            const t=setTimeout(()=>c.abort(),8000);
+            const r=await fetch(url,{cache:'no-store',signal:c.signal});
+            clearTimeout(t);
+            if(r.ok) return await r.json();
+        }catch(e){continue;}
     }
-    const cached=getCached('site_data_cache');return cached?cached.data:null;
+    const cached=getCached('site_data_cache');
+    return cached?cached.data:null;
 }
 
 function renderActivities(data){
     const grid=document.getElementById('activitiesGrid');
+    
+    // Заголовок и подзаголовок из админки
+    if(data && data.activities_page_title){
+        document.getElementById('pageTitle').innerHTML = escapeHtml(data.activities_page_title);
+    }
+    if(data && data.activities_page_subtitle){
+        document.getElementById('pageSubtitle').textContent = data.activities_page_subtitle;
+    }
+    
     if(!data){grid.innerHTML='<div class="empty-state">Не удалось загрузить данные.</div>';return;}
     
-    // Если есть activities_full (новый формат) — рендерим карточки
-    if(data.activities_full&&Array.isArray(data.activities_full)&&data.activities_full.length>0){
+    // Основной формат: activities_cards (как сохраняет админка)
+    if(data.activities_cards && Array.isArray(data.activities_cards) && data.activities_cards.length>0){
+        grid.innerHTML=data.activities_cards.map(a=>`
+            <div class="activity-card">
+                <div class="activity-icon">${escapeHtml(a.icon||'📘')}</div>
+                <div class="activity-title">${escapeHtml(a.title||'')}</div>
+                <div class="activity-desc">${escapeHtml(a.desc||'')}</div>
+                <div class="activity-info">
+                    ${a.when?`<div class="activity-row"><span class="label">Когда:</span> ${escapeHtml(a.when)}</div>`:''}
+                    ${a.cabinet?`<div class="activity-row"><span class="label">Кабинет:</span> ${escapeHtml(a.cabinet)}</div>`:''}
+                    ${a.teacher?`<div class="activity-row"><span class="label">Ведёт:</span> ${escapeHtml(a.teacher)}</div>`:''}
+                </div>
+            </div>
+        `).join('');
+        return;
+    }
+    
+    // Совместимость со старым форматом activities_full
+    if(data.activities_full && Array.isArray(data.activities_full) && data.activities_full.length>0){
         grid.innerHTML=data.activities_full.map(a=>`
             <div class="activity-card">
                 <div class="activity-icon">${escapeHtml(a.icon||'📘')}</div>
@@ -111,7 +149,7 @@ function renderActivities(data){
         return;
     }
     
-    // Фолбэк на старый формат (activities — текст по строкам)
+    // Фолбэк на текстовый формат activities (просто строки)
     if(data.activities){
         const lines=data.activities.split('\n').filter(l=>l.trim());
         if(lines.length>0){
@@ -129,7 +167,7 @@ function renderActivities(data){
 }
 
 loadData().then(data=>{
-    if(data)setCached('site_data_cache',{data,ts:Date.now()});
+    if(data) setCached('site_data_cache',{data,ts:Date.now()});
     renderActivities(data);
 }).catch(()=>{renderActivities(null);});
 </script>
