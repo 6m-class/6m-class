@@ -47,7 +47,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .field label{display:block;font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
 .field input,.field textarea{width:100%;padding:12px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-size:.95rem;outline:none;transition:.3s;resize:vertical}
 .field input:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 12px rgba(var(--primary-rgb),0.2)}
-.field input[type="file"]{padding:10px;border:1px dashed var(--border);color:#aaa;font-size:.85rem}
 .btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px}
 .btn-primary{background:var(--primary);color:#000}
 .btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
@@ -60,7 +59,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .item-list{display:flex;flex-direction:column;gap:10px;margin-top:15px}
 .item{display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;transition:.3s}
 .item:hover{border-color:rgba(var(--primary-rgb),0.3)}
-.item-content{flex:1}
+.item-content{flex:1;display:flex;align-items:center;gap:12px}
 .item-title{font-weight:700;font-size:.95rem;margin-bottom:4px}
 .item-sub{font-size:.8rem;color:#666}
 .item-actions{display:flex;gap:8px;margin-left:15px}
@@ -70,7 +69,8 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .stat-label{font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px}
 .db-status{position:fixed;bottom:20px;right:20px;padding:8px 15px;background:rgba(0,255,102,0.1);border:1px solid #00ff66;border-radius:20px;font-size:.75rem;color:#00ff66;z-index:1000}
 .db-status.err{background:rgba(255,0,51,0.1);border-color:#ff0033;color:#ff0033}
-.student-thumb{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.upload-preview{width:80px;height:80px;border-radius:8px;object-fit:cover;border:1px solid var(--border);margin-top:8px}
+.student-thumb{width:50px;height:50px;border-radius:6px;object-fit:cover;border:1px solid var(--border)}
 @media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -162,24 +162,41 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 
         <div class="section" id="sec-activities">
             <div class="card">
-                <div class="card-header"><div class="card-title">Внеурочные занятия</div></div>
+                <div class="card-header"><div class="card-title">Внеурочка на главной</div></div>
+                <p style="color:#666;font-size:.85rem;margin-bottom:15px;">Каждая строка = одно занятие (короткий список)</p>
                 <div class="field"><label>Занятия (по одному на строку)</label><textarea id="editActivities" rows="6"></textarea></div>
                 <button class="btn btn-primary" onclick="saveAll('Обновлена внеурочка')">💾 Сохранить</button>
                 <div class="msg" id="msgActivities"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Страница внеурочки — заголовки</div></div>
+                <div class="field"><label>Заголовок страницы</label><input type="text" id="editActTitle" placeholder="Внеурочные занятия"></div>
+                <div class="field"><label>Подзаголовок страницы</label><input type="text" id="editActSubtitle" placeholder="Расписание внеурочной деятельности"></div>
+                <button class="btn btn-primary" onclick="saveActivitiesPage()">💾 Сохранить заголовки</button>
+                <div class="msg" id="msgActPage"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Карточки занятий (страница activites.html)</div></div>
+                <p style="color:#666;font-size:.85rem;margin-bottom:15px;">Добавляйте карточки с полной информацией — они появятся на странице внеурочки</p>
+                <div id="activitiesCardsEditor"></div>
+                <button class="btn btn-outline" onclick="addActivityCard()" style="margin-top:15px">➕ Добавить карточку</button>
+                <button class="btn btn-primary" onclick="saveActivityCards()" style="margin-top:15px">💾 Сохранить карточки</button>
+                <div class="msg" id="msgActCards"></div>
             </div>
         </div>
 
         <div class="section" id="sec-teacher">
             <div class="card">
                 <div class="card-header"><div class="card-title">Классный руководитель</div></div>
-                <div class="field"><label>Имя</label><input type="text" id="editTeacherName" placeholder="Карпетян Артур Арменович"></div>
-                <div class="field"><label>Должность</label><input type="text" id="editTeacherRole" placeholder="Классный руководитель"></div>
+                <div class="field"><label>Имя</label><input type="text" id="teacherName" placeholder="Карпетян Артур Арменович"></div>
+                <div class="field"><label>Должность</label><input type="text" id="teacherRole" placeholder="Классный руководитель"></div>
                 <div class="field">
                     <label>Фото</label>
-                    <input type="file" id="teacherPhoto" accept="image/*" onchange="uploadTeacherPhoto(this)">
-                    <div id="teacherPhotoPreview" style="margin-top:10px"></div>
+                    <input type="file" id="teacherPhoto" accept="image/*" onchange="previewTeacherPhoto(this)">
+                    <img id="teacherPreview" class="upload-preview" style="display:none" />
                 </div>
-                <button class="btn btn-primary" onclick="saveTeacher()">💾 Сохранить</button>
+                <div id="teacherCurrent"></div>
+                <button class="btn btn-primary" onclick="saveTeacher()">💾 Сохранить учителя</button>
                 <div class="msg" id="msgTeacher"></div>
             </div>
         </div>
@@ -187,12 +204,13 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         <div class="section" id="sec-students">
             <div class="card">
                 <div class="card-header"><div class="card-title">Добавить ученика</div><div class="card-badge" id="studentsCount">0</div></div>
-                <div class="field"><label>Имя</label><input type="text" id="studentName" placeholder="Иван Иванов"></div>
+                <div class="field"><label>Имя ученика</label><input type="text" id="studentName" placeholder="Иван Иванов"></div>
                 <div class="field">
                     <label>Фото</label>
-                    <input type="file" id="studentPhoto" accept="image/*">
+                    <input type="file" id="studentPhoto" accept="image/*" onchange="previewStudentPhoto(this)">
+                    <img id="studentPreview" class="upload-preview" style="display:none" />
                 </div>
-                <button class="btn btn-primary" onclick="addStudent()">➕ Добавить</button>
+                <button class="btn btn-primary" onclick="addStudent()">➕ Добавить ученика</button>
                 <div class="msg" id="msgStudent"></div>
             </div>
             <div class="card">
@@ -249,7 +267,10 @@ let USER = localStorage.getItem('gh_user') || '';
 let BRANCH = 'main';
 let siteData = {};
 let dataSha = '';
+let teacherPhotoData = null;
+let studentPhotoData = null;
 
+// API с антикэшем
 async function api(path, opts = {}) {
     const sep = path.includes('?') ? '&' : '?';
     const res = await fetch(`https://api.github.com${path}${sep}t=${Date.now()}`, {
@@ -319,11 +340,50 @@ async function detectBranch() {
     catch (e) { BRANCH = 'master'; }
 }
 
-// ===== ЗАГРУЗКА ВСЕГО =====
+// ===== ЗАГРУЗКА ФАЙЛОВ В РЕПОЗИТОРИЙ =====
+async function uploadFile(path, base64Content, msg) {
+    // Проверяем, есть ли уже файл (нужен SHA для перезаписи)
+    let sha = null;
+    try {
+        const existing = await api(`/repos/${REPO}/contents/${path}?ref=${BRANCH}`);
+        sha = existing.sha;
+    } catch(e) { /* файла нет — это нормально */ }
+    
+    return api(`/repos/${REPO}/contents/${path}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            message: `${msg} (админ: ${USER})`,
+            content: base64Content,
+            sha: sha,
+            branch: BRANCH
+        })
+    });
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const result = reader.result;
+            const base64 = result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// ===== ЗАГРУЗКА =====
 async function loadAll() {
     const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
     dataSha = file.sha;
     siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+
+    // Убедимся, что students — массив
+    if (!Array.isArray(siteData.students)) siteData.students = [];
+    if (!Array.isArray(siteData.activities_cards)) siteData.activities_cards = [];
+    if (!siteData.teacher) siteData.teacher = {};
+    if (!siteData.activities_page) siteData.activities_page = {};
 
     document.getElementById('editTitle').value = siteData.title || '';
     document.getElementById('editPoem1').value = siteData.poem_line1 || '';
@@ -334,144 +394,306 @@ async function loadAll() {
     document.getElementById('editNewsEmpty').value = siteData.news_empty || '';
     document.getElementById('editSchedule').value = siteData.schedule || '';
     document.getElementById('editActivities').value = siteData.activities || '';
+    document.getElementById('editActTitle').value = siteData.activities_page.title || '';
+    document.getElementById('editActSubtitle').value = siteData.activities_page.subtitle || '';
 
     // Учитель
-    document.getElementById('editTeacherName').value = siteData.teacher_name || '';
-    document.getElementById('editTeacherRole').value = siteData.teacher_role || '';
-    if (siteData.teacher_photo) {
-        document.getElementById('teacherPhotoPreview').innerHTML = `<img src="${siteData.teacher_photo}?v=${Date.now()}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--primary)">`;
+    document.getElementById('teacherName').value = siteData.teacher.name || '';
+    document.getElementById('teacherRole').value = siteData.teacher.role || '';
+    const tc = document.getElementById('teacherCurrent');
+    if (siteData.teacher.photo) {
+        tc.innerHTML = `<p style="color:#666;font-size:.85rem;margin-top:10px">Текущее фото:</p><img src="${siteData.teacher.photo}" class="upload-preview" />`;
     } else {
-        document.getElementById('teacherPhotoPreview').innerHTML = '';
+        tc.innerHTML = '<p style="color:#666;font-size:.85rem;margin-top:10px">Фото не загружено</p>';
     }
+    teacherPhotoData = null;
+    document.getElementById('teacherPreview').style.display = 'none';
+    document.getElementById('teacherPhoto').value = '';
 
     // Ученики
-    const students = siteData.students || [];
-    document.getElementById('studentsCount').textContent = students.length;
-    document.getElementById('statStudents').textContent = students.length;
-    document.getElementById('studentsList').innerHTML = students.length ? students.map((s, i) =>
-        `<div class="item"><div class="item-content" style="display:flex;align-items:center;gap:12px">${s.photo ? `<img src="${s.photo}?v=${Date.now()}" class="student-thumb">` : ''}<div><div class="item-title">${esc(s.name)}</div></div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="deleteStudent(${i})">✕</button></div></div>`
-    ).join('') : '<p style="color:#555;padding:10px">Учеников пока нет</p>';
+    renderStudentsList();
+    document.getElementById('studentsCount').textContent = siteData.students.length;
 
+    // Карточки внеурочки
+    renderActivitiesCardsEditor();
+
+    // Новости и уведомления
     const news = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
     const notifs = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
 
     document.getElementById('newsCount').textContent = news.length;
     document.getElementById('notifCount').textContent = notifs.length;
-    document.getElementById('newsList').innerHTML = news.length ? news.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
-    document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
+    document.getElementById('newsList').innerHTML = news.length ? news.map(n => `<div class="item"><div class="item-content"><div><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
+    document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => `<div class="item"><div class="item-content"><div><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
 
     const sched = (siteData.schedule || '').split('\n').filter(l => l.trim()).length;
     const themes = { red: '🔴', blue: '🔵', green: '🟢', aero: '🩵' };
     document.getElementById('statNews').textContent = news.length;
     document.getElementById('statNotifs').textContent = notifs.length;
     document.getElementById('statSchedule').textContent = sched;
+    document.getElementById('statStudents').textContent = siteData.students.length;
     document.getElementById('statTheme').textContent = themes[siteData.theme] || '🔴';
 }
 
-// ===== ЗАГРУЗКА ФОТО =====
-async function uploadPhoto(file, filename) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const base64 = reader.result.split(',')[1];
-            try {
-                let sha = null;
-                try {
-                    const existing = await api(`/repos/${REPO}/contents/photos/${filename}?ref=${BRANCH}`);
-                    sha = existing.sha;
-                } catch(e) {}
-                const body = {
-                    message: `Загрузка фото: ${filename} (админ: ${USER})`,
-                    content: base64,
-                    branch: BRANCH
-                };
-                if (sha) body.sha = sha;
-                await api(`/repos/${REPO}/contents/photos/${filename}`, {
-                    method: 'PUT',
-                    body: JSON.stringify(body)
-                });
-                resolve(`photos/${filename}`);
-            } catch(e) { reject(e); }
-        };
-        reader.readAsDataURL(file);
-    });
+// ===== РЕНДЕР СПИСКА УЧЕНИКОВ =====
+function renderStudentsList() {
+    const list = document.getElementById('studentsList');
+    const students = siteData.students || [];
+    if (students.length === 0) {
+        list.innerHTML = '<p style="color:#555;padding:10px">Учеников пока нет</p>';
+        return;
+    }
+    list.innerHTML = students.map((s, i) => `
+        <div class="item">
+            <div class="item-content">
+                ${s.photo ? `<img src="${esc(s.photo)}" class="student-thumb" />` : ''}
+                <div>
+                    <div class="item-title">${esc(s.name || '')}</div>
+                    <div class="item-sub">${s.photo ? 'Фото загружено' : 'Без фото'}</div>
+                </div>
+            </div>
+            <div class="item-actions">
+                <button class="btn btn-danger btn-sm" onclick="deleteStudent(${i})">✕ Удалить</button>
+            </div>
+        </div>
+    `).join('');
 }
 
-// ===== УЧИТЕЛЬ =====
-async function uploadTeacherPhoto(input) {
+// ===== ДОБАВЛЕНИЕ УЧЕНИКА =====
+function previewStudentPhoto(input) {
     const file = input.files[0];
-    if (!file) return;
-    const preview = document.getElementById('teacherPhotoPreview');
-    preview.innerHTML = '<p style="color:#aaa">⏳ Загрузка...</p>';
-    try {
-        const ext = file.name.split('.').pop().toLowerCase();
-        const filename = `teacher_${Date.now()}.${ext}`;
-        const path = await uploadPhoto(file, filename);
-        siteData.teacher_photo = path;
-        preview.innerHTML = `<img src="${path}?v=${Date.now()}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--primary)">`;
-        showMsg('msgTeacher', '✅ Фото загружено! Нажми "Сохранить"', '#00ff66');
-    } catch(e) {
-        preview.innerHTML = '<p style="color:#ff5555">❌ ' + e.message + '</p>';
-    }
+    if (!file) { studentPhotoData = null; document.getElementById('studentPreview').style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('studentPreview').src = e.target.result;
+        document.getElementById('studentPreview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
 }
 
-async function saveTeacher() {
-    siteData.teacher_name = document.getElementById('editTeacherName').value.trim();
-    siteData.teacher_role = document.getElementById('editTeacherRole').value.trim();
-    try {
-        await pushData('Обновлён классный руководитель');
-        showMsg('msgTeacher', '✅ Сохранено!', '#00ff66');
-        setTimeout(() => loadAll(), 1000);
-    } catch(e) {
-        showMsg('msgTeacher', '❌ ' + e.message, '#ff5555');
-    }
-}
-
-// ===== УЧЕНИКИ =====
 async function addStudent() {
     const name = document.getElementById('studentName').value.trim();
-    const photoInput = document.getElementById('studentPhoto');
-    if (!name) { showMsg('msgStudent', '❌ Введи имя', '#ff5555'); return; }
-    showMsg('msgStudent', '⏳ Добавляем...', '#aaa');
-    let photoPath = '';
-    if (photoInput.files[0]) {
-        const file = photoInput.files[0];
-        const ext = file.name.split('.').pop().toLowerCase();
-        const filename = `student_${Date.now()}.${ext}`;
-        try {
-            photoPath = await uploadPhoto(file, filename);
-        } catch(e) {
-            showMsg('msgStudent', '❌ Ошибка фото: ' + e.message, '#ff5555');
-            return;
-        }
-    }
-    if (!siteData.students) siteData.students = [];
-    siteData.students.push({ name, photo: photoPath });
+    if (!name) { showMsg('msgStudent', '❌ Введи имя ученика', '#ff5555'); return; }
+
+    showMsg('msgStudent', '⏳ Добавляем...', '#ffaa00');
+
     try {
-        await pushData('Добавлен ученик: ' + name);
+        // ШАГ 1: СНАЧАЛА ПЕРЕЧИТЫВАЕМ data.json (чтобы получить свежий SHA и свежие данные)
+        const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+        dataSha = file.sha;
+        siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+        if (!Array.isArray(siteData.students)) siteData.students = [];
+
+        // ШАГ 2: Загружаем фото если есть
+        let photoPath = '';
+        const photoFile = document.getElementById('studentPhoto').files[0];
+        if (photoFile) {
+            const base64 = await fileToBase64(photoFile);
+            const ext = photoFile.name.split('.').pop().toLowerCase();
+            const safeName = name.replace(/[^a-zA-Zа-яА-Я0-9]/g, '_').substring(0, 20);
+            photoPath = `photos/students/${safeName}_${Date.now()}.${ext}`;
+            await uploadFile(photoPath, base64, `Загрузка фото ученика: ${name}`);
+        }
+
+        // ШАГ 3: ДОБАВЛЯЕМ ученика в массив (не заменяем!)
+        siteData.students.push({ name, photo: photoPath });
+
+        // ШАГ 4: Сохраняем data.json
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
+        const r = await api(`/repos/${REPO}/contents/data.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ message: `Добавлен ученик: ${name} (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
+        });
+        dataSha = r.content.sha;
+
+        // ШАГ 5: Очищаем форму и обновляем список
         document.getElementById('studentName').value = '';
         document.getElementById('studentPhoto').value = '';
+        document.getElementById('studentPreview').style.display = 'none';
+        studentPhotoData = null;
+        renderStudentsList();
+        document.getElementById('studentsCount').textContent = siteData.students.length;
+        document.getElementById('statStudents').textContent = siteData.students.length;
         showMsg('msgStudent', '✅ Ученик добавлен!', '#00ff66');
-        setTimeout(() => loadAll(), 1000);
-    } catch(e) {
+    } catch (e) {
         showMsg('msgStudent', '❌ ' + e.message, '#ff5555');
     }
 }
 
 async function deleteStudent(idx) {
     if (!confirm('Удалить ученика?')) return;
-    if (!siteData.students) return;
-    siteData.students.splice(idx, 1);
     try {
-        await pushData('Удалён ученик');
-        loadAll();
-    } catch(e) {
+        // ПЕРЕЧИТЫВАЕМ data.json
+        const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+        dataSha = file.sha;
+        siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+        if (!Array.isArray(siteData.students)) siteData.students = [];
+
+        siteData.students.splice(idx, 1);
+
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
+        const r = await api(`/repos/${REPO}/contents/data.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ message: `Удалён ученик (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
+        });
+        dataSha = r.content.sha;
+
+        renderStudentsList();
+        document.getElementById('studentsCount').textContent = siteData.students.length;
+        document.getElementById('statStudents').textContent = siteData.students.length;
+    } catch (e) {
         alert('❌ ' + e.message);
     }
 }
 
-// ===== СОХРАНЕНИЕ data.json =====
+// ===== УЧИТЕЛЬ =====
+function previewTeacherPhoto(input) {
+    const file = input.files[0];
+    if (!file) { teacherPhotoData = null; document.getElementById('teacherPreview').style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('teacherPreview').src = e.target.result;
+        document.getElementById('teacherPreview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
+async function saveTeacher() {
+    showMsg('msgTeacher', '⏳ Сохраняем...', '#ffaa00');
+    try {
+        // ПЕРЕЧИТЫВАЕМ data.json
+        const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+        dataSha = file.sha;
+        siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+        if (!siteData.teacher) siteData.teacher = {};
+
+        siteData.teacher.name = document.getElementById('teacherName').value.trim();
+        siteData.teacher.role = document.getElementById('teacherRole').value.trim();
+
+        // Загружаем фото если есть
+        const photoFile = document.getElementById('teacherPhoto').files[0];
+        if (photoFile) {
+            const base64 = await fileToBase64(photoFile);
+            const ext = photoFile.name.split('.').pop().toLowerCase();
+            photoPath = `photos/teacher_${Date.now()}.${ext}`;
+            await uploadFile(photoPath, base64, `Загрузка фото учителя`);
+            siteData.teacher.photo = photoPath;
+        }
+
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
+        const r = await api(`/repos/${REPO}/contents/data.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ message: `Обновлён учитель (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
+        });
+        dataSha = r.content.sha;
+
+        document.getElementById('teacherPhoto').value = '';
+        document.getElementById('teacherPreview').style.display = 'none';
+
+        showMsg('msgTeacher', '✅ Учитель сохранён!', '#00ff66');
+        setTimeout(() => loadAll(), 1000);
+    } catch (e) {
+        showMsg('msgTeacher', '❌ ' + e.message, '#ff5555');
+    }
+}
+
+// ===== ВНЕУРОЧКА — ЗАГОЛОВКИ СТРАНИЦЫ =====
+async function saveActivitiesPage() {
+    try {
+        const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+        dataSha = file.sha;
+        siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+        if (!siteData.activities_page) siteData.activities_page = {};
+
+        siteData.activities_page.title = document.getElementById('editActTitle').value.trim();
+        siteData.activities_page.subtitle = document.getElementById('editActSubtitle').value.trim();
+
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
+        const r = await api(`/repos/${REPO}/contents/data.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ message: `Обновлены заголовки внеурочки (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
+        });
+        dataSha = r.content.sha;
+
+        showMsg('msgActPage', '✅ Сохранено!', '#00ff66');
+    } catch (e) {
+        showMsg('msgActPage', '❌ ' + e.message, '#ff5555');
+    }
+}
+
+// ===== ВНЕУРОЧКА — КАРТОЧКИ =====
+function renderActivitiesCardsEditor() {
+    const container = document.getElementById('activitiesCardsEditor');
+    const cards = siteData.activities_cards || [];
+    if (cards.length === 0) {
+        container.innerHTML = '<p style="color:#555;padding:10px">Карточек пока нет. Нажмите «Добавить карточку».</p>';
+        return;
+    }
+    container.innerHTML = cards.map((c, i) => `
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:10px;">
+            <div class="field"><label>Название/иконка</label><input type="text" value="${esc(c.icon || '')}" onchange="updateActivityCard(${i},'icon',this.value)"></div>
+            <div class="field"><label>Заголовок</label><input type="text" value="${esc(c.title || '')}" onchange="updateActivityCard(${i},'title',this.value)"></div>
+            <div class="field"><label>Описание</label><textarea rows="2" onchange="updateActivityCard(${i},'desc',this.value)">${esc(c.desc || '')}</textarea></div>
+            <div class="field"><label>Когда</label><input type="text" value="${esc(c.when || '')}" onchange="updateActivityCard(${i},'when',this.value)"></div>
+            <div class="field"><label>Кабинет</label><input type="text" value="${esc(c.room || '')}" onchange="updateActivityCard(${i},'room',this.value)"></div>
+            <div class="field"><label>Кто ведёт</label><input type="text" value="${esc(c.teacher || '')}" onchange="updateActivityCard(${i},'teacher',this.value)"></div>
+            <button class="btn btn-danger btn-sm" onclick="deleteActivityCard(${i})">✕ Удалить карточку</button>
+        </div>
+    `).join('');
+}
+
+function addActivityCard() {
+    if (!Array.isArray(siteData.activities_cards)) siteData.activities_cards = [];
+    siteData.activities_cards.push({ icon: '', title: '', desc: '', when: '', room: '', teacher: '' });
+    renderActivitiesCardsEditor();
+}
+
+function updateActivityCard(idx, field, value) {
+    if (Array.isArray(siteData.activities_cards) && siteData.activities_cards[idx]) {
+        siteData.activities_cards[idx][field] = value;
+    }
+}
+
+function deleteActivityCard(idx) {
+    if (Array.isArray(siteData.activities_cards)) {
+        siteData.activities_cards.splice(idx, 1);
+        renderActivitiesCardsEditor();
+    }
+}
+
+async function saveActivityCards() {
+    showMsg('msgActCards', '⏳ Сохраняем...', '#ffaa00');
+    try {
+        const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+        dataSha = file.sha;
+        const fresh = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+        fresh.activities_cards = siteData.activities_cards;
+
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(fresh, null, 2))));
+        const r = await api(`/repos/${REPO}/contents/data.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ message: `Обновлены карточки внеурочки (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
+        });
+        dataSha = r.content.sha;
+        siteData = fresh;
+
+        showMsg('msgActCards', '✅ Карточки сохранены!', '#00ff66');
+    } catch (e) {
+        showMsg('msgActCards', '❌ ' + e.message, '#ff5555');
+    }
+}
+
+// ===== СОХРАНЕНИЕ data.json (тексты, расписание, внеурочка) =====
 async function saveAll(msg) {
+    // ПЕРЕЧИТЫВАЕМ data.json ПЕРЕД СОХРАНЕНИЕМ
+    try {
+        const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+        dataSha = file.sha;
+        siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+    } catch (e) {
+        siteData = {};
+    }
+
     siteData.title = document.getElementById('editTitle').value.trim();
     siteData.poem_line1 = document.getElementById('editPoem1').value.trim();
     siteData.poem_line2 = document.getElementById('editPoem2').value.trim();
@@ -481,6 +703,7 @@ async function saveAll(msg) {
     siteData.news_empty = document.getElementById('editNewsEmpty').value.trim();
     siteData.schedule = document.getElementById('editSchedule').value.trim();
     siteData.activities = document.getElementById('editActivities').value.trim();
+
     try {
         await pushData(msg);
         showMsg('msgTexts', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
@@ -520,6 +743,12 @@ async function pushData(msg) {
 }
 
 async function setTheme(theme) {
+    try {
+        const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+        dataSha = file.sha;
+        siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+    } catch (e) { siteData = {}; }
+
     siteData.theme = theme;
     try {
         await pushData('Смена темы на ' + theme);
