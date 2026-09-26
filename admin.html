@@ -213,8 +213,10 @@ let BRANCH = 'main';
 let siteData = {};
 let dataSha = '';
 
+// API с антикэшем
 async function api(path, opts = {}) {
-    const res = await fetch(`https://api.github.com${path}`, {
+    const sep = path.includes('?') ? '&' : '?';
+    const res = await fetch(`https://api.github.com${path}${sep}t=${Date.now()}`, {
         method: opts.method || 'GET',
         headers: {
             'Accept': 'application/vnd.github+json',
@@ -226,7 +228,9 @@ async function api(path, opts = {}) {
     if (!res.ok) {
         let msg = `Ошибка GitHub ${res.status}`;
         try { const j = await res.json(); if (j.message) msg += ': ' + j.message; } catch (e) {}
-        throw new Error(msg);
+        const err = new Error(msg);
+        err.status = res.status;
+        throw err;
     }
     return res.status === 204 ? null : res.json();
 }
@@ -322,11 +326,18 @@ async function saveAll(msg) {
     siteData.news_empty = document.getElementById('editNewsEmpty').value.trim();
     siteData.schedule = document.getElementById('editSchedule').value.trim();
     siteData.activities = document.getElementById('editActivities').value.trim();
-    await pushData(msg);
-    showMsg('msgTexts', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
-    showMsg('msgSchedule', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
-    showMsg('msgActivities', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
-    loadAll();
+    try {
+        await pushData(msg);
+        showMsg('msgTexts', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
+        showMsg('msgSchedule', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
+        showMsg('msgActivities', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
+        // Даём GitHub секунду на применение, потом перезагружаем
+        setTimeout(() => loadAll(), 1000);
+    } catch (e) {
+        showMsg('msgTexts', '❌ ' + e.message, '#ff5555');
+        showMsg('msgSchedule', '❌ ' + e.message, '#ff5555');
+        showMsg('msgActivities', '❌ ' + e.message, '#ff5555');
+    }
 }
 
 async function pushData(msg) {
@@ -338,8 +349,20 @@ async function pushData(msg) {
         });
         dataSha = r.content.sha;
     } catch (e) {
-        if (e.message.includes('403')) throw new Error('Недостаточно прав: токен без доступа Contents (режим модератора)');
-        throw e;
+        if (e.status === 409 || (e.message && e.message.includes('409'))) {
+            // Конфликт SHA — перезагружаем и повторяем
+            const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
+            dataSha = file.sha;
+            const r = await api(`/repos/${REPO}/contents/data.json`, {
+                method: 'PUT',
+                body: JSON.stringify({ message: `${msg} (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
+            });
+            dataSha = r.content.sha;
+        } else if (e.message && e.message.includes('403')) {
+            throw new Error('Недостаточно прав: токен без доступа Contents (режим модератора)');
+        } else {
+            throw e;
+        }
     }
 }
 
@@ -348,7 +371,7 @@ async function setTheme(theme) {
     try {
         await pushData('Смена темы на ' + theme);
         showMsg('msgTheme', '✅ Тема изменена для всех!', '#00ff66');
-        loadAll();
+        setTimeout(() => loadAll(), 1000);
     } catch (e) { showMsg('msgTheme', '❌ ' + e.message, '#ff5555'); }
 }
 

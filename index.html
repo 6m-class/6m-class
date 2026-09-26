@@ -170,6 +170,7 @@ const REPO = '6m-class/6m-class';
 const API = `https://api.github.com/repos/${REPO}`;
 const container = document.getElementById('siteContainer');
 const gate = document.getElementById('gate');
+let lastDataSha = null;
 
 // ===== ЭКРАН "Я НЕ РОБОТ" =====
 function startSite() {
@@ -210,17 +211,23 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s; re
 
 async function loadSite() {
     try {
+        // Определяем ветку
         let branch = 'main';
         try {
-            const br = await fetch(`${API}/branches/main`);
+            const br = await fetch(`${API}/branches/main?t=${Date.now()}`, { cache: 'no-store' });
             if (!br.ok) branch = 'master';
         } catch (e) {}
 
-        const res = await fetch(`${API}/contents/data.json?ref=${branch}`, { cache: 'no-store' });
+        // Грузим data.json с антикэшем
+        const res = await fetch(`${API}/contents/data.json?ref=${branch}&t=${Date.now()}`, { cache: 'no-store' });
         if (res.status === 404) throw new Error('data.json не найден');
         if (!res.ok) throw new Error('Ошибка GitHub: ' + res.status);
         const file = await res.json();
         const data = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+
+        // Пропускаем рендер, если SHA не изменился (не моргает)
+        if (lastDataSha === file.sha) return;
+        lastDataSha = file.sha;
 
         if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
         if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
@@ -240,7 +247,9 @@ async function loadSite() {
         document.getElementById('actBadge').textContent = act.length + ' занят.';
         document.getElementById('activitiesList').innerHTML = act.length ? act.map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('') : '<li style="color:#777"><span>—</span> Нет занятий</li>';
 
-        const news = await (await fetch(`${API}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=3`, { cache: 'no-store' })).json();
+        // Новости с антикэшем
+        const newsRes = await fetch(`${API}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=3&t=${Date.now()}`, { cache: 'no-store' });
+        const news = await newsRes.json();
         document.getElementById('newsBadge').textContent = Array.isArray(news) ? news.length : 0;
         const newsContent = document.getElementById('newsContent');
         if (Array.isArray(news) && news.length > 0) {
@@ -249,7 +258,9 @@ async function loadSite() {
             newsContent.innerHTML = `<p class="news-empty">${esc(data.news_empty || 'Упс... Тут пока что ничего нету.')}</p>`;
         }
 
-        const notifs = await (await fetch(`${API}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=1`, { cache: 'no-store' })).json();
+        // Уведомления с антикэшем
+        const notifRes = await fetch(`${API}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=1&t=${Date.now()}`, { cache: 'no-store' });
+        const notifs = await notifRes.json();
         if (Array.isArray(notifs) && notifs.length > 0) {
             const last = notifs[0];
             const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
@@ -270,7 +281,17 @@ async function loadSite() {
         document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
     }
 }
+
+// Первая загрузка
 loadSite();
+
+// Автообновление: проверка при возврате на вкладку
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) loadSite();
+});
+
+// Автообновление: каждые 30 секунд
+setInterval(loadSite, 30000);
 
 // ===== ТЕМЫ =====
 document.querySelectorAll('.theme-btn').forEach(btn => {
