@@ -11,5 +11,11 @@
   "theme": "green",
   "teacher_photo": "photos/teacher_1790438309688.jpg",
   "teacher_name": "Карпетян Артур Арменович",
-  "teacher_role": "Классный руководитель"
+  "teacher_role": "Классный руководитель",
+  "students": [
+    {
+      "name": "maks",
+      "photo": "photos/student_1790439118001.png"
+    }
+  ]
 }
