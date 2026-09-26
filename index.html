@@ -99,6 +99,12 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 </style>
 </head>
 <body>
+    // Было:
+sessionStorage.setItem('captchaPassed', '1');
+
+// Стало:
+localStorage.setItem('captchaPassed', '1');
+
 <a href="admin.html" class="admin-link">⚙️ Админ</a>
 <div class="theme-switcher">
     <div class="theme-btn active" data-set="red"></div>
