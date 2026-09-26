@@ -4,156 +4,153 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Настройки | Самый лучший класс</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <script src="settings.js"></script>
 <style>
-:root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--glow-strong:rgba(255,0,51,0.8);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2);--bg:#050505;--card:#111}
-[data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--glow-strong:rgba(255,204,0,0.8);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
-[data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--glow-strong:rgba(0,255,102,0.8);--border:rgba(0,255,102,0.3);--shadow:rgba(0,255,102,0.2)}
-[data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--glow-strong:rgba(0,170,255,0.8);--border:rgba(0,170,255,0.3);--shadow:rgba(0,170,255,0.2)}
-[data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--glow-strong:rgba(170,0,255,0.8);--border:rgba(170,0,255,0.3);--shadow:rgba(170,0,255,0.2)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;justify-content:center;align-items:center;padding:40px 20px}
+body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden}
 .bg-glow{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:60vh;background:radial-gradient(ellipse at top,var(--glow),transparent 70%);z-index:-2;pointer-events:none}
 .particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 5px var(--primary);animation:floatUp linear infinite;opacity:0}
 @keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}50%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
-.gear-link{position:fixed;top:20px;right:20px;font-size:1.4rem;text-decoration:none;opacity:0.5;transition:0.3s;filter:grayscale(1);z-index:1000}
-.gear-link:hover{opacity:1;color:var(--primary);filter:none}
-.settings-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 35px;width:100%;max-width:520px;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1);animation:fadeIn 0.5s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.settings-box h1{font-family:'Orbitron',sans-serif;font-size:1.4rem;text-align:center;margin-bottom:8px;text-transform:uppercase}
-.settings-box h1 span{color:var(--primary)}
-.settings-box .sub{color:#666;font-size:0.85rem;text-align:center;margin-bottom:30px}
-.setting-group{margin-bottom:30px}
-.setting-group label{display:block;font-size:0.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:600}
-.color-options{display:flex;gap:12px;flex-wrap:wrap}
-.color-opt{width:50px;height:50px;border-radius:12px;cursor:pointer;border:3px solid transparent;transition:0.3s;position:relative}
-.color-opt:hover{transform:scale(1.1)}
-.color-opt.active{border-color:#fff;box-shadow:0 0 15px currentColor}
-.color-opt[data-color="red"]{background:#ff0033;color:#ff0033}
-.color-opt[data-color="yellow"]{background:#ffcc00;color:#ffcc00}
-.color-opt[data-color="green"]{background:#00ff66;color:#00ff66}
-.color-opt[data-color="blue"]{background:#00aaff;color:#00aaff}
-.color-opt[data-color="purple"]{background:#aa00ff;color:#aa00ff}
-.color-opt .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;opacity:0;transition:0.3s}
-.color-opt.active .check{opacity:1}
-.font-options{display:flex;gap:12px;flex-wrap:wrap}
-.font-opt{flex:1;min-width:100px;padding:18px 15px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;transition:0.3s;text-align:center}
-.font-opt:hover{border-color:rgba(var(--primary-rgb),0.4)}
-.font-opt.active{border-color:var(--primary);background:rgba(var(--primary-rgb),0.1);box-shadow:0 0 15px var(--shadow)}
-.font-opt .name{font-size:0.8rem;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.font-opt .sample{font-size:1.1rem;color:#fff}
-.font-opt[data-font="normal"] .sample{font-family:'Montserrat',sans-serif;font-weight:400}
-.font-opt[data-font="bold"] .sample{font-family:'Montserrat',sans-serif;font-weight:700}
-.font-opt[data-font="beautiful"] .sample{font-family:'Ankona Kursive',cursive}
+nav{padding:20px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(5,5,5,0.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.back-btn{color:#fff;text-decoration:none;font-weight:700;text-transform:uppercase;font-size:.9rem;padding:8px 20px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;transition:.3s}
+.back-btn:hover{border-color:var(--primary);color:var(--primary);box-shadow:0 0 10px var(--shadow)}
+.container{max-width:600px;margin:0 auto;padding:60px 20px 80px}
+h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,5vw,2.5rem);text-align:center;margin-bottom:10px;text-transform:uppercase;text-shadow:0 0 15px var(--glow-strong)}
+.highlight{color:var(--primary)}
+.subtitle{text-align:center;color:#888;margin-bottom:40px;font-size:1rem}
+.card{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:30px;margin-bottom:20px}
+.card-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px}
+.color-grid{display:flex;gap:15px;flex-wrap:wrap;margin-bottom:10px}
+.color-btn{width:50px;height:50px;border-radius:12px;border:2px solid rgba(255,255,255,0.15);cursor:pointer;transition:.3s;position:relative}
+.color-btn:hover{transform:scale(1.1)}
+.color-btn.active{border-color:#fff;box-shadow:0 0 20px currentColor;transform:scale(1.1)}
+.color-btn[data-theme-val="red"]{background:#ff0033;color:#ff0033}
+.color-btn[data-theme-val="yellow"]{background:#ffcc00;color:#ffcc00}
+.color-btn[data-theme-val="green"]{background:#00ff66;color:#00ff66}
+.color-btn[data-theme-val="blue"]{background:#00aaff;color:#00aaff}
+.color-btn[data-theme-val="purple"]{background:#aa00ff;color:#aa00ff}
+.color-btn .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;opacity:0;font-weight:900}
+.color-btn.active .check{opacity:1}
+.color-label{font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;text-align:center;margin-top:5px}
+.font-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:10px}
+.font-btn{padding:18px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:space-between}
+.font-btn:hover{border-color:var(--border);background:rgba(255,255,255,0.05)}
+.font-btn.active{border-color:var(--primary);box-shadow:0 0 15px var(--shadow)}
+.font-name{font-size:1.1rem;font-weight:700}
+.font-preview{font-size:1.2rem;color:#999}
+.font-btn[data-font-val="normal"] .font-preview{font-family:'Montserrat',sans-serif}
+.font-btn[data-font-val="bold"] .font-preview{font-family:'Montserrat',sans-serif;font-weight:700}
+.font-btn[data-font-val="fancy"] .font-preview{font-family:'Miama Nueva',cursive}
 .preview-box{margin-top:20px;padding:20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px}
-.preview-box .preview-label{font-size:0.7rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.preview-box .preview-text{font-size:1rem;color:#fff;line-height:1.6}
-.preview-box .preview-text .hl{color:var(--primary)}
+.preview-label{font-size:.7rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.preview-text{font-size:1.3rem;line-height:1.5}
 .btn-row{display:flex;gap:12px;margin-top:25px}
-.btn{flex:1;padding:14px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;cursor:pointer;transition:0.3s;letter-spacing:0.5px;text-decoration:none;text-align:center}
+.btn{flex:1;padding:14px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px}
 .btn-primary{background:var(--primary);color:#000}
-.btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
+.btn-primary:hover{box-shadow:0 0 20px var(--glow-strong);transform:translateY(-2px)}
 .btn-outline{background:transparent;border:1px solid var(--border);color:#aaa}
 .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.support-card{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:25px;text-align:center}
+.support-card h3{font-family:'Orbitron',sans-serif;font-size:.95rem;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.support-card p{color:#888;font-size:.85rem;line-height:1.6;margin-bottom:15px}
+.support-link{display:inline-block;padding:10px 24px;border:1px solid var(--border);border-radius:8px;color:var(--primary);text-decoration:none;font-weight:700;font-size:.85rem;text-transform:uppercase;transition:.3s}
+.support-link:hover{border-color:var(--primary);box-shadow:0 0 15px var(--shadow);background:rgba(255,255,255,0.03)}
 </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="particles" id="particles"></div>
+<nav>
+    <a href="index.html" class="back-btn">&#8592; На главную</a>
+</nav>
+<div class="container">
+    <h1>Настройки <span class="highlight">сайта</span></h1>
+    <p class="subtitle">Персонализируйте внешний вид</p>
 
-<div class="settings-box">
-    <h1>⚙️ <span>Настройки</span></h1>
-    <p class="sub">Кастомизируй сайт под себя</p>
+    <div class="card">
+        <div class="card-title">Цвет</div>
+        <div class="color-grid">
+            <div class="color-btn" data-theme-val="red" onclick="selectColor('red')"><div class="check">&#10003;</div></div>
+            <div class="color-btn" data-theme-val="yellow" onclick="selectColor('yellow')"><div class="check">&#10003;</div></div>
+            <div class="color-btn" data-theme-val="green" onclick="selectColor('green')"><div class="check">&#10003;</div></div>
+            <div class="color-btn" data-theme-val="blue" onclick="selectColor('blue')"><div class="check">&#10003;</div></div>
+            <div class="color-btn" data-theme-val="purple" onclick="selectColor('purple')"><div class="check">&#10003;</div></div>
+        </div>
+        <div class="color-label" id="colorLabel">&#1086;&#1082;&#1088;&#1072;&#1089;&#1082;&#1072;</div>
 
-    <div class="setting-group">
-        <label>Цвет</label>
-        <div class="color-options" id="colorOptions">
-            <div class="color-opt" data-color="red"><div class="check">✓</div></div>
-            <div class="color-opt" data-color="yellow"><div class="check">✓</div></div>
-            <div class="color-opt" data-color="green"><div class="check">✓</div></div>
-            <div class="color-opt" data-color="blue"><div class="check">✓</div></div>
-            <div class="color-opt" data-color="purple"><div class="check">✓</div></div>
+        <div style="margin-top:25px" class="card-title">Шрифт</div>
+        <div class="font-grid">
+            <div class="font-btn" data-font-val="normal" onclick="selectFont('normal')">
+                <div class="font-name">Обычный</div>
+                <div class="font-preview">Аа Бб Вг</div>
+            </div>
+            <div class="font-btn" data-font-val="bold" onclick="selectFont('bold')">
+                <div class="font-name">Жирный</div>
+                <div class="font-preview">Аа Бб Вг</div>
+            </div>
+            <div class="font-btn" data-font-val="fancy" onclick="selectFont('fancy')">
+                <div class="font-name">Красивый</div>
+                <div class="font-preview">Аа Бб Вг</div>
+            </div>
+        </div>
+
+        <div class="preview-box">
+            <div class="preview-label">Предпросмотр</div>
+            <div class="preview-text" id="previewText">Самый лучший в мире класс — это сказано про нас!</div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-outline" onclick="resetSettings()">Сбросить</button>
+            <button class="btn btn-primary" onclick="location.href='index.html'">Готово</button>
         </div>
     </div>
 
-    <div class="setting-group">
-        <label>Шрифт</label>
-        <div class="font-options" id="fontOptions">
-            <div class="font-opt" data-font="normal">
-                <div class="name">Обычный</div>
-                <div class="sample">Привет, мир!</div>
-            </div>
-            <div class="font-opt" data-font="bold">
-                <div class="name">Жирный</div>
-                <div class="sample">Привет, мир!</div>
-            </div>
-            <div class="font-opt" data-font="beautiful">
-                <div class="name">Красивый</div>
-                <div class="sample">Привет, мир!</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="preview-box">
-        <div class="preview-label">Предпросмотр</div>
-        <div class="preview-text" id="previewText">Самый <span class="hl">лучший</span> класс в мире — это сказано про нас. Мы, внуки Пифагора!</div>
-    </div>
-
-    <div class="btn-row">
-        <a href="index.html" class="btn btn-outline">← Назад</a>
-        <button class="btn btn-primary" onclick="saveAndGo()">✓ Готово</button>
+    <div class="support-card">
+        <h3>&#128172; Поддержка</h3>
+        <p>Нашли ошибку или есть идея? Напишите нам!</p>
+        <a href="support.html" class="support-link">Открыть поддержку</a>
     </div>
 </div>
 
 <script>
 // Частицы
-var pc=document.getElementById('particles');
-for(var i=0;i<20;i++){var p=document.createElement('div');p.classList.add('particle');var s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
+const pc=document.getElementById('particles');
+for(let i=0;i<20;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
 
-var currentColor=localStorage.getItem('site-color')||'red';
-var currentFont=localStorage.getItem('site-font')||'normal';
+// Текущие настройки
+let curColor=localStorage.getItem('site-theme')||'red';
+let curFont=localStorage.getItem('site-font')||'normal';
 
-// Применяем визуально
-function applyVisual(){
-    document.documentElement.setAttribute('data-theme',currentColor);
-    document.documentElement.setAttribute('data-font',currentFont);
-    document.querySelectorAll('.color-opt').forEach(function(o){o.classList.toggle('active',o.dataset.color===currentColor);});
-    document.querySelectorAll('.font-opt').forEach(function(o){o.classList.toggle('active',o.dataset.font===currentFont);});
-    // Обновляем предпросмотр
-    var pt=document.getElementById('previewText');
-    if(currentFont==='bold'){pt.style.fontWeight='700';pt.style.fontFamily="'Montserrat',sans-serif";}
-    else if(currentFont==='beautiful'){pt.style.fontFamily="'Ankona Kursive',cursive";pt.style.fontWeight='normal';}
-    else{pt.style.fontWeight='normal';pt.style.fontFamily="'Montserrat',sans-serif";}
+const colorNames={red:'Красный',yellow:'Жёлтый',green:'Зелёный',blue:'Синий',purple:'Фиолетовый'};
+const fontNames={normal:'Обычный',bold:'Жирный',fancy:'Красивый'};
+
+function selectColor(c){
+    curColor=c;
+    setSiteTheme(c);
+    document.querySelectorAll('.color-btn').forEach(b=>b.classList.toggle('active',b.dataset.themeVal===c));
+    document.getElementById('colorLabel').textContent=colorNames[c];
+    updatePreview();
 }
-applyVisual();
-
-// Клик по цветам
-document.querySelectorAll('.color-opt').forEach(function(opt){
-    opt.onclick=function(){
-        currentColor=opt.dataset.color;
-        localStorage.setItem('site-color',currentColor);
-        applyVisual();
-    };
-});
-
-// Клик по шрифтам
-document.querySelectorAll('.font-opt').forEach(function(opt){
-    opt.onclick=function(){
-        currentFont=opt.dataset.font;
-        localStorage.setItem('site-font',currentFont);
-        applyVisual();
-    };
-});
-
-function saveAndGo(){
-    localStorage.setItem('site-color',currentColor);
-    localStorage.setItem('site-font',currentFont);
-    window.location.href='index.html';
+function selectFont(f){
+    curFont=f;
+    setSiteFont(f);
+    document.querySelectorAll('.font-btn').forEach(b=>b.classList.toggle('active',b.dataset.fontVal===f));
+    updatePreview();
+}
+function updatePreview(){
+    const el=document.getElementById('previewText');
+    el.setAttribute('data-font',curFont);
+}
+function resetSettings(){
+    selectColor('red');
+    selectFont('normal');
 }
 
-// Сброс не нужен отдельной кнопкой — просто выбираешь другие значения
+// Инициализация
+selectColor(curColor);
+selectFont(curFont);
 </script>
 </body>
 </html>
