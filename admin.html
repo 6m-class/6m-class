@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protect Token</title>
-<link rel="preconnect" href="https://api.github.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root{--primary:#ff0033;--primary-rgb:255,0,51;--bg:#0a0a0a;--card:#111;--border:rgba(255,255,255,0.08)}
@@ -71,28 +70,24 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .stat-label{font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px}
 .db-status{position:fixed;bottom:20px;right:20px;padding:8px 15px;background:rgba(0,255,102,0.1);border:1px solid #00ff66;border-radius:20px;font-size:.75rem;color:#00ff66;z-index:1000}
 .db-status.err{background:rgba(255,0,51,0.1);border-color:#ff0033;color:#ff0033}
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid transparent;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
-@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-
 <div id="connectScreen">
     <div class="login-box">
-        <h1>🛡 <span>Protect Token</span></h1>
+        <h1><span>Protect Token</span></h1>
         <p>Подключение к GitHub — введите токен один раз</p>
         <input type="password" id="tokenInput" placeholder="github_pat_..." onkeydown="if(event.key==='Enter')connect()">
         <button onclick="connect()">🔌 Подключить</button>
         <div class="login-error" id="connectError"></div>
         <div class="connect-hint">
-            🔑 <a href="https://github.com/settings/tokens" target="_blank">Создать токен</a><br>
+            <a href="https://github.com/settings/tokens" target="_blank">Создать токен</a><br>
             🔒 Токен хранится ТОЛЬКО на этом устройстве<br>
             👥 Модератору — свой токен
         </div>
     </div>
 </div>
-
 <div id="adminPanel">
     <div class="topbar">
         <h2>⚙️ <span>Админ-панель 6М</span></h2>
@@ -150,7 +145,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="card-header"><div class="card-title">Расписание на главной</div></div>
                 <p style="color:#666;font-size:.85rem;margin-bottom:15px;">Каждая строка = один урок</p>
                 <div class="field"><label>Уроки (по одному на строку)</label><textarea id="editSchedule" rows="10"></textarea></div>
-                <button class="btn btn-primary" onclick="saveAll('Обновлено расписание')">💾 Сохранить</button>
+                <button class="btn btn-primary" id="btnSaveSched" onclick="saveAll('Обновлено расписание')">💾 Сохранить</button>
                 <div class="msg" id="msgSchedule"></div>
             </div>
         </div>
@@ -158,7 +153,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="card">
                 <div class="card-header"><div class="card-title">Внеурочные занятия</div></div>
                 <div class="field"><label>Занятия (по одному на строку)</label><textarea id="editActivities" rows="6"></textarea></div>
-                <button class="btn btn-primary" onclick="saveAll('Обновлена внеурочка')">💾 Сохранить</button>
+                <button class="btn btn-primary" id="btnSaveAct" onclick="saveAll('Обновлена внеурочка')">💾 Сохранить</button>
                 <div class="msg" id="msgActivities"></div>
             </div>
         </div>
@@ -199,7 +194,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
     </div>
 </div>
 <div class="db-status" id="dbStatus">⏳ Подключение...</div>
-
 <script>
 const REPO = '6m-class/6m-class';
 let TOKEN = localStorage.getItem('gh_token') || '';
@@ -210,10 +204,8 @@ let dataSha = '';
 let isSaving = false;
 
 async function api(path, opts = {}) {
-    const url = path.includes('?') 
-        ? `https://api.github.com${path}&t=${Date.now()}` 
-        : `https://api.github.com${path}?t=${Date.now()}`;
-    const res = await fetch(url, {
+    const url = path.includes('?') ? path + '&t=' + Date.now() : path + '?t=' + Date.now();
+    const res = await fetch(`https://api.github.com${url}`, {
         method: opts.method || 'GET',
         headers: {
             'Accept': 'application/vnd.github+json',
@@ -234,17 +226,14 @@ async function api(path, opts = {}) {
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function showMsg(id, text, color) { const el = document.getElementById(id); el.textContent = text; el.style.color = color; setTimeout(() => { el.textContent = ''; }, 5000); }
-function setBtnLoading(btnId, loading) {
-    const btn = document.getElementById(btnId);
+
+function lockBtn(id, lock) {
+    const btn = document.getElementById(id);
     if (!btn) return;
-    if (loading) {
-        btn.disabled = true;
-        btn.dataset.origText = btn.textContent;
-        btn.innerHTML = '<span class="spinner"></span>Сохранение...';
-    } else {
-        btn.disabled = false;
-        if (btn.dataset.origText) btn.textContent = btn.dataset.origText;
-    }
+    btn.disabled = lock;
+    btn.style.opacity = lock ? '0.5' : '';
+    btn.textContent = lock ? '⏳ Сохранение...' : btn.dataset.originalText || btn.textContent;
+    if (!lock && btn.dataset.originalText) btn.textContent = btn.dataset.originalText;
 }
 
 // ===== ПОДКЛЮЧЕНИЕ =====
@@ -279,7 +268,7 @@ async function showPanel() {
     try {
         await detectBranch();
         await loadAll();
-        st.textContent = '☁️ GitHub подключён: ' + USER;
+        st.textContent = '☁️ GitHub: ' + USER;
         setTimeout(() => st.style.display = 'none', 3000);
     } catch (e) {
         st.textContent = '❌ ' + e.message;
@@ -292,11 +281,12 @@ async function detectBranch() {
     catch (e) { BRANCH = 'master'; }
 }
 
-// ===== ЗАГРУЗКА (параллельная) =====
+// ===== ЗАГРУЗКА =====
 async function loadAll() {
     const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
     dataSha = file.sha;
     siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+
     document.getElementById('editTitle').value = siteData.title || '';
     document.getElementById('editPoem1').value = siteData.poem_line1 || '';
     document.getElementById('editPoem2').value = siteData.poem_line2 || '';
@@ -307,22 +297,13 @@ async function loadAll() {
     document.getElementById('editSchedule').value = siteData.schedule || '';
     document.getElementById('editActivities').value = siteData.activities || '';
 
-    // Параллельная загрузка новостей и уведомлений
-    const [newsRes, notifsRes] = await Promise.allSettled([
-        api(`/repos/${REPO}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=50`),
-        api(`/repos/${REPO}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=50`)
-    ]);
-    const news = newsRes.status === 'fulfilled' ? newsRes.value.filter(i => !i.pull_request) : [];
-    const notifs = notifsRes.status === 'fulfilled' ? notifsRes.value.filter(i => !i.pull_request) : [];
+    const news = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
+    const notifs = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
 
     document.getElementById('newsCount').textContent = news.length;
     document.getElementById('notifCount').textContent = notifs.length;
-    document.getElementById('newsList').innerHTML = news.length 
-        ? news.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`).join('') 
-        : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
-    document.getElementById('notifList').innerHTML = notifs.length 
-        ? notifs.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') 
-        : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
+    document.getElementById('newsList').innerHTML = news.length ? news.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
+    document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
 
     const sched = (siteData.schedule || '').split('\n').filter(l => l.trim()).length;
     const themes = { red: '🔴', blue: '🔵', green: '🟢', aero: '🩵' };
@@ -336,7 +317,11 @@ async function loadAll() {
 async function saveAll(msg) {
     if (isSaving) return;
     isSaving = true;
-    setBtnLoading('btnSaveTexts', true);
+    
+    const btnIds = ['btnSaveTexts', 'btnSaveSched', 'btnSaveAct'];
+    btnIds.forEach(id => { const b = document.getElementById(id); if (b) b.dataset.originalText = b.textContent; });
+    btnIds.forEach(id => lockBtn(id, true));
+
     siteData.title = document.getElementById('editTitle').value.trim();
     siteData.poem_line1 = document.getElementById('editPoem1').value.trim();
     siteData.poem_line2 = document.getElementById('editPoem2').value.trim();
@@ -346,26 +331,29 @@ async function saveAll(msg) {
     siteData.news_empty = document.getElementById('editNewsEmpty').value.trim();
     siteData.schedule = document.getElementById('editSchedule').value.trim();
     siteData.activities = document.getElementById('editActivities').value.trim();
+
     try {
         await pushData(msg);
-        showMsg('msgTexts', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
-        showMsg('msgSchedule', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
-        showMsg('msgActivities', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
-        // Очистить кэш на этом устройстве (на случай если админ и посетитель — один человек)
-        localStorage.removeItem('data_json');
-        localStorage.removeItem('issues_news');
-        localStorage.removeItem('issues_notifs');
+        showMsg('msgTexts', '✅ Сохранено! Сайт обновится через 1-2 мин', '#00ff66');
+        showMsg('msgSchedule', '✅ Сохранено! Сайт обновится через 1-2 мин', '#00ff66');
+        showMsg('msgActivities', '✅ Сохранено! Сайт обновится через 1-2 мин', '#00ff66');
+        
+        // Чистим кэш сайта чтобы при открытии сразу были новые данные
+        localStorage.removeItem('site_data_cache');
+        localStorage.removeItem('gh_branch_cache');
+        
         setTimeout(() => loadAll(), 1000);
     } catch (e) {
         showMsg('msgTexts', '❌ ' + e.message, '#ff5555');
         showMsg('msgSchedule', '❌ ' + e.message, '#ff5555');
         showMsg('msgActivities', '❌ ' + e.message, '#ff5555');
+    } finally {
+        isSaving = false;
+        btnIds.forEach(id => lockBtn(id, false));
     }
-    isSaving = false;
-    setBtnLoading('btnSaveTexts', false);
 }
 
-async function pushData(msg, retry = true) {
+async function pushData(msg) {
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
     try {
         const r = await api(`/repos/${REPO}/contents/data.json`, {
@@ -374,15 +362,20 @@ async function pushData(msg, retry = true) {
         });
         dataSha = r.content.sha;
     } catch (e) {
-        if (e.status === 409 && retry) {
+        if (e.status === 409 || (e.message && e.message.includes('409'))) {
             // Конфликт SHA — перезагружаем и повторяем
             const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
             dataSha = file.sha;
-            siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
-            return pushData(msg, false);
+            const r = await api(`/repos/${REPO}/contents/data.json`, {
+                method: 'PUT',
+                body: JSON.stringify({ message: `${msg} (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
+            });
+            dataSha = r.content.sha;
+        } else if (e.status === 403 || (e.message && e.message.includes('403'))) {
+            throw new Error('Недостаточно прав: токен без доступа Contents (режим модератора)');
+        } else {
+            throw e;
         }
-        if (e.message.includes('403')) throw new Error('Недостаточно прав: токен без доступа Contents (режим модератора)');
-        throw e;
     }
 }
 
@@ -393,49 +386,53 @@ async function setTheme(theme) {
     try {
         await pushData('Смена темы на ' + theme);
         showMsg('msgTheme', '✅ Тема изменена для всех!', '#00ff66');
-        localStorage.removeItem('data_json');
-        setTimeout(() => loadAll(), 1000);
+        localStorage.removeItem('site_data_cache');
+        loadAll();
     } catch (e) { showMsg('msgTheme', '❌ ' + e.message, '#ff5555'); }
-    isSaving = false;
+    finally { isSaving = false; }
 }
 
 // ===== НОВОСТИ / УВЕДОМЛЕНИЯ =====
 async function addNews() {
+    if (isSaving) return;
+    isSaving = true;
+    lockBtn('btnAddNews', true);
     const t = document.getElementById('newsTitle').value.trim();
     const x = document.getElementById('newsText').value.trim();
-    if (!t || !x) { showMsg('msgNews', '❌ Заполни оба поля', '#ff5555'); return; }
-    setBtnLoading('btnAddNews', true);
+    if (!t || !x) { showMsg('msgNews', '❌ Заполни оба поля', '#ff5555'); isSaving = false; lockBtn('btnAddNews', false); return; }
     try {
         await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: x, labels: ['новость'] }) });
         document.getElementById('newsTitle').value = '';
         document.getElementById('newsText').value = '';
         showMsg('msgNews', '✅ Новость опубликована!', '#00ff66');
-        localStorage.removeItem('issues_news');
-        setTimeout(() => loadAll(), 1000);
+        localStorage.removeItem('news_cache');
+        loadAll();
     } catch (e) { showMsg('msgNews', '❌ ' + e.message, '#ff5555'); }
-    setBtnLoading('btnAddNews', false);
+    finally { isSaving = false; lockBtn('btnAddNews', false); }
 }
 
 async function addNotif() {
+    if (isSaving) return;
+    isSaving = true;
+    lockBtn('btnAddNotif', true);
     const t = document.getElementById('notifText').value.trim();
-    if (!t) { showMsg('msgNotif', '❌ Напиши текст', '#ff5555'); return; }
-    setBtnLoading('btnAddNotif', true);
+    if (!t) { showMsg('msgNotif', '❌ Напиши текст', '#ff5555'); isSaving = false; lockBtn('btnAddNotif', false); return; }
     try {
         await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: '', labels: ['уведомление'] }) });
         document.getElementById('notifText').value = '';
         showMsg('msgNotif', '✅ Уведомление отправлено всем!', '#00ff66');
-        localStorage.removeItem('issues_notifs');
-        setTimeout(() => loadAll(), 1000);
+        localStorage.removeItem('notifs_cache');
+        loadAll();
     } catch (e) { showMsg('msgNotif', '❌ ' + e.message, '#ff5555'); }
-    setBtnLoading('btnAddNotif', false);
+    finally { isSaving = false; lockBtn('btnAddNotif', false); }
 }
 
 async function closeIssue(num, type) {
     if (!confirm('Удалить запись?')) return;
     try {
         await api(`/repos/${REPO}/issues/${num}`, { method: 'PATCH', body: JSON.stringify({ state: 'closed' }) });
-        if (type === 'news') localStorage.removeItem('issues_news');
-        else localStorage.removeItem('issues_notifs');
+        localStorage.removeItem('news_cache');
+        localStorage.removeItem('notifs_cache');
         loadAll();
     } catch (e) { alert('❌ ' + e.message); }
 }
