@@ -7,23 +7,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="settings.js"></script>
 <link rel="preconnect" href="https://raw.githubusercontent.com">
 <style>
-:root { --primary:#ff0033; --primary-rgb:255,0,51; --bg:#0a0a0a; --card:#111; --border:rgba(255,255,255,0.08); --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --shadow:rgba(255,0,51,0.2); }
-[data-theme="blue"] { --primary:#00aaff; --primary-rgb:0,170,255; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.25); --shadow:rgba(0,170,255,0.2); }
-[data-theme="green"] { --primary:#00ff66; --primary-rgb:0,255,102; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.25); --shadow:rgba(0,255,102,0.2); }
-[data-theme="aero"] { --primary:#00ffff; --primary-rgb:0,255,255; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.25); --shadow:rgba(0,255,255,0.2); }
+:root{--primary:#ff0033;--primary-rgb:255,0,51;--bg:#0a0a0a;--card:#111;--border:rgba(255,255,255,0.08);--glow:rgba(255,0,51,0.15);--glow-strong:rgba(255,0,51,0.8);--shadow:rgba(255,0,51,0.2)}
+[data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--glow-strong:rgba(255,204,0,0.8);--border:rgba(255,204,0,0.25);--shadow:rgba(255,204,0,0.2)}
+[data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--glow-strong:rgba(0,255,102,0.8);--border:rgba(0,255,102,0.25);--shadow:rgba(0,255,102,0.2)}
+[data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--glow-strong:rgba(0,170,255,0.8);--border:rgba(0,170,255,0.25);--shadow:rgba(0,170,255,0.2)}
+[data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--glow-strong:rgba(170,0,255,0.8);--border:rgba(170,0,255,0.25);--shadow:rgba(170,0,255,0.2)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflow-x:hidden;min-height:100vh;display:flex;justify-content:center;align-items:center;position:relative;padding:40px 20px}
 .admin-link{position:fixed;top:20px;right:20px;z-index:1000;padding:8px 15px;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:5px;color:var(--primary);text-decoration:none;font-size:.8rem;font-weight:700;transition:.3s;backdrop-filter:blur(10px)}
 .admin-link:hover{background:var(--primary);color:#000;box-shadow:0 0 15px var(--glow-strong)}
-.theme-switcher{position:fixed;top:20px;left:20px;z-index:1000;display:flex;gap:8px}
-.theme-btn{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);cursor:pointer;transition:.3s;opacity:.6}
-.theme-btn:hover,.theme-btn.active{opacity:1;transform:scale(1.2);border-color:#fff;box-shadow:0 0 10px currentColor}
-.theme-btn[data-set="red"]{background:#ff0033;color:#ff0033}
-.theme-btn[data-set="blue"]{background:#00aaff;color:#00aaff}
-.theme-btn[data-set="green"]{background:#00ff66;color:#00ff66}
-.theme-btn[data-set="aero"]{background:#00ffff;color:#00ffff}
+.gear-link{position:fixed;top:20px;right:140px;z-index:1000;padding:8px 15px;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:5px;color:#aaa;text-decoration:none;font-size:1rem;transition:.3s;backdrop-filter:blur(10px)}
+.gear-link:hover{color:var(--primary);border-color:var(--primary);box-shadow:0 0 15px var(--shadow)}
 .background-glow{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80vw;height:80vw;background:radial-gradient(circle,var(--glow) 0%,rgba(10,10,10,0) 70%);z-index:-2;animation:pulseGlow 4s infinite alternate;pointer-events:none}
 @keyframes pulseGlow{0%{transform:translate(-50%,-50%) scale(1);opacity:.8}100%{transform:translate(-50%,-50%) scale(1.2);opacity:1}}
 .container{text-align:center;z-index:10;max-width:1000px;width:100%;display:flex;flex-direction:column;align-items:center}
@@ -85,7 +82,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .card-link{align-self:flex-start;color:#aaa;text-decoration:none;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;transition:.3s;padding:8px 16px;border:1px solid var(--border);border-radius:6px;margin-top:auto}
 .card-link:hover{border-color:var(--primary);color:var(--primary);box-shadow:0 0 12px var(--shadow)}
 
-/* УВЕДОМЛЕНИЕ — всегда видно, можно закрыть */
 .notif-bar{position:fixed;top:0;left:0;right:0;z-index:3000;background:rgba(17,17,17,0.97);border-bottom:2px solid var(--primary);padding:14px 50px 14px 20px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(12px);box-shadow:0 4px 20px var(--shadow);animation:slideDown .4s ease-out}
 .notif-bar.hidden{transform:translateY(-100%);opacity:0;pointer-events:none}
 @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -95,7 +91,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .notif-date{font-size:.7rem;color:#888;margin-top:2px}
 .notif-close{position:absolute;top:50%;right:14px;transform:translateY(-50%);background:none;border:none;color:#888;cursor:pointer;font-size:1.3rem;transition:.3s;padding:4px 8px;line-height:1}
 .notif-close:hover{color:var(--primary);transform:translateY(-50%) scale(1.2)}
-@media(max-width:600px){.notif-bar{padding:12px 44px 12px 16px}.notif-title{font-size:.85rem}}
+@media(max-width:600px){.notif-bar{padding:12px 44px 12px 16px}.notif-title{font-size:.85rem}.gear-link{right:auto;left:20px}}
 
 .particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
 .particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 10px var(--primary);animation:floatUp linear infinite;opacity:0}
@@ -109,20 +105,15 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 </style>
 </head>
 <body>
+<a href="settings.html" class="gear-link" title="Настройки">⚙</a>
 <a href="admin.html" class="admin-link">⚙️ Админ</a>
-<div class="theme-switcher">
-    <div class="theme-btn active" data-set="red"></div>
-    <div class="theme-btn" data-set="blue"></div>
-    <div class="theme-btn" data-set="green"></div>
-    <div class="theme-btn" data-set="aero"></div>
-</div>
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
 
 <div class="gate" id="gate">
     <div class="gate-card">
         <div class="gate-head">
-            <div class="gate-title"> Проверка безопасности</div>
+            <div class="gate-title">Проверка безопасности</div>
             <div class="card-badge"></div>
         </div>
         <p class="gate-sub">Подтвердите, что вы человек, чтобы войти на сайт</p>
@@ -135,7 +126,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
                 <div class="captcha-title">Я не робот</div>
                 <div class="captcha-status" id="captchaStatus">Нажмите, чтобы подтвердить</div>
             </div>
-            <div class="captcha-logo"><span> Protect</span></div>
+            <div class="captcha-logo"><span>Protect</span></div>
         </div>
     </div>
 </div>
@@ -171,7 +162,6 @@ const REPO = '6m-class/6m-class';
 const container = document.getElementById('siteContainer');
 const gate = document.getElementById('gate');
 
-// ===== КАПЧА (localStorage = один раз навсегда) =====
 function startSite() {
     if (!sessionStorage.getItem('visitedMain')) {
         container.classList.add('animate');
@@ -202,22 +192,12 @@ function runCaptcha() {
     }, 1500);
 }
 
-// ===== УВЕДОМЛЕНИЕ (всегда показывается, можно закрыть — без запоминания) =====
 function showNotifPopup(title, dateStr) {
-    // Удаляем старое если есть
     const old = document.querySelector('.notif-bar');
     if (old) old.remove();
-
     const bar = document.createElement('div');
     bar.className = 'notif-bar';
-    bar.innerHTML = `
-        <span class="notif-icon">🔔</span>
-        <div class="notif-content">
-            <div class="notif-title">${escapeHtml(title)}</div>
-            <div class="notif-date">${dateStr}</div>
-        </div>
-        <button class="notif-close" onclick="closeNotif()">✕</button>
-    `;
+    bar.innerHTML = '<span class="notif-icon">🔔</span><div class="notif-content"><div class="notif-title">'+escapeHtml(title)+'</div><div class="notif-date">'+dateStr+'</div></div><button class="notif-close" onclick="closeNotif()">✕</button>';
     document.body.appendChild(bar);
 }
 function closeNotif() {
@@ -230,30 +210,16 @@ function closeNotif() {
     }
 }
 
-// ===== УТИЛИТЫ =====
-function escapeHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-}
-
-// ===== КЭШ =====
-function getCached(key) {
-    try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) { return null; }
-}
-function setCached(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
-}
-
-// ===== ЗАГРУЗКА data.json (БЕЗ API, через raw/github pages) =====
-let lastDataSha = null;
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function getCached(key) { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) { return null; } }
+function setCached(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
 
 async function loadDataJson() {
     const urls = [
-        `data.json?v=${Date.now()}`,
-        `https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,
-        `https://raw.githubusercontent.com/${REPO}/master/data.json?v=${Date.now()}`,
-        `https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`,
+        'data.json?v='+Date.now(),
+        'https://raw.githubusercontent.com/'+REPO+'/main/data.json?v='+Date.now(),
+        'https://raw.githubusercontent.com/'+REPO+'/master/data.json?v='+Date.now(),
+        'https://cdn.jsdelivr.net/gh/'+REPO+'@main/data.json?v='+Date.now()
     ];
     for (const url of urls) {
         try {
@@ -269,18 +235,15 @@ async function loadDataJson() {
     return null;
 }
 
-// ===== ЗАГРУЗКА НОВОСТЕЙ И УВЕДОМЛЕНИЙ (API с кэшем 10 мин) =====
 async function loadIssues(label, cacheKey) {
     const cached = getCached(cacheKey);
     const now = Date.now();
-    if (cached && (now - cached.ts) < 600000) {
-        return cached.data;
-    }
+    if (cached && (now - cached.ts) < 600000) return cached.data;
     try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 8000);
         const res = await fetch(
-            `https://api.github.com/repos/${REPO}/issues?labels=${encodeURIComponent(label)}&state=open&sort=created&direction=desc&per_page=10&t=${Date.now()}`,
+            'https://api.github.com/repos/'+REPO+'/issues?labels='+encodeURIComponent(label)+'&state=open&sort=created&direction=desc&per_page=10&t='+Date.now(),
             { cache: 'no-store', signal: controller.signal }
         );
         clearTimeout(timeout);
@@ -294,7 +257,6 @@ async function loadIssues(label, cacheKey) {
     }
 }
 
-// ===== РЕНДЕР =====
 function renderData(data) {
     if (!data) {
         document.getElementById('poemLine1').textContent = 'Самый лучший в мире класс';
@@ -302,29 +264,23 @@ function renderData(data) {
         document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
         return;
     }
-
     setCached('site_data_cache', { data, ts: Date.now() });
-
     if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
     if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
     if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
     if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
     if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
 
-    const theme = data.theme || 'red';
-    document.documentElement.setAttribute('data-theme', theme);
-    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === theme));
-
     const sched = (data.schedule || '').split('\n').filter(l => l.trim());
     document.getElementById('schedBadge').textContent = sched.length + ' уроков';
     document.getElementById('scheduleList').innerHTML = sched.length
-        ? sched.map(l => `<li><span>•</span> ${escapeHtml(l.trim())}</li>`).join('')
+        ? sched.map(l => '<li><span>•</span> '+escapeHtml(l.trim())+'</li>').join('')
         : '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
 
     const act = (data.activities || '').split('\n').filter(l => l.trim());
     document.getElementById('actBadge').textContent = act.length + ' занят.';
     document.getElementById('activitiesList').innerHTML = act.length
-        ? act.map(l => `<li><span>•</span> ${escapeHtml(l.trim())}</li>`).join('')
+        ? act.map(l => '<li><span>•</span> '+escapeHtml(l.trim())+'</li>').join('')
         : '<li style="color:#777"><span>—</span> Нет занятий</li>';
 }
 
@@ -333,10 +289,10 @@ function renderNews(news, data) {
     const nc = document.getElementById('newsContent');
     if (Array.isArray(news) && news.length > 0) {
         nc.innerHTML = news.map(n =>
-            `<div class="news-item"><div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div><div class="news-text"><b>${escapeHtml(n.title)}</b><br>${escapeHtml(n.body || '')}</div></div>`
+            '<div class="news-item"><div class="news-date">'+new Date(n.created_at).toLocaleDateString('ru-RU')+'</div><div class="news-text"><b>'+escapeHtml(n.title)+'</b><br>'+escapeHtml(n.body || '')+'</div></div>'
         ).join('');
     } else {
-        nc.innerHTML = `<p class="news-empty">${escapeHtml(data?.news_empty || 'Упс... Тут пока что ничего нету.')}</p>`;
+        nc.innerHTML = '<p class="news-empty">'+escapeHtml(data?.news_empty || 'Упс... Тут пока что ничего нету.')+'</p>';
     }
 }
 
@@ -347,7 +303,6 @@ function renderNotifs(notifs) {
     }
 }
 
-// ===== ГЛАВНАЯ ЗАГРУЗКА =====
 let currentData = null;
 async function loadSite() {
     try {
@@ -356,11 +311,9 @@ async function loadSite() {
             loadIssues('новость', 'news_cache'),
             loadIssues('уведомление', 'notif_cache')
         ]);
-
         const data = dataResult.status === 'fulfilled' ? dataResult.value : null;
         const news = newsResult.status === 'fulfilled' ? newsResult.value : [];
         const notifs = notifResult.status === 'fulfilled' ? notifResult.value : [];
-
         if (data) currentData = data;
         renderData(currentData);
         renderNews(news, currentData);
@@ -377,23 +330,10 @@ async function loadSite() {
     }
 }
 
-// ===== СТАРТ =====
 loadSite();
-
 setInterval(loadSite, 60000);
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) loadSite();
-});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) loadSite(); });
 
-// ===== ТЕМЫ =====
-document.querySelectorAll('.theme-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.documentElement.setAttribute('data-theme', btn.dataset.set);
-        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === btn.dataset.set));
-    });
-});
-
-// ===== ЧАСТИЦЫ =====
 const isMobile = window.innerWidth < 600;
 const pc = document.getElementById('particles');
 const count = isMobile ? 20 : 50;
@@ -401,10 +341,10 @@ for (let i = 0; i < count; i++) {
     const p = document.createElement('div');
     p.classList.add('particle');
     const s = Math.random() * 5 + 2;
-    p.style.width = `${s}px`; p.style.height = `${s}px`;
-    p.style.left = `${Math.random() * 100}vw`;
-    p.style.animationDuration = `${Math.random() * 5 + 3}s`;
-    p.style.animationDelay = `${Math.random() * 5}s`;
+    p.style.width = s + 'px'; p.style.height = s + 'px';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = Math.random() * 5 + 3 + 's';
+    p.style.animationDelay = Math.random() * 5 + 's';
     pc.appendChild(p);
 }
 </script>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Настройки | Самый лучший класс</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="settings.js"></script>
+<style>
+:root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--glow-strong:rgba(255,0,51,0.8);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2);--bg:#050505;--card:#111}
+[data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--glow-strong:rgba(255,204,0,0.8);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
+[data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--glow-strong:rgba(0,255,102,0.8);--border:rgba(0,255,102,0.3);--shadow:rgba(0,255,102,0.2)}
+[data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--glow-strong:rgba(0,170,255,0.8);--border:rgba(0,170,255,0.3);--shadow:rgba(0,170,255,0.2)}
+[data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--glow-strong:rgba(170,0,255,0.8);--border:rgba(170,0,255,0.3);--shadow:rgba(170,0,255,0.2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;justify-content:center;align-items:center;padding:40px 20px}
+.bg-glow{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:60vh;background:radial-gradient(ellipse at top,var(--glow),transparent 70%);z-index:-2;pointer-events:none}
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 5px var(--primary);animation:floatUp linear infinite;opacity:0}
+@keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}50%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+.gear-link{position:fixed;top:20px;right:20px;font-size:1.4rem;text-decoration:none;opacity:0.5;transition:0.3s;filter:grayscale(1);z-index:1000}
+.gear-link:hover{opacity:1;color:var(--primary);filter:none}
+.settings-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 35px;width:100%;max-width:520px;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1);animation:fadeIn 0.5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.settings-box h1{font-family:'Orbitron',sans-serif;font-size:1.4rem;text-align:center;margin-bottom:8px;text-transform:uppercase}
+.settings-box h1 span{color:var(--primary)}
+.settings-box .sub{color:#666;font-size:0.85rem;text-align:center;margin-bottom:30px}
+.setting-group{margin-bottom:30px}
+.setting-group label{display:block;font-size:0.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:600}
+.color-options{display:flex;gap:12px;flex-wrap:wrap}
+.color-opt{width:50px;height:50px;border-radius:12px;cursor:pointer;border:3px solid transparent;transition:0.3s;position:relative}
+.color-opt:hover{transform:scale(1.1)}
+.color-opt.active{border-color:#fff;box-shadow:0 0 15px currentColor}
+.color-opt[data-color="red"]{background:#ff0033;color:#ff0033}
+.color-opt[data-color="yellow"]{background:#ffcc00;color:#ffcc00}
+.color-opt[data-color="green"]{background:#00ff66;color:#00ff66}
+.color-opt[data-color="blue"]{background:#00aaff;color:#00aaff}
+.color-opt[data-color="purple"]{background:#aa00ff;color:#aa00ff}
+.color-opt .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;opacity:0;transition:0.3s}
+.color-opt.active .check{opacity:1}
+.font-options{display:flex;gap:12px;flex-wrap:wrap}
+.font-opt{flex:1;min-width:100px;padding:18px 15px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;transition:0.3s;text-align:center}
+.font-opt:hover{border-color:rgba(var(--primary-rgb),0.4)}
+.font-opt.active{border-color:var(--primary);background:rgba(var(--primary-rgb),0.1);box-shadow:0 0 15px var(--shadow)}
+.font-opt .name{font-size:0.8rem;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.font-opt .sample{font-size:1.1rem;color:#fff}
+.font-opt[data-font="normal"] .sample{font-family:'Montserrat',sans-serif;font-weight:400}
+.font-opt[data-font="bold"] .sample{font-family:'Montserrat',sans-serif;font-weight:700}
+.font-opt[data-font="beautiful"] .sample{font-family:'Ankona Kursive',cursive}
+.preview-box{margin-top:20px;padding:20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px}
+.preview-box .preview-label{font-size:0.7rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.preview-box .preview-text{font-size:1rem;color:#fff;line-height:1.6}
+.preview-box .preview-text .hl{color:var(--primary)}
+.btn-row{display:flex;gap:12px;margin-top:25px}
+.btn{flex:1;padding:14px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;cursor:pointer;transition:0.3s;letter-spacing:0.5px;text-decoration:none;text-align:center}
+.btn-primary{background:var(--primary);color:#000}
+.btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:#aaa}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="particles" id="particles"></div>
+
+<div class="settings-box">
+    <h1>⚙️ <span>Настройки</span></h1>
+    <p class="sub">Кастомизируй сайт под себя</p>
+
+    <div class="setting-group">
+        <label>Цвет</label>
+        <div class="color-options" id="colorOptions">
+            <div class="color-opt" data-color="red"><div class="check">✓</div></div>
+            <div class="color-opt" data-color="yellow"><div class="check">✓</div></div>
+            <div class="color-opt" data-color="green"><div class="check">✓</div></div>
+            <div class="color-opt" data-color="blue"><div class="check">✓</div></div>
+            <div class="color-opt" data-color="purple"><div class="check">✓</div></div>
+        </div>
+    </div>
+
+    <div class="setting-group">
+        <label>Шрифт</label>
+        <div class="font-options" id="fontOptions">
+            <div class="font-opt" data-font="normal">
+                <div class="name">Обычный</div>
+                <div class="sample">Привет, мир!</div>
+            </div>
+            <div class="font-opt" data-font="bold">
+                <div class="name">Жирный</div>
+                <div class="sample">Привет, мир!</div>
+            </div>
+            <div class="font-opt" data-font="beautiful">
+                <div class="name">Красивый</div>
+                <div class="sample">Привет, мир!</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-box">
+        <div class="preview-label">Предпросмотр</div>
+        <div class="preview-text" id="previewText">Самый <span class="hl">лучший</span> класс в мире — это сказано про нас. Мы, внуки Пифагора!</div>
+    </div>
+
+    <div class="btn-row">
+        <a href="index.html" class="btn btn-outline">← Назад</a>
+        <button class="btn btn-primary" onclick="saveAndGo()">✓ Готово</button>
+    </div>
+</div>
+
+<script>
+// Частицы
+var pc=document.getElementById('particles');
+for(var i=0;i<20;i++){var p=document.createElement('div');p.classList.add('particle');var s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
+
+var currentColor=localStorage.getItem('site-color')||'red';
+var currentFont=localStorage.getItem('site-font')||'normal';
+
+// Применяем визуально
+function applyVisual(){
+    document.documentElement.setAttribute('data-theme',currentColor);
+    document.documentElement.setAttribute('data-font',currentFont);
+    document.querySelectorAll('.color-opt').forEach(function(o){o.classList.toggle('active',o.dataset.color===currentColor);});
+    document.querySelectorAll('.font-opt').forEach(function(o){o.classList.toggle('active',o.dataset.font===currentFont);});
+    // Обновляем предпросмотр
+    var pt=document.getElementById('previewText');
+    if(currentFont==='bold'){pt.style.fontWeight='700';pt.style.fontFamily="'Montserrat',sans-serif";}
+    else if(currentFont==='beautiful'){pt.style.fontFamily="'Ankona Kursive',cursive";pt.style.fontWeight='normal';}
+    else{pt.style.fontWeight='normal';pt.style.fontFamily="'Montserrat',sans-serif";}
+}
+applyVisual();
+
+// Клик по цветам
+document.querySelectorAll('.color-opt').forEach(function(opt){
+    opt.onclick=function(){
+        currentColor=opt.dataset.color;
+        localStorage.setItem('site-color',currentColor);
+        applyVisual();
+    };
+});
+
+// Клик по шрифтам
+document.querySelectorAll('.font-opt').forEach(function(opt){
+    opt.onclick=function(){
+        currentFont=opt.dataset.font;
+        localStorage.setItem('site-font',currentFont);
+        applyVisual();
+    };
+});
+
+function saveAndGo(){
+    localStorage.setItem('site-color',currentColor);
+    localStorage.setItem('site-font',currentFont);
+    window.location.href='index.html';
+}
+
+// Сброс не нужен отдельной кнопкой — просто выбираешь другие значения
+</script>
+</body>
+</html>
