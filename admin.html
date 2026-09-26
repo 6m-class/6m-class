@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protect Token</title>
+<link rel="preconnect" href="https://api.github.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root{--primary:#ff0033;--primary-rgb:255,0,51;--bg:#0a0a0a;--card:#111;--border:rgba(255,255,255,0.08)}
@@ -50,6 +51,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px}
 .btn-primary{background:var(--primary);color:#000}
 .btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .btn-outline{background:transparent;border:1px solid var(--border);color:#aaa}
 .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
 .btn-danger{background:transparent;border:1px solid rgba(255,80,80,0.3);color:#ff5555}
@@ -69,6 +71,8 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .stat-label{font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px}
 .db-status{position:fixed;bottom:20px;right:20px;padding:8px 15px;background:rgba(0,255,102,0.1);border:1px solid #00ff66;border-radius:20px;font-size:.75rem;color:#00ff66;z-index:1000}
 .db-status.err{background:rgba(255,0,51,0.1);border-color:#ff0033;color:#ff0033}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid transparent;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -76,13 +80,13 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 
 <div id="connectScreen">
     <div class="login-box">
-        <h1> <span>Protect Token</span></h1>
+        <h1>🛡 <span>Protect Token</span></h1>
         <p>Подключение к GitHub — введите токен один раз</p>
         <input type="password" id="tokenInput" placeholder="github_pat_..." onkeydown="if(event.key==='Enter')connect()">
         <button onclick="connect()">🔌 Подключить</button>
         <div class="login-error" id="connectError"></div>
         <div class="connect-hint">
-             <a href="https://github.com/settings/tokens" target="_blank"></a><br>
+            🔑 <a href="https://github.com/settings/tokens" target="_blank">Создать токен</a><br>
             🔒 Токен хранится ТОЛЬКО на этом устройстве<br>
             👥 Модератору — свой токен
         </div>
@@ -105,7 +109,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="stat-card"><div class="stat-num" id="statSchedule">0</div><div class="stat-label">Уроков</div></div>
             <div class="stat-card"><div class="stat-num" id="statTheme">🔴</div><div class="stat-label">Тема</div></div>
         </div>
-
         <div class="tabs">
             <div class="tab active" onclick="switchTab('texts',this)">✏️ Тексты</div>
             <div class="tab" onclick="switchTab('news',this)">📰 Новости</div>
@@ -115,7 +118,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="tab" onclick="switchTab('theme',this)">🎨 Тема</div>
             <div class="tab" onclick="switchTab('settings',this)">⚙️ Настройки</div>
         </div>
-
         <div class="section active" id="sec-texts">
             <div class="card">
                 <div class="card-header"><div class="card-title">Главная страница — тексты</div></div>
@@ -126,17 +128,16 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="field"><label>Текст кнопки</label><input type="text" id="editBtnText"></div>
                 <div class="field"><label>Ссылка кнопки</label><input type="text" id="editBtnLink"></div>
                 <div class="field"><label>Текст когда нет новостей</label><input type="text" id="editNewsEmpty"></div>
-                <button class="btn btn-primary" onclick="saveAll('Обновлены тексты')">💾 Сохранить</button>
+                <button class="btn btn-primary" id="btnSaveTexts" onclick="saveAll('Обновлены тексты')">💾 Сохранить</button>
                 <div class="msg" id="msgTexts"></div>
             </div>
         </div>
-
         <div class="section" id="sec-news">
             <div class="card">
                 <div class="card-header"><div class="card-title">Добавить новость</div><div class="card-badge" id="newsCount">0</div></div>
                 <div class="field"><label>Заголовок</label><input type="text" id="newsTitle" placeholder="Победа в олимпиаде!"></div>
                 <div class="field"><label>Текст</label><textarea id="newsText" rows="3" placeholder="Подробности..."></textarea></div>
-                <button class="btn btn-primary" onclick="addNews()">📤 Опубликовать</button>
+                <button class="btn btn-primary" id="btnAddNews" onclick="addNews()">📤 Опубликовать</button>
                 <div class="msg" id="msgNews"></div>
             </div>
             <div class="card">
@@ -144,7 +145,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="item-list" id="newsList"></div>
             </div>
         </div>
-
         <div class="section" id="sec-schedule">
             <div class="card">
                 <div class="card-header"><div class="card-title">Расписание на главной</div></div>
@@ -154,7 +154,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="msg" id="msgSchedule"></div>
             </div>
         </div>
-
         <div class="section" id="sec-activities">
             <div class="card">
                 <div class="card-header"><div class="card-title">Внеурочные занятия</div></div>
@@ -163,12 +162,11 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="msg" id="msgActivities"></div>
             </div>
         </div>
-
         <div class="section" id="sec-notifs">
             <div class="card">
                 <div class="card-header"><div class="card-title">Отправить уведомление</div><div class="card-badge" id="notifCount">0</div></div>
                 <div class="field"><label>Текст уведомления</label><textarea id="notifText" rows="2" placeholder="Завтра собрание в 15:00!"></textarea></div>
-                <button class="btn btn-primary" onclick="addNotif()">📤 Отправить всем</button>
+                <button class="btn btn-primary" id="btnAddNotif" onclick="addNotif()">📤 Отправить всем</button>
                 <div class="msg" id="msgNotif"></div>
             </div>
             <div class="card">
@@ -176,7 +174,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="item-list" id="notifList"></div>
             </div>
         </div>
-
         <div class="section" id="sec-theme">
             <div class="card">
                 <div class="card-header"><div class="card-title">Цветовая тема сайта</div></div>
@@ -190,7 +187,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="msg" id="msgTheme"></div>
             </div>
         </div>
-
         <div class="section" id="sec-settings">
             <div class="card">
                 <div class="card-header"><div class="card-title">Подключение</div></div>
@@ -202,7 +198,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         </div>
     </div>
 </div>
-
 <div class="db-status" id="dbStatus">⏳ Подключение...</div>
 
 <script>
@@ -212,11 +207,13 @@ let USER = localStorage.getItem('gh_user') || '';
 let BRANCH = 'main';
 let siteData = {};
 let dataSha = '';
+let isSaving = false;
 
-// API с антикэшем
 async function api(path, opts = {}) {
-    const sep = path.includes('?') ? '&' : '?';
-    const res = await fetch(`https://api.github.com${path}${sep}t=${Date.now()}`, {
+    const url = path.includes('?') 
+        ? `https://api.github.com${path}&t=${Date.now()}` 
+        : `https://api.github.com${path}?t=${Date.now()}`;
+    const res = await fetch(url, {
         method: opts.method || 'GET',
         headers: {
             'Accept': 'application/vnd.github+json',
@@ -237,6 +234,18 @@ async function api(path, opts = {}) {
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function showMsg(id, text, color) { const el = document.getElementById(id); el.textContent = text; el.style.color = color; setTimeout(() => { el.textContent = ''; }, 5000); }
+function setBtnLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    if (loading) {
+        btn.disabled = true;
+        btn.dataset.origText = btn.textContent;
+        btn.innerHTML = '<span class="spinner"></span>Сохранение...';
+    } else {
+        btn.disabled = false;
+        if (btn.dataset.origText) btn.textContent = btn.dataset.origText;
+    }
+}
 
 // ===== ПОДКЛЮЧЕНИЕ =====
 async function connect() {
@@ -283,12 +292,11 @@ async function detectBranch() {
     catch (e) { BRANCH = 'master'; }
 }
 
-// ===== ЗАГРУЗКА =====
+// ===== ЗАГРУЗКА (параллельная) =====
 async function loadAll() {
     const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
     dataSha = file.sha;
     siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
-
     document.getElementById('editTitle').value = siteData.title || '';
     document.getElementById('editPoem1').value = siteData.poem_line1 || '';
     document.getElementById('editPoem2').value = siteData.poem_line2 || '';
@@ -299,13 +307,22 @@ async function loadAll() {
     document.getElementById('editSchedule').value = siteData.schedule || '';
     document.getElementById('editActivities').value = siteData.activities || '';
 
-    const news = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
-    const notifs = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
+    // Параллельная загрузка новостей и уведомлений
+    const [newsRes, notifsRes] = await Promise.allSettled([
+        api(`/repos/${REPO}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=50`),
+        api(`/repos/${REPO}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=50`)
+    ]);
+    const news = newsRes.status === 'fulfilled' ? newsRes.value.filter(i => !i.pull_request) : [];
+    const notifs = notifsRes.status === 'fulfilled' ? notifsRes.value.filter(i => !i.pull_request) : [];
 
     document.getElementById('newsCount').textContent = news.length;
     document.getElementById('notifCount').textContent = notifs.length;
-    document.getElementById('newsList').innerHTML = news.length ? news.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
-    document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
+    document.getElementById('newsList').innerHTML = news.length 
+        ? news.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`).join('') 
+        : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
+    document.getElementById('notifList').innerHTML = notifs.length 
+        ? notifs.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') 
+        : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
 
     const sched = (siteData.schedule || '').split('\n').filter(l => l.trim()).length;
     const themes = { red: '🔴', blue: '🔵', green: '🟢', aero: '🩵' };
@@ -317,6 +334,9 @@ async function loadAll() {
 
 // ===== СОХРАНЕНИЕ data.json =====
 async function saveAll(msg) {
+    if (isSaving) return;
+    isSaving = true;
+    setBtnLoading('btnSaveTexts', true);
     siteData.title = document.getElementById('editTitle').value.trim();
     siteData.poem_line1 = document.getElementById('editPoem1').value.trim();
     siteData.poem_line2 = document.getElementById('editPoem2').value.trim();
@@ -331,16 +351,21 @@ async function saveAll(msg) {
         showMsg('msgTexts', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
         showMsg('msgSchedule', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
         showMsg('msgActivities', '✅ Сохранено! Сайт обновится у всех', '#00ff66');
-        // Даём GitHub секунду на применение, потом перезагружаем
+        // Очистить кэш на этом устройстве (на случай если админ и посетитель — один человек)
+        localStorage.removeItem('data_json');
+        localStorage.removeItem('issues_news');
+        localStorage.removeItem('issues_notifs');
         setTimeout(() => loadAll(), 1000);
     } catch (e) {
         showMsg('msgTexts', '❌ ' + e.message, '#ff5555');
         showMsg('msgSchedule', '❌ ' + e.message, '#ff5555');
         showMsg('msgActivities', '❌ ' + e.message, '#ff5555');
     }
+    isSaving = false;
+    setBtnLoading('btnSaveTexts', false);
 }
 
-async function pushData(msg) {
+async function pushData(msg, retry = true) {
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
     try {
         const r = await api(`/repos/${REPO}/contents/data.json`, {
@@ -349,30 +374,29 @@ async function pushData(msg) {
         });
         dataSha = r.content.sha;
     } catch (e) {
-        if (e.status === 409 || (e.message && e.message.includes('409'))) {
+        if (e.status === 409 && retry) {
             // Конфликт SHA — перезагружаем и повторяем
             const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
             dataSha = file.sha;
-            const r = await api(`/repos/${REPO}/contents/data.json`, {
-                method: 'PUT',
-                body: JSON.stringify({ message: `${msg} (админ: ${USER})`, content, sha: dataSha, branch: BRANCH })
-            });
-            dataSha = r.content.sha;
-        } else if (e.message && e.message.includes('403')) {
-            throw new Error('Недостаточно прав: токен без доступа Contents (режим модератора)');
-        } else {
-            throw e;
+            siteData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+            return pushData(msg, false);
         }
+        if (e.message.includes('403')) throw new Error('Недостаточно прав: токен без доступа Contents (режим модератора)');
+        throw e;
     }
 }
 
 async function setTheme(theme) {
+    if (isSaving) return;
+    isSaving = true;
     siteData.theme = theme;
     try {
         await pushData('Смена темы на ' + theme);
         showMsg('msgTheme', '✅ Тема изменена для всех!', '#00ff66');
+        localStorage.removeItem('data_json');
         setTimeout(() => loadAll(), 1000);
     } catch (e) { showMsg('msgTheme', '❌ ' + e.message, '#ff5555'); }
+    isSaving = false;
 }
 
 // ===== НОВОСТИ / УВЕДОМЛЕНИЯ =====
@@ -380,30 +404,38 @@ async function addNews() {
     const t = document.getElementById('newsTitle').value.trim();
     const x = document.getElementById('newsText').value.trim();
     if (!t || !x) { showMsg('msgNews', '❌ Заполни оба поля', '#ff5555'); return; }
+    setBtnLoading('btnAddNews', true);
     try {
         await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: x, labels: ['новость'] }) });
         document.getElementById('newsTitle').value = '';
         document.getElementById('newsText').value = '';
         showMsg('msgNews', '✅ Новость опубликована!', '#00ff66');
-        loadAll();
+        localStorage.removeItem('issues_news');
+        setTimeout(() => loadAll(), 1000);
     } catch (e) { showMsg('msgNews', '❌ ' + e.message, '#ff5555'); }
+    setBtnLoading('btnAddNews', false);
 }
 
 async function addNotif() {
     const t = document.getElementById('notifText').value.trim();
     if (!t) { showMsg('msgNotif', '❌ Напиши текст', '#ff5555'); return; }
+    setBtnLoading('btnAddNotif', true);
     try {
         await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: '', labels: ['уведомление'] }) });
         document.getElementById('notifText').value = '';
         showMsg('msgNotif', '✅ Уведомление отправлено всем!', '#00ff66');
-        loadAll();
+        localStorage.removeItem('issues_notifs');
+        setTimeout(() => loadAll(), 1000);
     } catch (e) { showMsg('msgNotif', '❌ ' + e.message, '#ff5555'); }
+    setBtnLoading('btnAddNotif', false);
 }
 
 async function closeIssue(num, type) {
     if (!confirm('Удалить запись?')) return;
     try {
         await api(`/repos/${REPO}/issues/${num}`, { method: 'PATCH', body: JSON.stringify({ state: 'closed' }) });
+        if (type === 'news') localStorage.removeItem('issues_news');
+        else localStorage.removeItem('issues_notifs');
         loadAll();
     } catch (e) { alert('❌ ' + e.message); }
 }
