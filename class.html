@@ -3,152 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Наша Команда | Самый лучший класс</title>
+<title>Мы | Самый лучший класс</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root { --primary:#ff0033; --glow:rgba(255,0,51,0.15); --glow-strong:rgba(255,0,51,0.8); --border:rgba(255,0,51,0.3); --shadow:rgba(255,0,51,0.2); }
 [data-theme="blue"] { --primary:#00aaff; --glow:rgba(0,170,255,0.15); --glow-strong:rgba(0,170,255,0.8); --border:rgba(0,170,255,0.3); --shadow:rgba(0,170,255,0.2); }
 [data-theme="green"] { --primary:#00ff66; --glow:rgba(0,255,102,0.15); --glow-strong:rgba(0,255,102,0.8); --border:rgba(0,255,102,0.3); --shadow:rgba(0,255,102,0.2); }
 [data-theme="aero"] { --primary:#00ffff; --glow:rgba(0,255,255,0.15); --glow-strong:rgba(0,255,255,0.8); --border:rgba(0,255,255,0.3); --shadow:rgba(0,255,255,0.2); }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background-color:#050505; color:#fff; font-family:'Montserrat',sans-serif; min-height:100vh; position:relative; overflow-x:hidden; }
-.theme-switcher { position:fixed; top:20px; left:20px; z-index:1000; display:flex; gap:8px; }
-.theme-btn { width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); cursor:pointer; transition:0.3s; opacity:0.6; }
-.theme-btn:hover,.theme-btn.active { opacity:1; transform:scale(1.2); border-color:#fff; box-shadow:0 0 10px currentColor; }
-.theme-btn[data-set="red"]{background:#ff0033;color:#ff0033}
-.theme-btn[data-set="blue"]{background:#00aaff;color:#00aaff}
-.theme-btn[data-set="green"]{background:#00ff66;color:#00ff66}
-.theme-btn[data-set="aero"]{background:#00ffff;color:#00ffff}
-.background-glow { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 50% 0%, var(--glow) 0%, rgba(5,5,5,0) 60%); z-index:-2; pointer-events:none; }
-nav { padding:20px 40px; display:flex; justify-content:flex-end; align-items:center; background:rgba(5,5,5,0.8); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
-.back-btn { color:#fff; text-decoration:none; font-weight:700; text-transform:uppercase; font-size:0.9rem; padding:8px 20px; border:1px solid rgba(255,255,255,0.3); border-radius:4px; transition:0.3s; }
-.back-btn:hover { border-color:var(--primary); color:var(--primary); box-shadow:0 0 10px var(--shadow); }
-.container { max-width:1200px; margin:0 auto; padding:60px 20px; }
-.teacher-section { text-align:center; margin-bottom:80px; padding:40px; background:rgba(20,20,20,0.5); border:1px solid var(--border); border-radius:15px; box-shadow:0 0 30px rgba(0,0,0,0.5); animation:fadeIn 1s ease-out; }
-.section-title { font-family:'Orbitron',sans-serif; font-size:2rem; margin-bottom:30px; color:#fff; text-transform:uppercase; letter-spacing:2px; }
-.section-title span { color:var(--primary); text-shadow:0 0 15px var(--primary); }
-.teacher-card { display:inline-flex; flex-direction:column; align-items:center; gap:20px; }
-.teacher-photo { width:200px; height:200px; border-radius:50%; object-fit:cover; border:3px solid var(--primary); box-shadow:0 0 20px var(--shadow); transition:transform 0.3s; background:#222; }
-.teacher-photo:hover { transform:scale(1.05); box-shadow:0 0 30px var(--glow-strong); }
-.teacher-name { font-size:1.5rem; font-weight:700; }
-.teacher-role { color:#aaa; font-size:1rem; text-transform:uppercase; letter-spacing:1px; }
-.students-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:30px; }
-.student-card { background:rgba(20,20,20,0.6); border:1px solid rgba(255,255,255,0.1); border-radius:10px; overflow:hidden; transition:all 0.3s ease; position:relative; }
-.student-card:hover { transform:translateY(-10px); border-color:var(--primary); box-shadow:0 10px 30px var(--shadow); }
-.student-img-wrapper { width:100%; height:250px; overflow:hidden; position:relative; background:#1a1a1a; }
-.student-img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; filter:grayscale(80%); }
-.student-card:hover .student-img { transform:scale(1.1); filter:grayscale(0%); }
-.student-info { padding:15px; text-align:center; background:#0a0a0a; border-top:2px solid var(--primary); }
-.student-name { font-weight:700; font-size:1.1rem; color:#fff; }
-.empty-state { text-align:center; color:#666; padding:40px 20px; font-size:1rem; }
-.loading { text-align:center; color:#666; padding:40px 20px; font-size:1rem; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-.particles { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; }
-.particle { position:absolute; background:var(--primary); border-radius:50%; box-shadow:0 0 5px var(--primary); animation:floatUp linear infinite; opacity:0; }
-@keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 50%{opacity:0.5} 100%{transform:translateY(-10vh) scale(1);opacity:0} }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background-color: #050505; color: #ffffff; font-family: 'Montserrat', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+.theme-switcher { position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 8px; }
+.theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s ease; opacity: 0.6; }
+.theme-btn:hover, .theme-btn.active { opacity: 1; transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px currentColor; }
+.theme-btn[data-set="red"] { background: #ff0033; color: #ff0033; }
+.theme-btn[data-set="blue"] { background: #00aaff; color: #00aaff; }
+.theme-btn[data-set="green"] { background: #00ff66; color: #00ff66; }
+.theme-btn[data-set="aero"] { background: #00ffff; color: #00ffff; }
+.background-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 0%, var(--glow) 0%, rgba(5,5,5,0) 60%); z-index: -2; pointer-events: none; }
+nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 10px var(--shadow); text-decoration: none; }
+.back-btn { color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.9rem; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; transition: 0.3s; }
+.back-btn:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--shadow); }
+.container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+.teacher-section { text-align: center; margin-bottom: 80px; padding: 40px; background: rgba(20,20,20,0.5); border: 1px solid var(--border); border-radius: 15px; box-shadow: 0 0 30px rgba(0,0,0,0.5); animation: fadeIn 1s ease-out; }
+.section-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+.section-title span { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
+.teacher-card { display: inline-flex; flex-direction: column; align-items: center; gap: 20px; }
+.teacher-photo { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: 0 0 20px var(--shadow); transition: transform 0.3s; }
+.teacher-photo:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--glow-strong); }
+.teacher-name { font-size: 1.5rem; font-weight: 700; }
+.teacher-role { color: #aaa; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+.students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
+.student-card { background: rgba(20,20,20,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; position: relative; }
+.student-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 10px 30px var(--shadow); }
+.student-img-wrapper { width: 100%; height: 250px; overflow: hidden; position: relative; }
+.student-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; filter: grayscale(80%); }
+.student-card:hover .student-img { transform: scale(1.1); filter: grayscale(0%); }
+.student-info { padding: 15px; text-align: center; background: #0a0a0a; border-top: 2px solid var(--primary); }
+.student-name { font-weight: 700; font-size: 1.1rem; color: #fff; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.particle { position: absolute; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); animation: floatUp linear infinite; opacity: 0; }
+@keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 50% { opacity: 0.5; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
 </style>
 </head>
 <body>
 <div class="theme-switcher">
-    <div class="theme-btn active" data-set="red"></div>
-    <div class="theme-btn" data-set="blue"></div>
-    <div class="theme-btn" data-set="green"></div>
-    <div class="theme-btn" data-set="aero"></div>
+    <div class="theme-btn active" data-set="red" title="Красная"></div>
+    <div class="theme-btn" data-set="blue" title="Синяя"></div>
+    <div class="theme-btn" data-set="green" title="Зелёная"></div>
+    <div class="theme-btn" data-set="aero" title="Аэро"></div>
 </div>
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
-<nav><a href="index.html" class="back-btn">← На главную</a></nav>
+<nav>
+    <a href="index.html" class="logo">6М</a>
+    <a href="index.html" class="back-btn">← На главную</a>
+</nav>
 <div class="container">
     <section class="teacher-section">
         <h2 class="section-title">Наш <span>Классный Руководитель</span></h2>
         <div class="teacher-card" id="teacherCard">
-            <div class="loading">Загрузка...</div>
+            <div style="width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;border:3px solid var(--primary)">⏳</div>
+            <div><div class="teacher-name">Загрузка...</div></div>
         </div>
     </section>
-    <h2 class="section-title" style="text-align:center; margin-bottom:40px;">Наша <span>Команда</span></h2>
+    <h2 class="section-title" style="text-align: center; margin-bottom: 40px;">Наша <span>Команда</span></h2>
     <div class="students-grid" id="studentsGrid">
-        <div class="loading">Загрузка...</div>
+        <p style="color:#666;text-align:center">⏳ Загрузка...</p>
     </div>
 </div>
 <script>
-const REPO='6m-class/6m-class';
-function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function getCached(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
-function setCached(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const REPO = '6m-class/6m-class';
 
-// Тема
-const themeBtns=document.querySelectorAll('.theme-btn');
-const savedTheme=localStorage.getItem('site-theme')||'red';
-document.documentElement.setAttribute('data-theme',savedTheme);
-themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===savedTheme));
-themeBtns.forEach(btn=>{btn.addEventListener('click',()=>{const t=btn.dataset.set;document.documentElement.setAttribute('data-theme',t);localStorage.setItem('site-theme',t);themeBtns.forEach(b=>b.classList.toggle('active',b.dataset.set===t));});});
+// Темы
+const themeBtns = document.querySelectorAll('.theme-btn');
+const savedTheme = localStorage.getItem('site-theme') || 'red';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === savedTheme));
+themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const theme = btn.dataset.set;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('site-theme', theme);
+        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+    });
+});
 
 // Частицы
-const pc=document.getElementById('particles');
-for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*4+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+5}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
+const pc = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div'); p.classList.add('particle');
+    const s = Math.random() * 4 + 1;
+    p.style.width = `${s}px`; p.style.height = `${s}px`;
+    p.style.left = `${Math.random() * 100}vw`;
+    p.style.animationDuration = `${Math.random() * 10 + 5}s`;
+    p.style.animationDelay = `${Math.random() * 5}s`;
+    pc.appendChild(p);
+}
 
 // Загрузка data.json
-async function loadData(){
-    const urls=[`data.json?v=${Date.now()}`,`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,`https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`];
-    for(const url of urls){
-        try{const c=new AbortController();const t=setTimeout(()=>c.abort(),8000);const r=await fetch(url,{cache:'no-store',signal:c.signal});clearTimeout(t);if(r.ok)return await r.json();}catch(e){continue;}
+async function loadData() {
+    const urls = [
+        `data.json?v=${Date.now()}`,
+        `https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,
+        `https://raw.githubusercontent.com/${REPO}/master/data.json?v=${Date.now()}`,
+        `https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`
+    ];
+    for (const url of urls) {
+        try {
+            const res = await fetch(url, { cache: 'no-store' });
+            if (res.ok) return await res.json();
+        } catch(e) { continue; }
     }
-    const cached=getCached('site_data_cache');return cached?cached.data:null;
+    return null;
 }
 
-// Фото по пути — пробуем относительный, потом raw
-function photoUrl(path){
-    if(!path)return '';
-    if(path.startsWith('http')||path.startsWith('data:'))return path;
-    return `photos/${path}?v=${Date.now()}`;
+function escapeHtml(s) {
+    const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML;
 }
 
-function renderTeacher(data){
-    const card=document.getElementById('teacherCard');
-    if(!data||!data.teacher){
-        card.innerHTML='<div class="teacher-name">Информация не загружена</div>';
+async function render() {
+    const data = await loadData();
+    if (!data) {
+        document.getElementById('teacherCard').innerHTML = '<div class="teacher-name">Нет данных</div>';
+        document.getElementById('studentsGrid').innerHTML = '<p style="color:#666;text-align:center">Нет данных</p>';
         return;
     }
-    const t=data.teacher;
-    const imgSrc=photoUrl(t.photo);
-    card.innerHTML=`
-        ${imgSrc?`<img src="${escapeHtml(imgSrc)}" class="teacher-photo" onerror="this.style.display='none'">`:''}
+
+    // Тема
+    if (data.theme && data.theme !== 'red') {
+        document.documentElement.setAttribute('data-theme', data.theme);
+        themeBtns.forEach(b => b.classList.toggle('active', b.dataset.set === data.theme));
+    }
+
+    // Учитель
+    const tc = document.getElementById('teacherCard');
+    const photoUrl = data.teacher_photo ? `${data.teacher_photo}?v=${Date.now()}` : '';
+    tc.innerHTML = `
+        ${photoUrl
+            ? `<img src="${escapeHtml(photoUrl)}" class="teacher-photo" alt="Учитель">`
+            : `<div style="width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);font-size:3rem">👤</div>`}
         <div>
-            <div class="teacher-name">${escapeHtml(t.name||'')}</div>
-            ${t.role?`<div class="teacher-role">${escapeHtml(t.role)}</div>`:''}
+            <div class="teacher-name">${escapeHtml(data.teacher_name || 'Не указан')}</div>
+            ${data.teacher_role ? `<div class="teacher-role">${escapeHtml(data.teacher_role)}</div>` : ''}
         </div>
     `;
-}
 
-function renderStudents(data){
-    const grid=document.getElementById('studentsGrid');
-    if(!data||!data.students||!Array.isArray(data.students)||data.students.length===0){
-        grid.innerHTML='<div class="empty-state">Ученики пока не добавлены.</div>';
-        return;
+    // Ученики
+    const students = data.students || [];
+    const grid = document.getElementById('studentsGrid');
+    if (students.length > 0) {
+        grid.innerHTML = students.map(s => {
+            const sp = s.photo ? `${s.photo}?v=${Date.now()}` : 'https://via.placeholder.com/300x250/111/333?text=Ученик';
+            return `
+                <div class="student-card">
+                    <div class="student-img-wrapper">
+                        <img src="${escapeHtml(sp)}" alt="${escapeHtml(s.name)}" class="student-img">
+                    </div>
+                    <div class="student-info">
+                        <div class="student-name">${escapeHtml(s.name)}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        grid.innerHTML = '<p style="color:#666;text-align:center">Учеников пока нет</p>';
     }
-    grid.innerHTML=data.students.map(s=>{
-        const imgSrc=photoUrl(s.photo);
-        return `
-            <div class="student-card">
-                <div class="student-img-wrapper">
-                    ${imgSrc?`<img src="${escapeHtml(imgSrc)}" class="student-img" onerror="this.src='https://via.placeholder.com/300x250/111/333?text=Нет+фото'">`:`<img src="https://via.placeholder.com/300x250/111/333?text=Нет+фото" class="student-img">`}
-                </div>
-                <div class="student-info">
-                    <div class="student-name">${escapeHtml(s.name||'Без имени')}</div>
-                </div>
-            </div>
-        `;
-    }).join('');
 }
 
-loadData().then(data=>{
-    if(data)setCached('site_data_cache',{data,ts:Date.now()});
-    renderTeacher(data);
-    renderStudents(data);
-}).catch(()=>{
-    renderTeacher(null);
-    renderStudents(null);
-});
+render();
+
+// Автообновление
+setInterval(render, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
 </script>
 </body>
 </html>
