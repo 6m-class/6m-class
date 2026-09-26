@@ -51,6 +51,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px}
 .btn-primary{background:var(--primary);color:#000}
 .btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-outline{background:transparent;border:1px solid var(--border);color:#aaa}
 .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
 .btn-danger{background:transparent;border:1px solid rgba(255,80,80,0.3);color:#ff5555}
@@ -75,6 +76,10 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .activity-card-edit .field{margin-bottom:10px}
 .student-card-edit{display:flex;align-items:center;gap:15px;padding:15px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;margin-bottom:10px}
 .student-card-edit img{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid var(--border)}
+.upload-progress{margin-top:8px;padding:10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:.8rem;color:#aaa;display:none}
+.upload-progress .bar{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-top:8px}
+.upload-progress .bar-fill{height:100%;background:var(--primary);border-radius:3px;transition:width .3s;width:0}
+.video-info{margin-top:8px;padding:8px 12px;background:rgba(var(--primary-rgb),0.05);border:1px solid rgba(var(--primary-rgb),0.2);border-radius:8px;font-size:.8rem;color:var(--primary);display:none}
 @media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -147,7 +152,14 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
                 <div class="card-header"><div class="card-title">Добавить новость</div><div class="card-badge" id="newsCount">0</div></div>
                 <div class="field"><label>Заголовок</label><input type="text" id="newsTitle" placeholder="Победа в олимпиаде!"></div>
                 <div class="field"><label>Текст</label><textarea id="newsText" rows="3" placeholder="Подробности..."></textarea></div>
-                <button class="btn btn-primary" onclick="addNews()">📤 Опубликовать</button>
+                <div class="field"><label>Видео-ссылка (YouTube/RuTube/Vimeo/VK — необязательно)</label><input type="text" id="newsVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
+                <div class="field"><label>Или загрузить видео с компьютера (макс. ~75 МБ)</label><input type="file" id="newsVideoFile" accept="video/*"></div>
+                <div class="video-info" id="newsVideoInfo"></div>
+                <div class="upload-progress" id="videoUploadProgress">
+                    <span id="videoUploadText">Загрузка видео...</span>
+                    <div class="bar"><div class="bar-fill" id="videoUploadBar"></div></div>
+                </div>
+                <button class="btn btn-primary" id="btnAddNews" onclick="addNews()">📤 Опубликовать</button>
                 <div class="msg" id="msgNews"></div>
             </div>
             <div class="card">
@@ -369,7 +381,7 @@ async function loadAll() {
     document.getElementById('editActTitle').value = siteData.activities_title || '';
     document.getElementById('editActSubtitle').value = siteData.activities_subtitle || '';
 
-    // Карточки внеурочки — загружаем в черновик
+    // Карточки внеурочки
     actCardsDraft = Array.isArray(siteData.activities_cards) ? siteData.activities_cards.map(c => ({...c})) : [];
     renderActCardsDraft();
 
@@ -388,7 +400,10 @@ async function loadAll() {
 
     document.getElementById('newsCount').textContent = news.length;
     document.getElementById('notifCount').textContent = notifs.length;
-    document.getElementById('newsList').innerHTML = news.length ? news.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
+    document.getElementById('newsList').innerHTML = news.length ? news.map(n => {
+        const hasVideo = n.body && n.body.includes('[VIDEO]');
+        return `<div class="item"><div class="item-content"><div class="item-title">${hasVideo?'🎬 ':''}${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`;
+    }).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
     document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
 
     // Ученики
@@ -515,20 +530,85 @@ async function setTheme(theme) {
     } catch (e) { showMsg('msgTheme', '❌ ' + e.message, '#ff5555'); }
 }
 
-// ===== НОВОСТИ / УВЕДОМЛЕНИЯ =====
+// ===== ЗАГРУЗКА ФАЙЛА (фото/видео) В РЕПОЗИТОРИЙ =====
+async function uploadFile(file, folder, filename) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const base64 = reader.result.split(',')[1];
+                const res = await api(`/repos/${REPO}/contents/${folder}/${filename}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ message: `Загрузка ${folder}/${filename}`, content: base64, branch: BRANCH })
+                });
+                resolve(`https://raw.githubusercontent.com/${REPO}/${BRANCH}/${folder}/${filename}`);
+            } catch (e) { reject(e); }
+        };
+        reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
+        reader.readAsDataURL(file);
+    });
+}
+
+// ===== НОВОСТИ =====
 async function addNews() {
     const t = document.getElementById('newsTitle').value.trim();
     const x = document.getElementById('newsText').value.trim();
-    if (!t || !x) { showMsg('msgNews', '❌ Заполни оба поля', '#ff5555'); return; }
+    const videoUrl = document.getElementById('newsVideoUrl').value.trim();
+    const videoFile = document.getElementById('newsVideoFile').files[0];
+
+    if (!t || !x) { showMsg('msgNews', '❌ Заполни заголовок и текст', '#ff5555'); return; }
+
+    let finalVideoTag = '';
+    let body = x;
+
+    // Если выбрали файл с компа — загружаем в репо
+    if (videoFile) {
+        const maxSize = 75 * 1024 * 1024; // 75 МБ
+        if (videoFile.size > maxSize) {
+            showMsg('msgNews', '❌ Файл больше 75 МБ. Уменьши или используй ссылку.', '#ff5555');
+            return;
+        }
+        document.getElementById('videoUploadProgress').style.display = 'block';
+        document.getElementById('videoUploadText').textContent = '⏳ Загрузка видео ' + (videoFile.size/1024/1024).toFixed(1) + ' МБ...';
+        document.getElementById('btnAddNews').disabled = true;
+        try {
+            const ext = videoFile.name.split('.').pop().toLowerCase();
+            const filename = `video_${Date.now()}.${ext}`;
+            const uploadedUrl = await uploadFile(videoFile, 'videos', filename);
+            finalVideoTag = `\n\n[VIDEO]${uploadedUrl}[/VIDEO]`;
+            document.getElementById('videoUploadText').textContent = '✅ Видео загружено!';
+            document.getElementById('videoUploadBar').style.width = '100%';
+        } catch (e) {
+            document.getElementById('videoUploadProgress').style.display = 'none';
+            document.getElementById('btnAddNews').disabled = false;
+            showMsg('msgNews', '❌ Ошибка загрузки видео: ' + e.message, '#ff5555');
+            return;
+        }
+    } else if (videoUrl) {
+        finalVideoTag = `\n\n[VIDEO]${videoUrl}[/VIDEO]`;
+    }
+
+    body += finalVideoTag;
+
     try {
-        await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: x, labels: ['новость'] }) });
+        await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: body, labels: ['новость'] }) });
         document.getElementById('newsTitle').value = '';
         document.getElementById('newsText').value = '';
+        document.getElementById('newsVideoUrl').value = '';
+        document.getElementById('newsVideoFile').value = '';
+        document.getElementById('videoUploadProgress').style.display = 'none';
+        document.getElementById('videoUploadBar').style.width = '0';
+        document.getElementById('btnAddNews').disabled = false;
         showMsg('msgNews', '✅ Новость опубликована!', '#00ff66');
         loadAll();
-    } catch (e) { showMsg('msgNews', '❌ ' + e.message, '#ff5555'); }
+    } catch (e) {
+        document.getElementById('btnAddNews').disabled = false;
+        document.getElementById('videoUploadProgress').style.display = 'none';
+        showMsg('msgNews', '❌ ' + e.message, '#ff5555');
+    }
 }
 
+// ===== УВЕДОМЛЕНИЯ =====
 async function addNotif() {
     const t = document.getElementById('notifText').value.trim();
     if (!t) { showMsg('msgNotif', '❌ Напиши текст', '#ff5555'); return; }
@@ -549,24 +629,6 @@ async function closeIssue(num, type) {
 }
 
 // ===== УЧЕНИКИ =====
-async function uploadPhoto(file, filename) {
-    const reader = new FileReader();
-    return new Promise((resolve, reject) => {
-        reader.onload = async () => {
-            try {
-                const base64 = reader.result.split(',')[1];
-                const res = await api(`/repos/${REPO}/contents/photos/${filename}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ message: `Загрузка фото ${filename}`, content: base64, branch: BRANCH })
-                });
-                resolve(`https://raw.githubusercontent.com/${REPO}/${BRANCH}/photos/${filename}`);
-            } catch (e) { reject(e); }
-        };
-        reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
-        reader.readAsDataURL(file);
-    });
-}
-
 async function addStudent() {
     const name = document.getElementById('studentName').value.trim();
     const photoFile = document.getElementById('studentPhoto').files[0];
@@ -577,7 +639,7 @@ async function addStudent() {
     try {
         const ext = photoFile.name.split('.').pop();
         const filename = `student_${Date.now()}.${ext}`;
-        const photoUrl = await uploadPhoto(photoFile, filename);
+        const photoUrl = await uploadFile(photoFile, 'photos', filename);
 
         await freshLoadData();
         if (!Array.isArray(siteData.students)) siteData.students = [];
@@ -620,7 +682,7 @@ async function saveTeacher() {
         if (photoFile) {
             const ext = photoFile.name.split('.').pop();
             const filename = `teacher_${Date.now()}.${ext}`;
-            photoUrl = await uploadPhoto(photoFile, filename);
+            photoUrl = await uploadFile(photoFile, 'photos', filename);
         }
 
         await freshLoadData();
