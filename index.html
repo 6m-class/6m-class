@@ -24,8 +24,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .background-glow{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80vw;height:80vw;background:radial-gradient(circle,var(--glow) 0%,rgba(10,10,10,0) 70%);z-index:-2;animation:pulseGlow 4s infinite alternate;pointer-events:none}
 @keyframes pulseGlow{0%{transform:translate(-50%,-50%) scale(1);opacity:.8}100%{transform:translate(-50%,-50%) scale(1.2);opacity:1}}
 .container{text-align:center;z-index:10;max-width:1000px;width:100%;display:flex;flex-direction:column;align-items:center}
-
-/* === ЭКРАН "Я НЕ РОБОТ" === */
 .gate{position:fixed;inset:0;background:rgba(5,5,5,0.92);backdrop-filter:blur(12px);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;transition:opacity .6s ease}
 .gate.hidden{opacity:0;pointer-events:none}
 .gate-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:35px 30px;max-width:420px;width:100%;text-align:center;box-shadow:0 0 60px rgba(var(--primary-rgb),0.15)}
@@ -33,7 +31,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .gate-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--primary);text-transform:uppercase;letter-spacing:1px}
 .card-badge{font-size:.7rem;padding:4px 10px;border-radius:20px;background:rgba(var(--primary-rgb),0.15);color:var(--primary);font-weight:700}
 .gate-sub{color:#666;font-size:.85rem;margin-bottom:22px}
-
 .captcha-box{display:flex;align-items:center;gap:15px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:left;transition:.3s;cursor:pointer}
 .captcha-box:hover{border-color:rgba(var(--primary-rgb),0.4)}
 .captcha-box.verified{border-color:var(--primary);box-shadow:0 0 20px var(--shadow)}
@@ -51,8 +48,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .captcha-logo span{font-size:.55rem;color:#666;letter-spacing:1px;text-transform:uppercase}
 @keyframes capSpin{to{transform:rotate(360deg)}}
 @keyframes capPop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
-
-/* === АНИМАЦИЯ ПЕЧАТИ === */
 .typewriter-wrapper{display:flex;flex-direction:column;align-items:center;gap:15px;min-height:120px}
 .typewriter-line{display:inline-block;font-size:clamp(1.2rem,3vw,2.5rem);font-weight:700;white-space:nowrap;overflow:hidden;width:0;border-right:3px solid transparent}
 .animate .line-1{color:#fff;animation:typingLine1 2.5s steps(30,end) forwards,blinkCursor .75s step-end infinite 2.5s}
@@ -66,10 +61,8 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .no-animate .line-3{color:#e0e0e0;font-size:clamp(1rem,2.5vw,2rem)}
 .no-animate .btn{opacity:1;transform:translateY(0)}
 .no-animate .extra-sections{opacity:1}
-
 .btn{display:inline-block;margin-top:40px;padding:14px 38px;font-family:'Orbitron',sans-serif;font-size:1.05rem;font-weight:700;color:var(--primary);text-decoration:none;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--primary);border-radius:8px;background:transparent;cursor:pointer;transition:.3s;opacity:0;transform:translateY(20px);box-shadow:0 0 10px var(--shadow)}
 .btn:hover{background:var(--primary);color:#000;box-shadow:0 0 25px var(--glow-strong);transform:scale(1.05)}
-
 .extra-sections{margin-top:80px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;opacity:0}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:25px;text-align:left;transition:.3s;display:flex;flex-direction:column}
 .card:hover{border-color:rgba(var(--primary-rgb),0.4);box-shadow:0 0 25px var(--shadow);transform:translateY(-4px)}
@@ -86,7 +79,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .news-empty{color:#666;font-style:italic;padding:18px 0;text-align:center;flex-grow:1;font-size:.9rem}
 .card-link{align-self:flex-start;color:#aaa;text-decoration:none;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;transition:.3s;padding:8px 16px;border:1px solid var(--border);border-radius:6px;margin-top:auto}
 .card-link:hover{border-color:var(--primary);color:var(--primary);box-shadow:0 0 12px var(--shadow)}
-
 .notif-popup{position:fixed;top:80px;right:20px;z-index:2000;background:rgba(17,17,17,0.97);border:1px solid var(--primary);border-radius:10px;padding:20px;max-width:350px;box-shadow:0 0 30px var(--glow-strong);animation:slideIn .5s ease-out;backdrop-filter:blur(10px)}
 .notif-popup h4{font-family:'Orbitron',sans-serif;font-size:.95rem;color:var(--primary);margin-bottom:10px;text-transform:uppercase}
 .notif-popup p{color:#fff;font-size:.95rem;line-height:1.5}
@@ -94,7 +86,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .notif-popup .notif-close{position:absolute;top:10px;right:12px;background:none;border:none;color:#777;cursor:pointer;font-size:1.2rem;transition:.3s}
 .notif-popup .notif-close:hover{color:var(--primary)}
 @keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
-
 .particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
 .particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 10px var(--primary);animation:floatUp linear infinite;opacity:0}
 @keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(-10vh) scale(1.5);opacity:0}}
@@ -117,7 +108,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
 
-<!-- === ЭКРАН ПРОВЕРКИ === -->
 <div class="gate" id="gate">
     <div class="gate-card">
         <div class="gate-head">
@@ -170,7 +160,6 @@ const REPO = '6m-class/6m-class';
 const API = `https://api.github.com/repos/${REPO}`;
 const container = document.getElementById('siteContainer');
 const gate = document.getElementById('gate');
-let lastDataSha = null;
 
 // ===== ЭКРАН "Я НЕ РОБОТ" =====
 function startSite() {
@@ -206,97 +195,180 @@ function runCaptcha() {
     }, 1500);
 }
 
-// ===== ЗАГРУЗКА ДАННЫХ =====
+// ===== ФОЛБЭК ДАННЫЕ ПО УМОЛЧАНИЮ =====
+const FALLBACK_DATA = {
+    title: "Самый лучший класс",
+    poem_line1: "Самый лучший в мире класс",
+    poem_line2: "это сказано про нас",
+    poem_line3: "Мы, внуки Пифагора!",
+    btn_text: "Наши ученики",
+    btn_link: "class.html",
+    news_empty: "Упс... Тут пока что ничего нету.",
+    schedule: "1. Разговоры о важном (8:30 - 9:15)\n2. Математика (9:30 - 10:15)\n3. Русский язык (10:35 - 11:20)\n4. Технология (11:40 - 12:25)\n5. Технология (12:35 - 13:20)\n6. Изобразительное искусство (13:30 - 14:15)\n7. Литература (14:20 - 15:05)",
+    activities: "\u{1F1F7}\u{1F1FA} Россия - мои горизонты - Чт",
+    theme: "red"
+};
+
+// ===== КЭШ В LOCALSTORAGE =====
+function getCachedData() {
+    try { return JSON.parse(localStorage.getItem('cachedData') || 'null'); } catch(e) { return null; }
+}
+function setCachedData(data) {
+    try { localStorage.setItem('cachedData', JSON.stringify(data)); } catch(e) {}
+}
+function getCachedNews() {
+    try { return JSON.parse(localStorage.getItem('cachedNews') || '[]'); } catch(e) { return []; }
+}
+function setCachedNews(news) {
+    try { localStorage.setItem('cachedNews', JSON.stringify(news)); } catch(e) {}
+}
+
+// ===== ОПРЕДЕЛЕНИЕ ВЕТКИ (КЭШ 1 ЧАС) =====
+async function getBranch() {
+    const cached = localStorage.getItem('cachedBranch');
+    const cachedTime = localStorage.getItem('cachedBranchTime');
+    if (cached && cachedTime && Date.now() - parseInt(cachedTime) < 3600000) return cached;
+    try {
+        const r = await fetchWithTimeout(`${API}/branches/main?t=${Date.now()}`, { cache: 'no-store' }, 5000);
+        if (r.ok) { localStorage.setItem('cachedBranch', 'main'); localStorage.setItem('cachedBranchTime', Date.now().toString()); return 'main'; }
+    } catch(e) {}
+    localStorage.setItem('cachedBranch', 'master');
+    localStorage.setItem('cachedBranchTime', Date.now().toString());
+    return 'master';
+}
+
+// ===== FETCH С ТАЙМАУТОМ =====
+function fetchWithTimeout(url, opts = {}, timeout = 8000) {
+    return new Promise((resolve, reject) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => { controller.abort(); reject(new Error('timeout')); }, timeout);
+        fetch(url, { ...opts, signal: controller.signal })
+            .then(r => { clearTimeout(id); resolve(r); })
+            .catch(e => { clearTimeout(id); reject(e); });
+    });
+}
+
+// ===== РЕНДЕР =====
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-async function loadSite() {
-    try {
-        // Определяем ветку
-        let branch = 'main';
-        try {
-            const br = await fetch(`${API}/branches/main?t=${Date.now()}`, { cache: 'no-store' });
-            if (!br.ok) branch = 'master';
-        } catch (e) {}
+let lastDataSha = null;
 
-        // Грузим data.json с антикэшем
-        const res = await fetch(`${API}/contents/data.json?ref=${branch}&t=${Date.now()}`, { cache: 'no-store' });
-        if (res.status === 404) throw new Error('data.json не найден');
-        if (!res.ok) throw new Error('Ошибка GitHub: ' + res.status);
-        const file = await res.json();
-        const data = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+function renderData(data) {
+    if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
+    if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
+    if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
+    if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
+    if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
 
-        // Пропускаем рендер, если SHA не изменился (не моргает)
-        if (lastDataSha === file.sha) return;
-        lastDataSha = file.sha;
+    const theme = data.theme || 'red';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('site-theme', theme);
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === theme));
 
-        if (data.poem_line1) document.getElementById('poemLine1').textContent = data.poem_line1;
-        if (data.poem_line2) document.getElementById('poemLine2').textContent = data.poem_line2;
-        if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
-        if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
-        if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
+    const sched = (data.schedule || '').split('\n').filter(l => l.trim());
+    document.getElementById('schedBadge').textContent = sched.length + ' уроков';
+    document.getElementById('scheduleList').innerHTML = sched.length ? sched.map(l => `<li><span>\u2022</span> ${esc(l.trim())}</li>`).join('') : '<li style="color:#777"><span>\u2014</span> Расписание не заполнено</li>';
 
-        const theme = data.theme || 'red';
-        document.documentElement.setAttribute('data-theme', theme);
-        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === theme));
+    const act = (data.activities || '').split('\n').filter(l => l.trim());
+    document.getElementById('actBadge').textContent = act.length + ' занят.';
+    document.getElementById('activitiesList').innerHTML = act.length ? act.map(l => `<li><span>\u2022</span> ${esc(l.trim())}</li>`).join('') : '<li style="color:#777"><span>\u2014</span> Нет занятий</li>';
+}
 
-        const sched = (data.schedule || '').split('\n').filter(l => l.trim());
-        document.getElementById('schedBadge').textContent = sched.length + ' уроков';
-        document.getElementById('scheduleList').innerHTML = sched.length ? sched.map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('') : '<li style="color:#777"><span>—</span> Расписание не заполнено</li>';
-
-        const act = (data.activities || '').split('\n').filter(l => l.trim());
-        document.getElementById('actBadge').textContent = act.length + ' занят.';
-        document.getElementById('activitiesList').innerHTML = act.length ? act.map(l => `<li><span>•</span> ${esc(l.trim())}</li>`).join('') : '<li style="color:#777"><span>—</span> Нет занятий</li>';
-
-        // Новости с антикэшем
-        const newsRes = await fetch(`${API}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=3&t=${Date.now()}`, { cache: 'no-store' });
-        const news = await newsRes.json();
-        document.getElementById('newsBadge').textContent = Array.isArray(news) ? news.length : 0;
-        const newsContent = document.getElementById('newsContent');
-        if (Array.isArray(news) && news.length > 0) {
-            newsContent.innerHTML = news.map(n => `<div class="news-item"><div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div><div class="news-text"><b>${esc(n.title)}</b><br>${esc(n.body || '')}</div></div>`).join('');
-        } else {
-            newsContent.innerHTML = `<p class="news-empty">${esc(data.news_empty || 'Упс... Тут пока что ничего нету.')}</p>`;
-        }
-
-        // Уведомления с антикэшем
-        const notifRes = await fetch(`${API}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=1&t=${Date.now()}`, { cache: 'no-store' });
-        const notifs = await notifRes.json();
-        if (Array.isArray(notifs) && notifs.length > 0) {
-            const last = notifs[0];
-            const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
-            if (!seen.includes(last.number)) {
-                const popup = document.createElement('div');
-                popup.className = 'notif-popup';
-                popup.innerHTML = `<button class="notif-close" onclick="this.parentElement.remove()">✕</button><h4>🔔 Уведомление</h4><p>${esc(last.title)}</p><div class="notif-date">${new Date(last.created_at).toLocaleString('ru-RU')}</div>`;
-                document.body.appendChild(popup);
-                setTimeout(() => { if (popup.parentElement) popup.remove(); }, 15000);
-                seen.push(last.number);
-                localStorage.setItem('seenNotifs', JSON.stringify(seen.slice(-20)));
-            }
-        }
-    } catch (err) {
-        console.error('Ошибка:', err);
-        document.getElementById('poemLine1').textContent = 'Самый лучший в мире класс';
-        document.getElementById('poemLine2').textContent = 'это сказано про нас';
-        document.getElementById('poemLine3').textContent = 'Мы, внуки Пифагора!';
+function renderNews(news, newsEmptyText) {
+    document.getElementById('newsBadge').textContent = Array.isArray(news) ? news.length : 0;
+    const newsContent = document.getElementById('newsContent');
+    if (Array.isArray(news) && news.length > 0) {
+        newsContent.innerHTML = news.map(n => `<div class="news-item"><div class="news-date">${new Date(n.created_at).toLocaleDateString('ru-RU')}</div><div class="news-text"><b>${esc(n.title)}</b><br>${esc(n.body || '')}</div></div>`).join('');
+    } else {
+        newsContent.innerHTML = `<p class="news-empty">${esc(newsEmptyText || 'Упс... Тут пока что ничего нету.')}</p>`;
     }
 }
 
-// Первая загрузка
+// ===== ЗАГРУЗКА (С ФОЛБЭКОМ) =====
+async function loadSite() {
+    // Сначала показываем кэш, если есть
+    const cached = getCachedData();
+    if (cached) {
+        renderData(cached);
+        const cachedNews = getCachedNews();
+        if (cachedNews.length > 0) renderNews(cachedNews, cached.news_empty);
+    }
+
+    try {
+        const branch = await getBranch();
+
+        // Запрос data.json
+        const res = await fetchWithTimeout(`${API}/contents/data.json?ref=${branch}&t=${Date.now()}`, { cache: 'no-store' }, 8000);
+        if (!res.ok) throw new Error('GitHub ' + res.status);
+        const file = await res.json();
+        const data = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+
+        setCachedData(data);
+        renderData(data);
+
+        // Новости — один запрос
+        let news = [];
+        try {
+            const nr = await fetchWithTimeout(`${API}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=3&t=${Date.now()}`, { cache: 'no-store' }, 8000);
+            if (nr.ok) {
+                news = await nr.json();
+                if (Array.isArray(news)) setCachedNews(news);
+            }
+        } catch(e) { news = getCachedNews(); }
+
+        renderNews(news, data.news_empty);
+
+        // Уведомления — только если нет активного попапа
+        if (!document.querySelector('.notif-popup')) {
+            try {
+                const nfr = await fetchWithTimeout(`${API}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=1&t=${Date.now()}`, { cache: 'no-store' }, 8000);
+                if (nfr.ok) {
+                    const notifs = await nfr.json();
+                    if (Array.isArray(notifs) && notifs.length > 0) {
+                        const last = notifs[0];
+                        const seen = JSON.parse(localStorage.getItem('seenNotifs') || '[]');
+                        if (!seen.includes(last.number)) {
+                            const popup = document.createElement('div');
+                            popup.className = 'notif-popup';
+                            popup.innerHTML = `<button class="notif-close" onclick="this.parentElement.remove()">\u2715</button><h4>\u{1F514} Уведомление</h4><p>${esc(last.title)}</p><div class="notif-date">${new Date(last.created_at).toLocaleString('ru-RU')}</div>`;
+                            document.body.appendChild(popup);
+                            setTimeout(() => { if (popup.parentElement) popup.remove(); }, 15000);
+                            seen.push(last.number);
+                            localStorage.setItem('seenNotifs', JSON.stringify(seen.slice(-20)));
+                        }
+                    }
+                }
+            } catch(e) {}
+        }
+    } catch (err) {
+        console.warn('API недоступен, используем кэш:', err.message);
+        if (!cached) {
+            // Если кэша нет — показываем дефолт
+            renderData(FALLBACK_DATA);
+            renderNews([], FALLBACK_DATA.news_empty);
+        }
+    }
+}
+
 loadSite();
 
-// Автообновление: проверка при возврате на вкладку
+// ===== АВТООБНОВЛЕНИЕ =====
+let refreshTimer = null;
+function scheduleRefresh() {
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(loadSite, 60000);
+}
+scheduleRefresh();
+
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) loadSite();
 });
-
-// Автообновление: каждые 30 секунд
-setInterval(loadSite, 30000);
 
 // ===== ТЕМЫ =====
 document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.documentElement.setAttribute('data-theme', btn.dataset.set);
+        localStorage.setItem('site-theme', btn.dataset.set);
         document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.set === btn.dataset.set));
     });
 });
