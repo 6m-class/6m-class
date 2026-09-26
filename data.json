@@ -12,5 +12,9 @@
   "teacher_photo": "photos/teacher_1790438309688.jpg",
   "teacher_name": "Карпетян Артур Арменович",
   "teacher_role": "Классный руководитель",
-  "students": []
+  "students": [],
+  "activities_page": {
+    "title": "Олимпиадная математика. Пн",
+    "subtitle": "Преподаватель: Карапетян Артур Арменович"
+  }
 }
