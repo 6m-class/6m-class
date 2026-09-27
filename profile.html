@@ -14,185 +14,222 @@
 [data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--glow-strong:rgba(170,0,255,0.8);--border:rgba(170,0,255,0.3);--shadow:rgba(170,0,255,0.2)}
 [data-theme="aero"]{--primary:#00ffff;--primary-rgb:0,255,255;--glow:rgba(0,255,255,0.15);--glow-strong:rgba(0,255,255,0.8);--border:rgba(0,255,255,0.3);--shadow:rgba(0,255,255,0.2)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;align-items:center;justify-content:center;padding:20px}
+body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:20px}
 .bg-glow{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:50vh;background:radial-gradient(ellipse at top,var(--glow),transparent 70%);z-index:-2;pointer-events:none}
 .particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 5px var(--primary);animation:floatUp linear infinite;opacity:0}
 @keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}50%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
-.profile-box{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:16px;padding:40px 30px;width:100%;max-width:480px;text-align:center;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1);z-index:10;position:relative}
-.profile-box h1{font-family:'Orbitron',sans-serif;font-size:1.3rem;margin-bottom:25px;text-transform:uppercase}
-.profile-box h1 span{color:var(--primary)}
-.photo-wrapper{position:relative;width:130px;height:130px;margin:0 auto 20px}
-.photo-circle{width:130px;height:130px;border-radius:50%;border:3px solid var(--border);object-fit:cover;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:3rem;color:#333;transition:.3s}
-.photo-circle:hover{border-color:var(--primary);box-shadow:0 0 25px var(--shadow)}
-.photo-edit-btn{position:absolute;bottom:0;right:0;width:40px;height:40px;border-radius:50%;background:var(--primary);border:3px solid #050505;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:.3s}
-.photo-edit-btn:hover{transform:scale(1.1);box-shadow:0 0 15px var(--glow-strong)}
-.photo-edit-btn input{display:none}
-.info-row{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;margin-bottom:10px;text-align:left}
-.info-label{font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
-.info-value{font-size:.95rem;color:#fff;font-weight:600}
-.info-value.role-admin{color:var(--primary)}
-.profile-name{font-size:1.4rem;font-weight:700;margin-bottom:5px}
-.profile-role{font-size:.8rem;color:#666;margin-bottom:25px}
-.btn-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;justify-content:center}
-.btn{padding:12px 24px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
-.btn-primary{background:var(--primary);color:#000}
-.btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
-.btn-outline{background:transparent;border:1px solid var(--border);color:#aaa}
-.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
-.btn-danger{background:transparent;border:1px solid rgba(255,80,80,0.3);color:#ff5555}
-.btn-danger:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
-.msg{text-align:center;font-size:.85rem;margin-top:15px;min-height:20px}
-.upload-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
-.upload-overlay.show{display:flex}
-.upload-card{background:rgba(20,20,20,0.95);border:1px solid var(--border);border-radius:12px;padding:30px;max-width:400px;width:100%;text-align:center}
-.upload-card h3{font-family:'Orbitron',sans-serif;font-size:1rem;margin-bottom:15px;color:var(--primary)}
-.upload-preview{width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin:0 auto 15px;display:none}
-.upload-card input[type=file]{width:100%;padding:10px;margin-bottom:15px;border:1px dashed var(--border);border-radius:8px;color:#fff;background:rgba(255,255,255,0.03)}
-.upload-card input[type=file]::-webkit-file-upload-button{background:var(--primary);color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:700}
+nav{width:100%;max-width:600px;padding:12px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.nav-left{display:flex;gap:10px;align-items:center}
+.nav-btn{color:#fff;text-decoration:none;font-weight:700;text-transform:uppercase;font-size:.85rem;padding:8px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;transition:.3s;cursor:pointer}
+.nav-btn:hover{border-color:var(--primary);color:var(--primary)}
+.logout-btn{padding:8px 16px;border:1px solid rgba(255,80,80,0.3);border-radius:4px;background:transparent;color:#ff5555;font-size:.85rem;cursor:pointer;transition:.3s;font-family:'Montserrat',sans-serif;font-weight:700}
+.logout-btn:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
+.user-badge{font-size:.85rem;color:#aaa}
+.user-badge b{color:var(--primary)}
+.profile-card{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:30px;width:100%;max-width:500px;text-align:center;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1);position:relative;z-index:10}
+.avatar-wrap{position:relative;width:120px;height:120px;margin:0 auto 20px}
+.avatar{width:120px;height:120px;border-radius:50%;border:3px solid var(--primary);object-fit:cover;box-shadow:0 0 25px var(--shadow);background:rgba(255,255,255,0.05)}
+.avatar-placeholder{width:120px;height:120px;border-radius:50%;border:3px solid var(--primary);background:rgba(var(--primary-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-family:'Orbitron',sans-serif;font-weight:900;color:var(--primary);box-shadow:0 0 25px var(--shadow)}
+.avatar-upload-btn{position:absolute;bottom:-5px;right:-5px;width:36px;height:36px;border-radius:50%;background:var(--primary);border:2px solid #050505;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.3s}
+.avatar-upload-btn:hover{transform:scale(1.15);box-shadow:0 0 15px var(--shadow)}
+.profile-name{font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:5px}
+.profile-name span{color:var(--primary)}
+.profile-info{display:flex;gap:30px;justify-content:center;margin:20px 0;flex-wrap:wrap}
+.info-item{text-align:center}
+.info-label{font-size:.75rem;color:#555;text-transform:uppercase;margin-bottom:3px}
+.info-value{font-size:1.1rem;font-weight:700}
+.info-value span{color:var(--primary)}
+.upload-section{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08)}
+.upload-section h3{font-size:.9rem;color:#aaa;margin-bottom:12px;text-transform:uppercase}
+.file-label{display:inline-block;padding:10px 24px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:.3s;font-size:.85rem;color:var(--primary)}
+.file-label:hover{background:rgba(var(--primary-rgb),0.1);box-shadow:0 0 15px var(--shadow)}
+.file-input{display:none}
+.upload-preview{margin-top:15px;display:none}
+.upload-preview img{max-width:100px;max-height:100px;border-radius:8px;border:1px solid var(--border)}
+.upload-btn{margin-top:12px;padding:12px 30px;background:var(--primary);border:none;border-radius:8px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;cursor:pointer;transition:.3s;font-size:.9rem;text-transform:uppercase}
+.upload-btn:hover{box-shadow:0 0 25px var(--shadow);transform:translateY(-2px)}
+.upload-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.status-msg{margin-top:12px;font-size:.85rem;min-height:20px}
+.status-msg.ok{color:#00ff66}
+.status-msg.err{color:#ff5555}
+@media(max-width:600px){.profile-card{padding:20px 15px}.profile-info{gap:15px}}
 </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="particles" id="particles"></div>
-<div class="profile-box">
-<h1>Мой <span>профиль</span></h1>
-<div class="photo-wrapper">
-<div class="photo-circle" id="photoCircle">👤</div>
-<label class="photo-edit-btn">📷
-<input type="file" accept="image/*" onchange="uploadPhoto(this)">
-</label>
+<nav>
+<div class="nav-left">
+<a href="index.html" class="nav-btn">← Главная</a>
+<a href="chat.html" class="nav-btn">💬 Чат</a>
 </div>
-<div class="profile-name" id="profileName">Загрузка...</div>
-<div class="profile-role" id="profileRole"></div>
-<div class="info-row"><div class="info-label">Логин</div><div class="info-value" id="infoLogin">—</div></div>
-<div class="info-row"><div class="info-label">Роль</div><div class="info-value" id="infoRole">—</div></div>
-<div class="info-row"><div class="info-label">Сообщений в чате</div><div class="info-value" id="infoMsgCount">—</div></div>
-<div class="btn-row">
-<a href="chat.html" class="btn btn-primary">💬 Чат</a>
-<a href="index.html" class="btn btn-outline">🏠 Главная</a>
-<button class="btn btn-danger" onclick="logout()">🚪 Выйти</button>
+<button class="logout-btn" onclick="logout()">Выйти</button>
+</nav>
+<div class="profile-card">
+<div class="avatar-wrap" id="avatarWrap"></div>
+<div class="profile-name" id="profileName"></div>
+<div class="profile-info">
+<div class="info-item"><div class="info-label">Логин</div><div class="info-value" id="profileLogin"></div></div>
+<div class="info-item"><div class="info-label">Роль</div><div class="info-value" id="profileRole"></div></div>
+<div class="info-item"><div class="info-label">Сообщений</div><div class="info-value" id="profileMsgCount"><span>0</span></div></div>
 </div>
-<div class="msg" id="profileMsg"></div>
+<div class="upload-section">
+<h3>🖼️ Загрузить фото</h3>
+<label class="file-label" for="fileInput">📷 Выбрать файл</label>
+<input type="file" id="fileInput" class="file-input" accept="image/*">
+<div class="upload-preview" id="uploadPreview">
+<img id="previewImg" src="">
+<button class="upload-btn" id="uploadBtn" onclick="uploadAvatar()">Сохранить</button>
 </div>
-<div class="upload-overlay" id="uploadOverlay">
-<div class="upload-card">
-<h3>Загрузка фото</h3>
-<img class="upload-preview" id="uploadPreview">
-<div id="uploadStatus" style="color:#666;font-size:.85rem;margin-bottom:15px">Выберите фото</div>
-<button class="btn btn-primary" id="uploadBtn" onclick="confirmUpload()" disabled style="opacity:.5">💾 Сохранить</button>
-<button class="btn btn-outline" onclick="cancelUpload()">Отмена</button>
+<div class="status-msg" id="statusMsg"></div>
 </div>
 </div>
 <script src="settings.js"></script>
 <script>
 const REPO='6m-class/6m-class';
 const API=`https://api.github.com/repos/${REPO}`;
-const _k='6m-class';const _e=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];const TOKEN=_e.map((c,i)=>String.fromCharCode(c^_k.charCodeAt(i%_k.length))).join('');
+const _k='6m-class';const _e=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];
+const TOKEN=_e.map((c,i)=>String.fromCharCode(c^_k.charCodeAt(i%_k.length))).join('');
 const user=JSON.parse(localStorage.getItem('class_user')||'null');
 if(!user){window.location.href='login.html';}
-let pendingPhotoFile=null;
-let pendingPhotoBase64=null;
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-function showMsg(t,c){const e=document.getElementById('profileMsg');e.textContent=t;e.style.color=c;setTimeout(()=>e.textContent='',5000)}
-async function fetchT(url,opts={},ms=12000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);return fetch(url,{...opts,signal:c.signal}).finally(()=>clearTimeout(t))}
-
-async function loadDataJson(){
-const urls=[
-`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,
-`https://raw.githubusercontent.com/${REPO}/master/data.json?v=${Date.now()}`,
-`https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`,
-`data.json?v=${Date.now()}`
-];
-for(const url of urls){try{const c=new AbortController();const t=setTimeout(()=>c.abort(),8000);const r=await fetch(url,{cache:'no-store',signal:c.signal});clearTimeout(t);if(r.ok)return await r.json();}catch(e){continue}}
-return null;
+const headers={'Authorization':`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+async function fetchJSON(url,opts={},ms=15000){
+const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
+const r=await fetch(url,{...opts,signal:c.signal});
+const data=await r.json().catch(()=>({message:'JSON parse error'}));
+if(!r.ok)throw new Error(data.message||('HTTP '+r.status));
+return data;
 }
-
+// Отрисовка аватара
+function renderAvatar(url){
+const wrap=document.getElementById('avatarWrap');
+if(url){
+wrap.innerHTML=`<img class="avatar" src="${url}" alt=""><div class="avatar-upload-btn" onclick="document.getElementById('fileInput').click()">📷</div>`;
+}else{
+const letter=(user.name||'?')[0].toUpperCase();
+wrap.innerHTML=`<div class="avatar-placeholder">${esc(letter)}</div><div class="avatar-upload-btn" onclick="document.getElementById('fileInput').click()">📷</div>`;
+}
+}
+// Заполнение профиля
+document.getElementById('profileName').innerHTML=esc(user.name)+(user.role==='admin'?' 👑':'');
+document.getElementById('profileLogin').textContent=user.login;
+document.getElementById('profileRole').innerHTML=user.role==='admin'?'<span>Админ 👑</span>':'Ученик';
+// Загрузка data.json
 async function loadProfile(){
-const data=await loadDataJson();
-if(!data){showMsg('Не удалось загрузить данные',' #ff5555');return;}
+try{
+const data=await fetchJSON(`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,{cache:'no-store'},10000);
 const accounts=Array.isArray(data.accounts)?data.accounts:[];
 const acc=accounts.find(a=>a.login===user.login);
-if(!acc){showMsg('Аккаунт не найден',' #ff5555');return;}
-document.getElementById('profileName').textContent=acc.name||acc.login;
-document.getElementById('profileRole').textContent=acc.role==='admin'?'Администратор':'Ученик';
-document.getElementById('infoLogin').textContent=acc.login;
-document.getElementById('infoRole').textContent=acc.role==='admin'?'Администратор':'Ученик';
-document.getElementById('infoRole').className='info-value'+(acc.role==='admin'?' role-admin':'');
-if(acc.photo){
-const pc=document.getElementById('photoCircle');
-pc.innerHTML=`<img src="${acc.photo}?t=${Date.now()}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" onerror="this.parentElement.innerHTML='👤'">`;
+if(acc&&acc.avatar){
+renderAvatar(acc.avatar);
+localStorage.setItem('class_avatar',acc.avatar);
+}else{
+renderAvatar(null);
 }
-// Count messages
-try{
-const r=await fetchT(`${API}/issues?labels=${encodeURIComponent('чат')}&state=open&per_page=5&t=${Date.now()}`,{cache:'no-store',headers:{'Authorization':`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json'}});
-if(r.ok){const issues=await r.json();const chat=issues.find(i=>!i.pull_request);if(chat){
-const rc=await fetchT(`${API}/issues/${chat.number}/comments?per_page=100&t=${Date.now()}`,{cache:'no-store',headers:{'Authorization':`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json'}});
-if(rc.ok){const comments=await rc.json();let count=0;comments.forEach(c=>{try{const p=JSON.parse(c.body);if(p.login===user.login)count++;}catch(e){if(c.user.login===user.login)count++;}});document.getElementById('infoMsgCount').textContent=count;}
-}}
-}catch(e){}
-}
-
-function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=()=>reject(new Error('Ошибка чтения'));r.readAsDataURL(file);});}
-
-function uploadPhoto(input){
-const file=input.files[0];
-if(!file)return;
-if(file.size>5*1024*1024){showMsg('Файл слишком большой (макс 5 МБ)','#ff5555');return;}
-pendingPhotoFile=file;
-const reader=new FileReader();
-reader.onload=()=>{pendingPhotoBase64=reader.result;const prev=document.getElementById('uploadPreview');prev.src=reader.result;prev.style.display='block';document.getElementById('uploadStatus').textContent='Фото готово к загрузке';document.getElementById('uploadBtn').style.opacity='1';document.getElementById('uploadBtn').disabled=false;};
-reader.readAsDataURL(file);
-document.getElementById('uploadOverlay').classList.add('show');
-}
-
-function cancelUpload(){document.getElementById('uploadOverlay').classList.remove('show');pendingPhotoFile=null;pendingPhotoBase64=null;document.getElementById('uploadPreview').style.display='none';document.getElementById('uploadStatus').textContent='Выберите фото';document.getElementById('uploadBtn').style.opacity='.5';document.getElementById('uploadBtn').disabled=true;}
-
-async function confirmUpload(){
-if(!pendingPhotoFile)return;
-const btn=document.getElementById('uploadBtn');
-btn.disabled=true;btn.textContent='⏳ Загрузка...';
-try{
-const base64=await fileToBase64(pendingPhotoFile);
-const ext=pendingPhotoFile.name.split('.').pop().toLowerCase();
-const filename=`avatar_${user.login}_${Date.now()}.${ext}`;
-const res=await fetchT(`${API}/contents/avatars/${filename}`,{method:'PUT',headers:{'Authorization':`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:`Аватар: ${user.login}`,content:base64,branch:'main'})});
-if(!res.ok&&res.status!==201&&res.status!==200){const err=await res.json().catch(()=>{});throw new Error(err?.message||'Ошибка загрузки');}
-const photoUrl=`https://raw.githubusercontent.com/${REPO}/main/avatars/${filename}`;
-// Update data.json
-const dataFile=await fetchT(`${API}/contents/data.json?ref=main`,{cache:'no-store',headers:{'Authorization':`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json'}});
-const dataSha=(await dataFile.json()).sha;
-const rawContent=atob((await dataFile.json()).content.replace(/\n/g,''));
-const data=JSON.parse(decodeURIComponent(escape(rawContent)));
-if(!Array.isArray(data.accounts))data.accounts=[];
-const acc=data.accounts.find(a=>a.login===user.login);
-if(acc)acc.photo=photoUrl;
-const newContent=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
-await fetchT(`${API}/contents/data.json`,{method:'PUT',headers:{'Authorization':`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:`Фото профиля: ${user.login}`,content:newContent,sha:dataSha,branch:'main'})});
-// Update localStorage
-const updatedUser={...user,photo:photoUrl};
-localStorage.setItem('class_user',JSON.stringify(updatedUser));
-// Update UI
-const pc=document.getElementById('photoCircle');
-pc.innerHTML=`<img src="${photoUrl}?t=${Date.now()}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
-showMsg('✅ Фото сохранено!','#00ff66');
-cancelUpload();
-btn.textContent='💾 Сохранить';
+// Счётчик сообщений
+const msgCount=await countMessages();
+document.getElementById('profileMsgCount').innerHTML=`<span>${msgCount}</span>`;
 }catch(e){
-showMsg('❌ '+e.message,'#ff5555');
-btn.textContent='💾 Сохранить';btn.disabled=false;
+renderAvatar(localStorage.getItem('class_avatar')||null);
+document.getElementById('statusMsg').textContent='Не удалось загрузить данные: '+e.message;
+document.getElementById('statusMsg').className='status-msg err';
 }
 }
-
-function logout(){localStorage.removeItem('class_user');window.location.href='login.html';}
-
+// Подсчёт сообщений
+async function countMessages(){
+try{
+const issues=await fetchJSON(`${API}/issues?labels=${encodeURIComponent('чат')}&state=open&per_page=5&t=${Date.now()}`,{cache:'no-store',headers},10000);
+const chat=issues.find(i=>!i.pull_request);
+if(!chat)return 0;
+const comments=await fetchJSON(`${API}/issues/${chat.number}/comments?per_page=100&t=${Date.now()}`,{cache:'no-store',headers},10000);
+return comments.filter(c=>{try{const p=JSON.parse(c.body);return p.login===user.login||p.name===user.name;}catch(e){return false;}}).length;
+}catch(e){return 0;}
+}
+// Превью файла
+let selectedFile=null;
+document.getElementById('fileInput').addEventListener('change',e=>{
+const file=e.target.files[0];
+if(!file)return;
+if(file.size>500000){
+document.getElementById('statusMsg').textContent='❌ Файл слишком большой (макс 500 КБ)';
+document.getElementById('statusMsg').className='status-msg err';
+return;
+}
+selectedFile=file;
+const reader=new FileReader();
+reader.onload=ev=>{
+document.getElementById('previewImg').src=ev.target.result;
+document.getElementById('uploadPreview').style.display='block';
+};
+reader.readAsDataURL(file);
+});
+// Загрузка на GitHub
+async function uploadAvatar(){
+if(!selectedFile)return;
+const btn=document.getElementById('uploadBtn');
+const status=document.getElementById('statusMsg');
+btn.disabled=true;btn.textContent='⏳ Загрузка...';status.textContent='';status.className='status-msg';
+try{
+const reader=new FileReader();
+const base64=await new Promise((res,rej)=>{reader.onload=()=>res(reader.result);reader.onerror=rej;reader.readAsDataURL(selectedFile);});
+const base64Data=base64.split(',')[1];
+const fileName=`avatars/${user.login}_${Date.now()}.jpg`;
+const path=encodeURIComponent(fileName);
+// 1. Загружаем файл в репозиторий
+const fileData=await fetchJSON(`${API}/contents/${path}`,{
+method:'PUT',
+headers:{...headers,'Content-Type':'application/json'},
+body:JSON.stringify({message:`Upload avatar for ${user.login}`,content:base64Data})
+},30000);
+const rawUrl=`https://raw.githubusercontent.com/${REPO}/main/${fileName}?v=${Date.now()}`;
+// 2. Обновляем data.json
+const dataUrl=`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`;
+const dataResp=await fetch(dataUrl,{cache:'no-store'});
+const data=await dataResp.json();
+const accounts=Array.isArray(data.accounts)?data.accounts:[];
+const acc=accounts.find(a=>a.login===user.login);
+if(acc){acc.avatar=rawUrl;}
+const newData=JSON.stringify(data,null,2);
+const newDataB64=btoa(unescape(encodeURIComponent(newData)));
+// Получаем sha файла data.json
+const dataMeta=await fetchJSON(`${API}/contents/data.json`,{cache:'no-store',headers},10000);
+await fetchJSON(`${API}/contents/data.json`,{
+method:'PUT',
+headers:{...headers,'Content-Type':'application/json'},
+body:JSON.stringify({message:`Update avatar for ${user.login}`,content:newDataB64,sha:dataMeta.sha})
+},15000);
+// Готово
+renderAvatar(rawUrl);
+localStorage.setItem('class_avatar',rawUrl);
+status.textContent='✅ Фото сохранено!';
+status.className='status-msg ok';
+btn.disabled=false;btn.textContent='Сохранить';
+document.getElementById('uploadPreview').style.display='none';
+selectedFile=null;
+document.getElementById('fileInput').value='';
+}catch(e){
+status.textContent='❌ '+e.message;
+status.className='status-msg err';
+btn.disabled=false;btn.textContent='Сохранить';
+}
+}
+function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
 loadProfile();
-
 // Particles
 const isMobile=window.innerWidth<600;
 const pc=document.getElementById('particles');
-const count=isMobile?12:25;
-for(let i=0;i<count;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+6}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
+const count=isMobile?10:20;
+for(let i=0;i<count;i++){
+const p=document.createElement('div');p.classList.add('particle');
+const s=Math.random()*3+1;
+p.style.width=`${s}px`;p.style.height=`${s}px`;
+p.style.left=`${Math.random()*100}vw`;
+p.style.animationDuration=`${Math.random()*10+6}s`;
+p.style.animationDelay=`${Math.random()*5}s`;
+pc.appendChild(p);
+}
 </script>
 </body>
 </html>
