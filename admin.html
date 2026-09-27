@@ -45,9 +45,10 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .card-badge{font-size:.7rem;padding:4px 10px;border-radius:20px;background:rgba(var(--primary-rgb),0.15);color:var(--primary);font-weight:700}
 .field{margin-bottom:18px}
 .field label{display:block;font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
-.field input,.field textarea{width:100%;padding:12px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-size:.95rem;outline:none;transition:.3s;resize:vertical}
-.field input:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 12px rgba(var(--primary-rgb),0.2)}
+.field input,.field textarea,.field select{width:100%;padding:12px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-size:.95rem;outline:none;transition:.3s;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 12px rgba(var(--primary-rgb),0.2)}
 .field input[type="file"]{padding:10px;border:1px dashed var(--border)}
+.field select option{background:#111;color:#fff}
 .btn{padding:12px 25px;border-radius:8px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s;letter-spacing:.5px}
 .btn-primary{background:var(--primary);color:#000}
 .btn-primary:hover{box-shadow:0 0 20px rgba(var(--primary-rgb),0.5);transform:translateY(-2px)}
@@ -75,7 +76,6 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .activity-card-edit .field{margin-bottom:10px}
 .student-card-edit{display:flex;align-items:center;gap:15px;padding:15px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;margin-bottom:10px}
 .student-card-edit img{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid var(--border)}
-/* Support tab styles */
 .support-item{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:15px;position:relative}
 .support-item.closed{opacity:.6;border-color:rgba(255,255,255,0.04)}
 .support-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap}
@@ -132,6 +132,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="stat-card"><div class="stat-num" id="statSchedule">0</div><div class="stat-label">Уроков</div></div>
             <div class="stat-card"><div class="stat-num" id="statStudents">0</div><div class="stat-label">Учеников</div></div>
             <div class="stat-card"><div class="stat-num" id="statSupport">0</div><div class="stat-label">Поддержка</div></div>
+            <div class="stat-card"><div class="stat-num" id="statAccounts">0</div><div class="stat-label">Аккаунтов</div></div>
             <div class="stat-card"><div class="stat-num" id="statTheme">🔴</div><div class="stat-label">Тема</div></div>
         </div>
 
@@ -144,6 +145,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="tab" onclick="switchTab('students',this)">👥 Ученики</div>
             <div class="tab" onclick="switchTab('teacher',this)">🧑‍🏫 Учитель</div>
             <div class="tab" onclick="switchTab('support',this)">💬 Поддержка</div>
+            <div class="tab" onclick="switchTab('accounts',this)">🔑 Аккаунты</div>
             <div class="tab" onclick="switchTab('theme',this)">🎨 Тема</div>
             <div class="tab" onclick="switchTab('settings',this)">⚙️ Настройки</div>
         </div>
@@ -281,6 +283,23 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
+        <!-- ===== АККАУНТЫ ===== -->
+        <div class="section" id="sec-accounts">
+            <div class="card">
+                <div class="card-header"><div class="card-title">🔑 Регистрация аккаунтов</div><div class="card-badge" id="accountsBadge">0</div></div>
+                <div class="field"><label>Логин</label><input type="text" id="accLogin" placeholder="ivan"></div>
+                <div class="field"><label>Пароль</label><input type="text" id="accPassword" placeholder="1234"></div>
+                <div class="field"><label>Имя</label><input type="text" id="accName" placeholder="Иван Иванов"></div>
+                <div class="field"><label>Роль</label><select id="accRole"><option value="student">Ученик</option><option value="admin">Админ</option></select></div>
+                <button class="btn btn-primary" onclick="addAccount()">➕ Зарегистрировать</button>
+                <div class="msg" id="msgAccount"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Все аккаунты</div></div>
+                <div class="item-list" id="accountsList"></div>
+            </div>
+        </div>
+
         <!-- ===== ТЕМА ===== -->
         <div class="section" id="sec-theme">
             <div class="card">
@@ -320,7 +339,6 @@ let siteData = {};
 let dataSha = '';
 let actCardsDraft = [];
 
-// API с антикэшем
 async function api(path, opts = {}) {
     const sep = path.includes('?') ? '&' : '?';
     const res = await fetch(`https://api.github.com${path}${sep}t=${Date.now()}`, {
@@ -345,7 +363,6 @@ async function api(path, opts = {}) {
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 function showMsg(id, text, color) { const el = document.getElementById(id); if(!el) return; el.textContent = text; el.style.color = color; setTimeout(() => { el.textContent = ''; }, 5000); }
 
-// ===== ПОДКЛЮЧЕНИЕ =====
 async function connect() {
     TOKEN = document.getElementById('tokenInput').value.trim();
     if (!TOKEN) { document.getElementById('connectError').textContent = '❌ Вставь токен'; return; }
@@ -390,7 +407,6 @@ async function detectBranch() {
     catch (e) { BRANCH = 'master'; }
 }
 
-// ===== СВЕЖАЯ ЗАГРУЗКА data.json ПЕРЕД КАЖДЫМ ДЕЙСТВИЕМ =====
 async function freshLoadData() {
     const file = await api(`/repos/${REPO}/contents/data.json?ref=${BRANCH}`);
     dataSha = file.sha;
@@ -398,10 +414,8 @@ async function freshLoadData() {
     return siteData;
 }
 
-// ===== ПОЛНАЯ ЗАГРУЗКА =====
 async function loadAll() {
     await freshLoadData();
-
     document.getElementById('editTitle').value = siteData.title || '';
     document.getElementById('editPoem1').value = siteData.poem_line1 || '';
     document.getElementById('editPoem2').value = siteData.poem_line2 || '';
@@ -413,10 +427,8 @@ async function loadAll() {
     document.getElementById('editActivities').value = siteData.activities || '';
     document.getElementById('editActTitle').value = siteData.activities_title || '';
     document.getElementById('editActSubtitle').value = siteData.activities_subtitle || '';
-
     actCardsDraft = Array.isArray(siteData.activities_cards) ? siteData.activities_cards.map(c => ({...c})) : [];
     renderActCardsDraft();
-
     document.getElementById('teacherName').value = (siteData.teacher && siteData.teacher.name) || '';
     document.getElementById('teacherRole').value = (siteData.teacher && siteData.teacher.role) || '';
     if (siteData.teacher && siteData.teacher.photo) {
@@ -424,10 +436,8 @@ async function loadAll() {
         pv.src = siteData.teacher.photo + '?t=' + Date.now();
         pv.style.display = 'block';
     }
-
     const news = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('новость')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
     const notifs = (await api(`/repos/${REPO}/issues?labels=${encodeURIComponent('уведомление')}&state=open&sort=created&direction=desc&per_page=50`)).filter(i => !i.pull_request);
-
     document.getElementById('newsCount').textContent = news.length;
     document.getElementById('notifCount').textContent = notifs.length;
     document.getElementById('newsList').innerHTML = news.length ? news.map(n => {
@@ -435,11 +445,9 @@ async function loadAll() {
         return `<div class="item"><div class="item-content"><div class="item-title">${hasVideo?'🎬 ':''}${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleDateString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'news')">✕</button></div></div>`;
     }).join('') : '<p style="color:#555;padding:10px">Новостей пока нет</p>';
     document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => `<div class="item"><div class="item-content"><div class="item-title">${esc(n.title)}</div><div class="item-sub">${new Date(n.created_at).toLocaleString('ru-RU')} · автор: ${esc(n.user.login)}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="closeIssue(${n.number},'notifs')">✕</button></div></div>`).join('') : '<p style="color:#555;padding:10px">Уведомлений нет</p>';
-
     const students = Array.isArray(siteData.students) ? siteData.students : [];
     document.getElementById('studentsBadge').textContent = students.length;
     document.getElementById('studentsList').innerHTML = students.length ? students.map((s, i) => `<div class="student-card-edit"><img src="${esc(s.photo)}?t=${Date.now()}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22><rect fill=%22%23222%22 width=%2260%22 height=%2260%22/></svg>'"><div style="flex:1"><div style="font-weight:700">${esc(s.name)}</div></div><button class="btn btn-danger btn-sm" onclick="deleteStudent(${i})">✕ Удалить</button></div>`).join('') : '<p style="color:#555;padding:10px">Учеников пока нет</p>';
-
     const sched = (siteData.schedule || '').split('\n').filter(l => l.trim()).length;
     const themes = { red: '🔴', blue: '🔵', green: '🟢', aero: '🩵' };
     document.getElementById('statNews').textContent = news.length;
@@ -447,12 +455,10 @@ async function loadAll() {
     document.getElementById('statSchedule').textContent = sched;
     document.getElementById('statStudents').textContent = students.length;
     document.getElementById('statTheme').textContent = themes[siteData.theme] || '🔴';
-
-    // Загружаем поддержку
     loadSupport();
+    loadAccounts();
 }
 
-// ===== ЗАПИСЬ data.json =====
 async function pushData(msg) {
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
     try {
@@ -478,7 +484,6 @@ async function pushData(msg) {
     }
 }
 
-// ===== СОХРАНЕНИЕ ТЕКСТОВ / РАСПИСАНИЯ / ВНЕУРОЧКИ-СПИСКА =====
 async function saveAll(msg) {
     await freshLoadData();
     siteData.title = document.getElementById('editTitle').value.trim();
@@ -507,7 +512,6 @@ async function saveAll(msg) {
     }
 }
 
-// ===== КАРТОЧКИ ВНЕУРОЧКИ =====
 function renderActCardsDraft() {
     const container = document.getElementById('actCardsContainer');
     document.getElementById('actCardsBadge').textContent = actCardsDraft.length;
@@ -550,7 +554,6 @@ async function saveActCards() {
     }
 }
 
-// ===== ТЕМА =====
 async function setTheme(theme) {
     await freshLoadData();
     siteData.theme = theme;
@@ -561,22 +564,16 @@ async function setTheme(theme) {
     } catch (e) { showMsg('msgTheme', '❌ ' + e.message, '#ff5555'); }
 }
 
-// ===== НОВОСТИ / УВЕДОМЛЕНИЯ =====
 async function addNews() {
     const t = document.getElementById('newsTitle').value.trim();
     const x = document.getElementById('newsText').value.trim();
     if (!t || !x) { showMsg('msgNews', '❌ Заполни оба поля', '#ff5555'); return; }
-
     const videoUrl = document.getElementById('newsVideo').value.trim();
     const videoFile = document.getElementById('newsVideoFile').files[0];
     let body = x;
-
-    // Если есть ссылка на видео
     if (videoUrl) {
         body += '\n\n[VIDEO]' + videoUrl + '[/VIDEO]';
     }
-
-    // Если есть файл видео
     if (videoFile) {
         if (videoFile.size > 75 * 1024 * 1024) {
             showMsg('msgNews', '❌ Файл слишком большой (макс 75 МБ). Используй ссылку.', '#ff5555');
@@ -606,7 +603,6 @@ async function addNews() {
         btn.disabled = false;
         btn.textContent = '📤 Опубликовать';
     }
-
     try {
         await api(`/repos/${REPO}/issues`, { method: 'POST', body: JSON.stringify({ title: t, body: body, labels: ['новость'] }) });
         document.getElementById('newsTitle').value = '';
@@ -646,7 +642,6 @@ async function closeIssue(num, type) {
     } catch (e) { alert('❌ ' + e.message); }
 }
 
-// ===== УЧЕНИКИ =====
 async function uploadPhoto(file, filename) {
     const reader = new FileReader();
     return new Promise((resolve, reject) => {
@@ -670,18 +665,15 @@ async function addStudent() {
     const photoFile = document.getElementById('studentPhoto').files[0];
     if (!name) { showMsg('msgStudent', '❌ Введи имя', '#ff5555'); return; }
     if (!photoFile) { showMsg('msgStudent', '❌ Выбери фото', '#ff5555'); return; }
-
     showMsg('msgStudent', '⏳ Загрузка фото...', '#aaa');
     try {
         const ext = photoFile.name.split('.').pop();
         const filename = `student_${Date.now()}.${ext}`;
         const photoUrl = await uploadPhoto(photoFile, filename);
-
         await freshLoadData();
         if (!Array.isArray(siteData.students)) siteData.students = [];
         siteData.students.push({ name, photo: photoUrl });
         await pushData(`Добавлен ученик: ${name}`);
-
         document.getElementById('studentName').value = '';
         document.getElementById('studentPhoto').value = '';
         showMsg('msgStudent', '✅ Ученик добавлен!', '#00ff66');
@@ -706,12 +698,10 @@ async function deleteStudent(i) {
     }
 }
 
-// ===== УЧИТЕЛЬ =====
 async function saveTeacher() {
     const name = document.getElementById('teacherName').value.trim();
     const role = document.getElementById('teacherRole').value.trim();
     const photoFile = document.getElementById('teacherPhoto').files[0];
-
     showMsg('msgTeacher', '⏳ Сохранение...', '#aaa');
     try {
         let photoUrl = '';
@@ -720,14 +710,12 @@ async function saveTeacher() {
             const filename = `teacher_${Date.now()}.${ext}`;
             photoUrl = await uploadPhoto(photoFile, filename);
         }
-
         await freshLoadData();
         if (!siteData.teacher) siteData.teacher = {};
         siteData.teacher.name = name;
         siteData.teacher.role = role;
         if (photoUrl) siteData.teacher.photo = photoUrl;
         await pushData('Обновлён учитель');
-
         document.getElementById('teacherPhoto').value = '';
         showMsg('msgTeacher', '✅ Учитель сохранён!', '#00ff66');
         setTimeout(() => loadAll(), 1000);
@@ -736,35 +724,27 @@ async function saveTeacher() {
     }
 }
 
-// ===== ПОДДЕРЖКА =====
 async function loadSupport() {
     const list = document.getElementById('supportList');
     list.innerHTML = '<p style="color:#555;padding:10px">Загрузка обращений...</p>';
     try {
-        // Получаем все Issues с меткой "поддержка" (открытые и закрытые)
         const [openIssues, closedIssues] = await Promise.all([
             api(`/repos/${REPO}/issues?labels=${encodeURIComponent('поддержка')}&state=open&sort=created&direction=desc&per_page=30`),
             api(`/repos/${REPO}/issues?labels=${encodeURIComponent('поддержка')}&state=closed&sort=created&direction=desc&per_page=30`)
         ]);
         const allIssues = [...openIssues, ...closedIssues].filter(i => !i.pull_request);
-
         document.getElementById('supportCount').textContent = openIssues.filter(i => !i.pull_request).length;
         document.getElementById('statSupport').textContent = openIssues.filter(i => !i.pull_request).length;
-
         if (allIssues.length === 0) {
             list.innerHTML = '<p style="color:#555;padding:10px">Обращений пока нет.</p>';
             return;
         }
-
-        // Рендерим обращения
         for (const issue of allIssues) {
             const div = document.createElement('div');
             div.className = 'support-item' + (issue.state === 'closed' ? ' closed' : '');
             div.id = `support-${issue.number}`;
-
             const statusClass = issue.state === 'closed' ? 'closed' : 'open';
             const statusText = issue.state === 'closed' ? 'Закрыто' : 'Открыто';
-
             div.innerHTML = `
                 <div class="support-header">
                     <div>
@@ -795,8 +775,6 @@ async function loadSupport() {
                 </div>
             `;
             list.appendChild(div);
-
-            // Загружаем комментарии
             loadComments(issue.number);
         }
     } catch (e) {
@@ -838,14 +816,11 @@ async function sendReply(num) {
     const author = document.getElementById(`reply-author-${num}`).value.trim();
     const text = document.getElementById(`reply-text-${num}`).value.trim();
     if (!author || !text) { alert('Заполни поля "Кто отвечает" и "Ответ"'); return; }
-
     const date = new Date().toLocaleString('ru-RU');
     const body = `Кто отвечает: ${author}\nОтвет: ${text}\nДата: ${date}`;
-
     hideReplyForm(num);
     const commentsEl = document.getElementById(`comments-${num}`);
     commentsEl.innerHTML = '<p style="color:#555;font-size:.8rem">Отправка...</p>';
-
     try {
         await api(`/repos/${REPO}/issues/${num}/comments`, {
             method: 'POST',
@@ -862,20 +837,14 @@ async function sendReply(num) {
 async function closeSupport(num) {
     if (!confirm('Закрыть обращение?')) return;
     try {
-        await api(`/repos/${REPO}/issues/${num}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ state: 'closed' })
-        });
+        await api(`/repos/${REPO}/issues/${num}`, { method: 'PATCH', body: JSON.stringify({ state: 'closed' }) });
         loadSupport();
     } catch (e) { alert('❌ ' + e.message); }
 }
 
 async function reopenSupport(num) {
     try {
-        await api(`/repos/${REPO}/issues/${num}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ state: 'open' })
-        });
+        await api(`/repos/${REPO}/issues/${num}`, { method: 'PATCH', body: JSON.stringify({ state: 'open' }) });
         loadSupport();
     } catch (e) { alert('❌ ' + e.message); }
 }
@@ -883,15 +852,9 @@ async function reopenSupport(num) {
 async function deleteSupport(num) {
     if (!confirm('Удалить обращение? Оно будет закрыто, тело очищено, метки удалены. Комментарии останутся в истории GitHub.')) return;
     try {
-        // Закрываем issue и очищаем его
         await api(`/repos/${REPO}/issues/${num}`, {
             method: 'PATCH',
-            body: JSON.stringify({
-                state: 'closed',
-                title: '[УДАЛЕНО]',
-                body: '',
-                labels: []
-            })
+            body: JSON.stringify({ state: 'closed', title: '[УДАЛЕНО]', body: '', labels: [] })
         });
         loadSupport();
     } catch (e) { alert('❌ ' + e.message); }
@@ -900,12 +863,9 @@ async function deleteSupport(num) {
 async function deleteComment(commentId, issueNum) {
     if (!confirm('Удалить этот ответ?')) return;
     try {
-        await api(`/repos/${REPO}/issues/comments/${commentId}`, {
-            method: 'DELETE'
-        });
+        await api(`/repos/${REPO}/issues/comments/${commentId}`, { method: 'DELETE' });
         loadComments(issueNum);
     } catch (e) {
-        // Если нет прав на удаление — показываем сообщение
         if (e.message.includes('403')) {
             alert('❌ Нет прав на удаление комментария. Удалять можно только свои комментарии или нужен токен с правами admin.');
         } else {
@@ -914,7 +874,55 @@ async function deleteComment(commentId, issueNum) {
     }
 }
 
-// ===== ТАБЫ =====
+// ===== АККАУНТЫ =====
+function loadAccounts(){
+    const accounts=Array.isArray(siteData.accounts)?siteData.accounts:[];
+    document.getElementById('accountsBadge').textContent=accounts.length;
+    document.getElementById('statAccounts').textContent=accounts.length;
+    document.getElementById('accountsList').innerHTML=accounts.length?accounts.map((a,i)=>
+        `<div class="item"><div class="item-content"><div class="item-title">${esc(a.name)} ${a.role==='admin'?'👑':''}</div><div class="item-sub">Логин: ${esc(a.login)} · Роль: ${a.role==='admin'?'Админ':'Ученик'}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">✕</button></div></div>`
+    ).join(''):'<p style="color:#555;padding:10px">Аккаунтов пока нет</p>';
+}
+
+async function addAccount(){
+    const login=document.getElementById('accLogin').value.trim();
+    const password=document.getElementById('accPassword').value.trim();
+    const name=document.getElementById('accName').value.trim();
+    const role=document.getElementById('accRole').value;
+    if(!login||!password||!name){showMsg('msgAccount','❌ Заполни все поля','#ff5555');return;}
+    try{
+        await freshLoadData();
+        if(!Array.isArray(siteData.accounts))siteData.accounts=[];
+        if(siteData.accounts.find(a=>a.login===login)){
+            showMsg('msgAccount','❌ Логин уже занят','#ff5555');return;
+        }
+        siteData.accounts.push({login,password,name,role});
+        await pushData('Добавлен аккаунт: '+login);
+        document.getElementById('accLogin').value='';
+        document.getElementById('accPassword').value='';
+        document.getElementById('accName').value='';
+        showMsg('msgAccount','✅ Аккаунт создан!','#00ff66');
+        setTimeout(()=>loadAll(),1000);
+    }catch(e){
+        showMsg('msgAccount','❌ '+e.message,'#ff5555');
+    }
+}
+
+async function deleteAccount(i){
+    if(!confirm('Удалить аккаунт?'))return;
+    try{
+        await freshLoadData();
+        if(Array.isArray(siteData.accounts)){
+            siteData.accounts.splice(i,1);
+            await pushData('Удалён аккаунт');
+            showMsg('msgAccount','✅ Аккаунт удалён','#00ff66');
+            setTimeout(()=>loadAll(),1000);
+        }
+    }catch(e){
+        showMsg('msgAccount','❌ '+e.message,'#ff5555');
+    }
+}
+
 function switchTab(name, el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -922,7 +930,6 @@ function switchTab(name, el) {
     document.getElementById('sec-' + name).classList.add('active');
 }
 
-// ===== СТАРТ =====
 (async () => {
     if (TOKEN) {
         try {

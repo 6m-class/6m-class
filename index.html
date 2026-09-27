@@ -18,10 +18,15 @@
 [data-theme="purple"] { --primary:#aa00ff; --primary-rgb:170,0,255; --glow:rgba(170,0,255,0.15); --glow-strong:rgba(170,0,255,0.8); --border:rgba(170,0,255,0.25); --shadow:rgba(170,0,255,0.2); }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflow-x:hidden;min-height:100vh;display:flex;justify-content:center;align-items:center;position:relative;padding:40px 20px}
-.admin-link{position:fixed;top:20px;right:20px;z-index:1000;padding:8px 15px;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:5px;color:var(--primary);text-decoration:none;font-size:.8rem;font-weight:700;transition:.3s;backdrop-filter:blur(10px)}
+
+/* Навигация — общий контейнер справа сверху */
+.nav-top{position:fixed;top:20px;right:20px;z-index:1000;display:flex;gap:8px;align-items:center}
+.nav-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:8px;color:var(--primary);text-decoration:none;font-size:1.3rem;transition:.3s;backdrop-filter:blur(10px);flex-shrink:0}
+.nav-btn:hover{background:rgba(var(--primary-rgb),0.15);box-shadow:0 0 15px var(--glow-strong);transform:scale(1.1)}
+.nav-btn.gear:hover{transform:rotate(45deg)}
+.admin-link{padding:8px 15px;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:8px;color:var(--primary);text-decoration:none;font-size:.8rem;font-weight:700;transition:.3s;backdrop-filter:blur(10px);white-space:nowrap}
 .admin-link:hover{background:var(--primary);color:#000;box-shadow:0 0 15px var(--glow-strong)}
-.gear-link{position:fixed;top:20px;right:90px;z-index:1000;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:8px;color:var(--primary);text-decoration:none;font-size:1.3rem;transition:.3s;backdrop-filter:blur(10px)}
-.gear-link:hover{background:rgba(var(--primary-rgb),0.15);box-shadow:0 0 15px var(--glow-strong);transform:rotate(45deg)}
+
 .background-glow{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80vw;height:80vw;background:radial-gradient(circle,var(--glow) 0%,rgba(10,10,10,0) 70%);z-index:-2;animation:pulseGlow 4s infinite alternate;pointer-events:none}
 @keyframes pulseGlow{0%{transform:translate(-50%,-50%) scale(1);opacity:.8}100%{transform:translate(-50%,-50%) scale(1.2);opacity:1}}
 .container{text-align:center;z-index:10;max-width:1000px;width:100%;display:flex;flex-direction:column;align-items:center}
@@ -93,7 +98,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 .notif-date{font-size:.7rem;color:#888;margin-top:2px}
 .notif-close{position:absolute;top:50%;right:14px;transform:translateY(-50%);background:none;border:none;color:#888;cursor:pointer;font-size:1.3rem;transition:.3s;padding:4px 8px;line-height:1}
 .notif-close:hover{color:var(--primary);transform:translateY(-50%) scale(1.2)}
-@media(max-width:600px){.notif-bar{padding:12px 44px 12px 16px}.notif-title{font-size:.85rem}.admin-link{font-size:.7rem;padding:6px 10px}.gear-link{width:32px;height:32px;font-size:1.1rem}}
+@media(max-width:600px){.notif-bar{padding:12px 44px 12px 16px}.notif-title{font-size:.85rem}.nav-btn{width:32px;height:32px;font-size:1.1rem}.admin-link{font-size:.7rem;padding:6px 10px}.nav-top{gap:5px;top:15px;right:15px}}
 
 .particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
 .particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 10px var(--primary);animation:floatUp linear infinite;opacity:0}
@@ -107,8 +112,12 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;overflo
 </style>
 </head>
 <body>
-<a href="admin.html" class="admin-link">⚙️ Админ</a>
-<a href="settings.html" class="gear-link" title="Настройки">⚙</a>
+<div class="nav-top">
+    <a href="settings.html" class="nav-btn gear" title="Настройки">⚙</a>
+    <a href="chat.html" class="nav-btn" title="Чат класса">💬</a>
+    <a href="login.html" class="nav-btn" title="Аккаунт">👤</a>
+    <a href="admin.html" class="admin-link">⚙️ Админ</a>
+</div>
 <div class="background-glow"></div>
 <div class="particles" id="particles"></div>
 
@@ -299,9 +308,6 @@ function renderData(data) {
     if (data.poem_line3) document.getElementById('poemLine3').textContent = data.poem_line3;
     if (data.btn_text) document.getElementById('mainBtn').textContent = data.btn_text;
     if (data.btn_link) document.getElementById('mainBtn').href = data.btn_link;
-
-    // ТЕМА: localStorage (настройки пользователя) приоритетнее data.json
-    // data.theme не трогаем — тему выбирает пользователь через настройки
 
     const sched = (data.schedule || '').split('\n').filter(l => l.trim());
     document.getElementById('schedBadge').textContent = sched.length + ' уроков';
