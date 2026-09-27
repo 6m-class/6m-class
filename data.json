@@ -75,5 +75,12 @@
     "role": "Классный руководитель",
     "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/teacher_1790451683391.jpg"
   },
-  "accounts": []
+  "accounts": [
+    {
+      "login": "Maksyta",
+      "password": "Maksyta",
+      "name": "Субботин Максим",
+      "role": "admin"
+    }
+  ]
 }
