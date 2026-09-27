@@ -89,6 +89,12 @@
       "password": "232323",
       "role": "admin",
       "avatar": ""
+    },
+    {
+      "login": "Maxim61014",
+      "password": "232323",
+      "name": "Максим",
+      "role": "admin"
     }
   ],
   "pinned": []
