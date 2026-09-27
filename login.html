@@ -19,69 +19,79 @@ body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-heigh
 .particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 5px var(--primary);animation:floatUp linear infinite;opacity:0}
 @keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}50%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
-.login-box{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:40px 30px;width:100%;max-width:400px;text-align:center;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1);z-index:10;position:relative}
-.login-box h1{font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:8px;text-transform:uppercase}
-.login-box h1 span{color:var(--primary)}
-.login-box p{color:#666;font-size:.85rem;margin-bottom:25px}
-.login-box input{width:100%;padding:14px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:.9rem;outline:none;transition:.3s;margin-bottom:12px;font-family:'Montserrat',sans-serif}
-.login-box input:focus{border-color:var(--primary);box-shadow:0 0 15px rgba(var(--primary-rgb),0.3)}
-.login-box button{width:100%;padding:14px;background:var(--primary);border:none;border-radius:8px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;cursor:pointer;transition:.3s;margin-top:5px}
-.login-box button:hover{box-shadow:0 0 25px rgba(var(--primary-rgb),0.6);transform:translateY(-2px)}
-.login-box button:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.login-error{color:#ff5555;font-size:.85rem;margin-top:10px;min-height:20px}
-.back-btn{display:inline-block;margin-top:15px;color:#666;text-decoration:none;font-size:.8rem;transition:.3s}
-.back-btn:hover{color:var(--primary)}
+.login-card{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:35px;width:100%;max-width:400px;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1);position:relative;z-index:10}
+.login-title{font-family:'Orbitron',sans-serif;font-size:1.6rem;text-align:center;margin-bottom:8px;text-transform:uppercase}
+.login-title span{color:var(--primary)}
+.login-sub{text-align:center;color:#888;font-size:.85rem;margin-bottom:25px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:.8rem;color:#aaa;margin-bottom:6px;text-transform:uppercase;font-weight:700}
+.field input{width:100%;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:.95rem;outline:none;transition:.3s;font-family:'Montserrat',sans-serif}
+.field input:focus{border-color:var(--primary);box-shadow:0 0 12px var(--shadow)}
+.login-btn{width:100%;padding:14px;background:var(--primary);border:none;border-radius:8px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;cursor:pointer;transition:.3s;margin-top:5px}
+.login-btn:hover{box-shadow:0 0 25px var(--shadow);transform:translateY(-2px)}
+.login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.reg-link{text-align:center;margin-top:18px;font-size:.85rem;color:#888}
+.reg-link a{color:var(--primary);text-decoration:none;font-weight:700}
+.reg-link a:hover{text-decoration:underline}
+.status-msg{text-align:center;font-size:.85rem;min-height:20px;margin-top:10px}
+.status-msg.ok{color:#00ff66}
+.status-msg.err{color:#ff5555}
+.back-link{position:fixed;top:20px;left:20px;color:#fff;text-decoration:none;font-weight:700;font-size:.85rem;padding:8px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;transition:.3s;z-index:100}
+.back-link:hover{border-color:var(--primary);color:var(--primary)}
 </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="particles" id="particles"></div>
-<div class="login-box">
-<h1>Вход в <span>класс</span></h1>
-<p>Войдите, чтобы открыть профиль и чат</p>
-<input type="text" id="loginInput" placeholder="Логин" onkeydown="if(event.key==='Enter')document.getElementById('passInput').focus()">
-<input type="password" id="passInput" placeholder="Пароль" onkeydown="if(event.key==='Enter')doLogin()">
-<button id="loginBtn" onclick="doLogin()">🔑 Войти</button>
-<div class="login-error" id="loginError"></div>
-<a href="index.html" class="back-btn">← На главную</a>
+<a href="index.html" class="back-link">← Главная</a>
+<div class="login-card">
+<div class="login-title">Вход <span>👋</span></div>
+<div class="login-sub">Войдите в аккаунт класса</div>
+<div class="field"><label>Логин</label><input type="text" id="loginInput" placeholder="ivan123" maxlength="20"></div>
+<div class="field"><label>Пароль</label><input type="password" id="passInput" placeholder="••••••" maxlength="50"></div>
+<button class="login-btn" id="loginBtn" onclick="doLogin()">Войти</button>
+<div class="status-msg" id="statusMsg"></div>
+<div class="reg-link">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></div>
 </div>
 <script src="settings.js"></script>
 <script>
 const REPO='6m-class/6m-class';
-async function loadDataJson(){
-const urls=[
-`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,
-`https://raw.githubusercontent.com/${REPO}/master/data.json?v=${Date.now()}`,
-`https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`,
-`data.json?v=${Date.now()}`
-];
-for(const url of urls){try{const c=new AbortController();const t=setTimeout(()=>c.abort(),8000);const r=await fetch(url,{cache:'no-store',signal:c.signal});clearTimeout(t);if(r.ok)return await r.json();}catch(e){continue}}
-return null;
-}
 async function doLogin(){
 const login=document.getElementById('loginInput').value.trim();
-const pass=document.getElementById('passInput').value.trim();
-const err=document.getElementById('loginError');
+const pass=document.getElementById('passInput').value;
 const btn=document.getElementById('loginBtn');
-if(!login||!pass){err.textContent='❌ Введи логин и пароль';return;}
-btn.disabled=true;btn.textContent='⏳ Проверка...';err.textContent='';
+const status=document.getElementById('statusMsg');
+if(!login||!pass){status.textContent='❌ Заполните все поля';status.className='status-msg err';return;}
+btn.disabled=true;btn.textContent='⏳ Вход...';status.textContent='';status.className='status-msg';
 try{
-const data=await loadDataJson();
-if(!data){err.textContent='❌ Не удалось загрузить данные. Проверь интернет.';btn.disabled=false;btn.textContent='🔑 Войти';return;}
+const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,{cache:'no-store'});
+const data=await resp.json();
 const accounts=Array.isArray(data.accounts)?data.accounts:[];
-if(accounts.length===0){err.textContent='❌ Аккаунтов пока нет. Попроси админа создать.';btn.disabled=false;btn.textContent='🔑 Войти';return;}
 const acc=accounts.find(a=>a.login===login&&a.password===pass);
-if(!acc){err.textContent='❌ Неправильный логин или пароль';btn.disabled=false;btn.textContent='🔑 Войти';return;}
-localStorage.setItem('class_user',JSON.stringify({login:acc.login,name:acc.name,role:acc.role,photo:acc.photo||''}));
-window.location.href='profile.html';
-}catch(e){err.textContent='❌ Ошибка: '+e.message;btn.disabled=false;btn.textContent='🔑 Войти';}
+if(!acc){status.textContent='❌ Неверный логин или пароль';status.className='status-msg err';btn.disabled=false;btn.textContent='Войти';return;}
+localStorage.setItem('class_user',JSON.stringify({name:acc.name,login:acc.login,role:acc.role||'student'}));
+if(acc.avatar)localStorage.setItem('class_avatar',acc.avatar);
+status.textContent='✅ Вход выполнен!';status.className='status-msg ok';
+setTimeout(()=>window.location.href='profile.html',1000);
+}catch(e){
+status.textContent='❌ Ошибка: '+e.message;
+status.className='status-msg err';
+btn.disabled=false;btn.textContent='Войти';
 }
-// Already logged in?
-const saved=localStorage.getItem('class_user');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+// Auto-login if already saved
+const saved=JSON.parse(localStorage.getItem('class_user')||'null');
 if(saved){window.location.href='profile.html';}
-// Particles
-const isMobile=window.innerWidth<600;const pc=document.getElementById('particles');const count=isMobile?12:25;
-for(let i=0;i<count;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+6}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
+const isMobile=window.innerWidth<600;const pc=document.getElementById('particles');const count=isMobile?10:20;
+for(let i=0;i<count;i++){
+const p=document.createElement('div');p.classList.add('particle');
+const s=Math.random()*3+1;p.style.width=`${s}px`;p.style.height=`${s}px`;
+p.style.left=`${Math.random()*100}vw`;
+p.style.animationDuration=`${Math.random()*10+6}s`;
+p.style.animationDelay=`${Math.random()*5}s`;
+pc.appendChild(p);
+}
 </script>
 </body>
 </html>
