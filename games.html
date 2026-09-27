@@ -233,12 +233,14 @@ aimDrawIdle();
 </script>
 
   <script>
-// ===== GEOMETRY DASH =====
+<script>
+// ===== GEOMETRY DASH (переписано) =====
 const gdCanvas=document.getElementById('gdCanvas');
 const gdCtx=gdCanvas.getContext('2d');
 const GD_W=600,GD_H=340,GD_GROUND=280,GD_CELL=30;
-let gdLevel=0,gdRunning=false,gdAnimId=null,gdAttempts=1,gdHolding=false,gdShake=0;
-let gdPlayer={x:100,y:GD_GROUND-30,vy:0,rot:0,mode:'cube',alive:true};
+let gdLevel=0,gdRunning=false,gdAnimId=null,gdAttempts=1,gdShake=0;
+let gdJumpRequested=false;
+let gdPlayer={x:150,y:GD_GROUND-30,vy:0,rot:0,mode:'cube',alive:true,onGround:true};
 let gdCamera=0,gdParticles=[],gdTrail=[];
 let gdBest={0:0,1:0,2:0};
 try{const s=JSON.parse(localStorage.getItem('gd_best')||'{}');gdBest={0:s[0]||0,1:s[1]||0,2:s[2]||0};}catch(e){}
@@ -288,8 +290,8 @@ document.getElementById('gdAttempts').textContent='Попытка '+gdAttempts;
 document.getElementById('gdStartBtn').disabled=true;
 document.getElementById('gdStatus').textContent='';
 document.getElementById('gdStatus').className='game-status';
-gdPlayer={x:100,y:GD_GROUND-30,vy:0,rot:0,mode:'cube',alive:true};
-gdCamera=0;gdParticles=[];gdTrail=[];gdShake=0;
+gdPlayer={x:150,y:GD_GROUND-30,vy:0,rot:0,mode:'cube',alive:true,onGround:true};
+gdCamera=0;gdParticles=[];gdTrail=[];gdShake=0;gdJumpRequested=false;
 gdLoop();
 }
 
@@ -317,7 +319,7 @@ setTimeout(()=>{
 gdRunning=false;
 if(gdAnimId)cancelAnimationFrame(gdAnimId);
 document.getElementById('gdStartBtn').disabled=false;
-document.getElementById('gdStatus').textContent='💀 Погиб! Попробуй ещё';
+document.getElementById('gdStatus').textContent='💀 Погиб! Ещё раз?';
 document.getElementById('gdStatus').className='game-status lose';
 gdDrawIdle();
 },800);
@@ -327,7 +329,7 @@ function gdWin(){
 gdRunning=false;
 if(gdAnimId)cancelAnimationFrame(gdAnimId);
 document.getElementById('gdStartBtn').disabled=false;
-document.getElementById('gdStatus').textContent='🏆 Уровень пройден!';
+document.getElementById('gdStatus').textContent='🏆 Пройдено!';
 document.getElementById('gdStatus').className='game-status win';
 if(gdAttempts<gdBest[gdLevel]||gdBest[gdLevel]===0){
 gdBest[gdLevel]=gdAttempts;
@@ -336,90 +338,151 @@ localStorage.setItem('gd_best',JSON.stringify(gdBest));
 gdDrawIdle();
 }
 
-function gdPlayerOnGround(){
+function gdCheckGround(){
+// Проверяем — стоит ли игрок на земле или на блоке
 const px=gdPlayer.x+gdCamera;
+// Обычный пол
+if(gdPlayer.y>=GD_GROUND-30)return true;
+// Блоки
 for(const o of GD_LEVELS[gdLevel].obstacles){
 if(o.t==='block'){
 const ox=o.x*GD_CELL;
 const blockTop=GD_GROUND-o.h*GD_CELL;
-if(px+25>ox&&px<ox+GD_CELL&&gdPlayer.y+30>=blockTop-2&&gdPlayer.y+30<=blockTop+10)return true;
+// Игрок шириной 30, центр на gdPlayer.x, низ на gdPlayer.y+30
+if(px+28>ox&&px<ox+GD_CELL&&Math.abs(gdPlayer.y+30-blockTop)<3)return true;
 }
 }
-return gdPlayer.y>=GD_GROUND-30;
+return false;
 }
 
 function gdLoop(){
-if(!gdRunning)return;
+if(!gdRunning||!gdPlayer.alive)return;
 const lvl=GD_LEVELS[gdLevel];
 gdCamera+=lvl.speed;
+const px=gdPlayer.x+gdCamera;
 
+// === ФИЗИКА ===
 if(gdPlayer.mode==='cube'){
-gdPlayer.vy+=0.9;
+// Гравитация
+gdPlayer.vy+=0.85;
 gdPlayer.y+=gdPlayer.vy;
-if(gdHolding&&gdPlayerOnGround())gdPlayer.vy=-13;
-if(gdPlayerOnGround()){gdPlayer.y=GD_GROUND-30;gdPlayer.vy=0;gdPlayer.rot=0;}
-else gdPlayer.rot+=0.18;
-}else if(gdPlayer.mode==='ship'){
-if(gdHolding)gdPlayer.vy-=0.8;else gdPlayer.vy+=0.6;
-gdPlayer.vy=Math.max(-8,Math.min(8,gdPlayer.vy));
+
+// Проверка земли
+const onG=gdCheckGround();
+
+// ПРЫЖОК — проверяем ДО приклеивания к земле
+if(gdJumpRequested&&onG){
+gdPlayer.vy=-14;
+gdPlayer.onGround=false;
+}
+gdJumpRequested=false;
+
+// Приклеивание к земле/блоку
+if(onG){
+// Найти наивысшую поверхность под игроком
+let surfY=GD_GROUND-30;
+for(const o of lvl.obstacles){
+if(o.t==='block'){
+const ox=o.x*GD_CELL;
+const blockTop=GD_GROUND-o.h*GD_CELL-30;
+if(px+28>ox&&px<ox+GD_CELL&&blockTop<surfY&&gdPlayer.y>=blockTop-5){
+surfY=blockTop;
+}
+}
+}
+if(gdPlayer.vy>=0){
+gdPlayer.y=surfY;
+gdPlayer.vy=0;
+gdPlayer.rot=0;
+gdPlayer.onGround=true;
+}
+} else {
+gdPlayer.onGround=false;
+gdPlayer.rot+=0.2;
+}
+}
+
+else if(gdPlayer.mode==='ship'){
+if(gdJumpRequested)gdPlayer.vy-=1.2;
+gdPlayer.vy+=0.5;
+gdPlayer.vy=Math.max(-7,Math.min(7,gdPlayer.vy));
 gdPlayer.y+=gdPlayer.vy;
-if(gdPlayer.y<0){gdPlayer.y=0;gdPlayer.vy=0;}
+gdJumpRequested=false;
+// Границы
+if(gdPlayer.y<5){gdPlayer.y=5;gdPlayer.vy=0;}
 if(gdPlayer.y>GD_GROUND-20){gdPlayer.y=GD_GROUND-20;gdPlayer.vy=0;}
-gdPlayer.rot=gdPlayer.vy*0.05;
-}else if(gdPlayer.mode==='ufo'){
-gdPlayer.vy+=0.7;
+gdPlayer.rot=gdPlayer.vy*0.06;
+}
+
+else if(gdPlayer.mode==='ufo'){
+gdPlayer.vy+=0.65;
 gdPlayer.y+=gdPlayer.vy;
-if(gdPlayer.y>GD_GROUND-30){gdPlayer.y=GD_GROUND-30;gdPlayer.vy=0;}
-if(gdPlayer.y<0){gdPlayer.y=0;gdPlayer.vy=0;}
+if(gdJumpRequested){gdPlayer.vy=-10;gdJumpRequested=false;}
+if(gdPlayer.y>GD_GROUND-30){gdPlayer.y=GD_GROUND-30;gdPlayer.vy=0;gdPlayer.onGround=true;}
+else gdPlayer.onGround=false;
+if(gdPlayer.y<5){gdPlayer.y=5;gdPlayer.vy=0;}
 gdPlayer.rot=0;
 }
 
-if(gdPlayer.alive&&Math.random()<0.5){
-gdTrail.push({x:gdPlayer.x-5,y:gdPlayer.y+15,life:1});
+// === ШЛЕЙФ ===
+if(Math.random()<0.6){
+gdTrail.push({x:gdPlayer.x-8,y:gdPlayer.y+12,life:1,mode:gdPlayer.mode});
 }
 
+// === КОЛЛИЗИИ ===
 for(const o of lvl.obstacles){
 const ox=o.x*GD_CELL;
-if(o.t==='portal'){
-if(Math.abs(gdPlayer.x+gdCamera-ox-GD_CELL/2)<10&&o.mode!==gdPlayer.mode){
-gdPlayer.mode=o.mode;
-gdPlayer.vy=0;
-gdParticles.push({x:gdPlayer.x,y:gdPlayer.y,life:30,color:'#00ffff',portal:true});
+const dx=Math.abs(px-(ox+GD_CELL/2));
+
+if(o.t==='spike'){
+// Шип — треугольник, хитбокс поменьше
+if(dx<18&&gdPlayer.y>GD_GROUND-22){gdDie();return;}
 }
-}else if(o.t==='end'){
-if(gdPlayer.x+gdCamera>ox){gdWin();return;}
-}else if(o.t==='spike'){
-if(Math.abs(gdPlayer.x+gdCamera-ox-GD_CELL/2)<20&&gdPlayer.y>GD_GROUND-20){gdDie();return;}
-}else if(o.t==='block'){
+else if(o.t==='block'){
 const blockTop=GD_GROUND-o.h*GD_CELL;
-const diff=Math.abs(gdPlayer.x+gdCamera-ox-GD_CELL/2);
-if(diff<25&&gdPlayer.y+30>blockTop&&gdPlayer.x+gdCamera>ox-5){
-if(gdPlayer.mode==='cube'){
-if(gdPlayer.vy>0&&gdPlayer.y+30<blockTop+15){
-gdPlayer.y=blockTop-30;gdPlayer.vy=0;
-}else if(gdPlayer.x+gdCamera<ox+GD_CELL/2){
+const blockBottom=GD_GROUND;
+// Игрок: x от px-15 до px+15, y от gdPlayer.y до gdPlayer.y+30
+const pl=px-15,pr=px+15,pt=gdPlayer.y,pb=gdPlayer.y+30;
+const bl=ox,br=ox+GD_CELL,bt=blockTop,bb=blockBottom;
+// Пересечение прямоугольников
+if(pl<br&&pr>bl&&pt<bb&&pb>bt){
+// Если падаем сверху и низ игрока близко к верху блока → приземление
+if(gdPlayer.vy>=0&&pb-blockTop<15&&gdPlayer.mode==='cube'){
+// приземлились — это нормально, обработано в физике
+}else{
+// Удар сбоку или снизу → смерть
 gdDie();return;
 }
 }
 }
+else if(o.t==='portal'){
+if(dx<12&&o.mode!==gdPlayer.mode){
+gdPlayer.mode=o.mode;
+gdPlayer.vy=0;
+gdParticles.push({x:gdPlayer.x,y:gdPlayer.y,life:30,color:'#00ffff',portal:true});
+}
+}
+else if(o.t==='end'){
+if(px>ox){gdWin();return;}
 }
 }
 
+// === ЧАСТИцы ===
 gdParticles=gdParticles.filter(p=>{
 if(p.portal){p.life--;return p.life>0;}
 p.x+=p.vx;p.y+=p.vy;p.vy+=0.4;p.life-=0.02;
 return p.life>0;
 });
-gdTrail=gdTrail.filter(t=>{t.life-=0.05;return t.life>0;});
+gdTrail=gdTrail.filter(t=>{t.life-=0.06;return t.life>0;});
 
+// === ПРОГРЕСС ===
 const totalLen=lvl.obstacles[lvl.obstacles.length-1].x*GD_CELL;
-const progress=Math.min(100,gdCamera/totalLen*100);
-document.getElementById('gdProgress').style.width=progress+'%';
+document.getElementById('gdProgress').style.width=Math.min(100,gdCamera/totalLen*100)+'%';
 
 if(gdShake>0)gdShake--;
 
 gdDraw();
-if(gdPlayer.alive)gdAnimId=requestAnimationFrame(gdLoop);
+gdAnimId=requestAnimationFrame(gdLoop);
 }
 
 function gdDraw(){
@@ -427,77 +490,98 @@ const lvl=GD_LEVELS[gdLevel];
 gdCtx.save();
 if(gdShake>0)gdCtx.translate((Math.random()-0.5)*gdShake,(Math.random()-0.5)*gdShake);
 
+// Фон
 const bgGrad=gdCtx.createLinearGradient(0,0,0,GD_H);
 bgGrad.addColorStop(0,lvl.bg);
 bgGrad.addColorStop(1,lvl.ground);
 gdCtx.fillStyle=bgGrad;
 gdCtx.fillRect(0,0,GD_W,GD_H);
 
+// Сетка
 gdCtx.strokeStyle='rgba(255,255,255,0.04)';
 gdCtx.lineWidth=1;
 const gridOff=gdCamera%40;
 for(let x=-gridOff;x<GD_W;x+=40){gdCtx.beginPath();gdCtx.moveTo(x,0);gdCtx.lineTo(x,GD_H);gdCtx.stroke();}
 for(let y=0;y<GD_H;y+=40){gdCtx.beginPath();gdCtx.moveTo(0,y);gdCtx.lineTo(GD_W,y);gdCtx.stroke();}
 
+// Пол
 gdCtx.fillStyle=lvl.ground;
 gdCtx.fillRect(0,GD_GROUND,GD_W,GD_H-GD_GROUND);
-gdCtx.fillStyle='rgba(255,255,255,0.15)';
+gdCtx.fillStyle='rgba(255,255,255,0.2)';
 gdCtx.fillRect(0,GD_GROUND,GD_W,3);
 
+// Препятствия
 for(const o of lvl.obstacles){
 const sx=o.x*GD_CELL-gdCamera;
 if(sx<-GD_CELL||sx>GD_W+GD_CELL)continue;
+
 if(o.t==='spike'){
 gdCtx.fillStyle='#fff';
-gdCtx.shadowColor='#ff0033';gdCtx.shadowBlur=10;
+gdCtx.shadowColor='#ff0033';gdCtx.shadowBlur=12;
 gdCtx.beginPath();
-gdCtx.moveTo(sx+GD_CELL/2,GD_GROUND-20);
-gdCtx.lineTo(sx+5,GD_GROUND);
-gdCtx.lineTo(sx+GD_CELL-5,GD_GROUND);
-gdCtx.closePath();gdCtx.fill();
+gdCtx.moveTo(sx+GD_CELL/2,GD_GROUND-22);
+gdCtx.lineTo(sx+4,GD_GROUND);
+gdCtx.lineTo(sx+GD_CELL-4,GD_GROUND);
+gdCtx.closePath();
+gdCtx.fill();
 gdCtx.shadowBlur=0;
-}else if(o.t==='block'){
+}
+else if(o.t==='block'){
 const by=GD_GROUND-o.h*GD_CELL;
 gdCtx.fillStyle='#fff';
-gdCtx.shadowColor='#ff0033';gdCtx.shadowBlur=8;
+gdCtx.shadowColor='#ff0033';gdCtx.shadowBlur=10;
 gdCtx.fillRect(sx,by,GD_CELL,o.h*GD_CELL);
 gdCtx.shadowBlur=0;
-gdCtx.strokeStyle='rgba(255,0,51,0.5)';gdCtx.lineWidth=2;
-gdCtx.strokeRect(sx,by,GD_CELL,o.h*GD_CELL);
-}else if(o.t==='portal'){
-const py=GD_GROUND-60;
+gdCtx.strokeStyle='rgba(255,0,51,0.6)';
+gdCtx.lineWidth=2;
+gdCtx.strokeRect(sx+1,by+1,GD_CELL-2,o.h*GD_CELL-2);
+// Внутренний квадрат
+gdCtx.strokeStyle='rgba(255,0,51,0.2)';
+gdCtx.strokeRect(sx+5,by+5,GD_CELL-10,o.h*GD_CELL-10);
+}
+else if(o.t==='portal'){
+const py=GD_GROUND-65;
 gdCtx.save();
 gdCtx.translate(sx+GD_CELL/2,py);
 const pc=o.mode==='ship'?'#00aaff':o.mode==='ufo'?'#00ff66':'#ffcc00';
-gdCtx.globalAlpha=0.6;
+gdCtx.globalAlpha=0.5;
 gdCtx.fillStyle=pc;
-gdCtx.shadowColor=pc;gdCtx.shadowBlur=15;
-gdCtx.beginPath();gdCtx.ellipse(0,0,12,30,0,0,Math.PI*2);gdCtx.fill();
+gdCtx.shadowColor=pc;gdCtx.shadowBlur=20;
+gdCtx.beginPath();gdCtx.ellipse(0,0,14,35,0,0,Math.PI*2);gdCtx.fill();
 gdCtx.shadowBlur=0;
 gdCtx.globalAlpha=1;
+gdCtx.strokeStyle=pc;gdCtx.lineWidth=2;
+gdCtx.beginPath();gdCtx.ellipse(0,0,14,35,0,0,Math.PI*2);gdCtx.stroke();
 gdCtx.fillStyle='#fff';
-gdCtx.font='bold 10px Orbitron';gdCtx.textAlign='center';gdCtx.textBaseline='middle';
+gdCtx.font='bold 9px Orbitron';gdCtx.textAlign='center';gdCtx.textBaseline='middle';
 gdCtx.fillText(o.mode==='ship'?'SHIP':o.mode==='ufo'?'UFO':'CUBE',0,0);
 gdCtx.restore();
-}else if(o.t==='end'){
-gdCtx.fillStyle='rgba(0,255,102,0.3)';
-gdCtx.fillRect(sx,0,3,GD_GROUND);
+}
+else if(o.t==='end'){
+gdCtx.fillStyle='rgba(0,255,102,0.2)';
+gdCtx.fillRect(sx,0,4,GD_GROUND);
+gdCtx.strokeStyle='#00ff66';gdCtx.lineWidth=2;
+gdCtx.beginPath();gdCtx.moveTo(sx,0);gdCtx.lineTo(sx,GD_GROUND);gdCtx.stroke();
 gdCtx.fillStyle='#00ff66';
-gdCtx.font='bold 14px Orbitron';gdCtx.textAlign='center';
-gdCtx.fillText('FINISH',sx+30,GD_GROUND-100);
+gdCtx.font='bold 16px Orbitron';gdCtx.textAlign='center';
+gdCtx.fillText('FINISH',sx+35,GD_GROUND-100);
 }
 }
 
+// Шлейф
 gdTrail.forEach(t=>{
-gdCtx.globalAlpha=t.life*0.5;
-gdCtx.fillStyle=gdPlayer.mode==='ship'?'#00aaff':gdPlayer.mode==='ufo'?'#00ff66':'#ff0033';
-gdCtx.fillRect(t.x,t.y,6,6);
+gdCtx.globalAlpha=t.life*0.4;
+const tc=t.mode==='ship'?'#00aaff':t.mode==='ufo'?'#00ff66':'#ff0033';
+gdCtx.fillStyle=tc;
+gdCtx.fillRect(t.x,t.y,5,5);
 gdCtx.globalAlpha=1;
 });
 
+// Игрок
 if(gdPlayer.alive){
 gdCtx.save();
-gdCtx.translate(gdPlayer.x,gdPlayer.y);
+gdCtx.translate(gdPlayer.x+15,gdPlayer.y+15);
+
 if(gdPlayer.mode==='cube'){
 gdCtx.rotate(gdPlayer.rot);
 gdCtx.fillStyle='#fff';
@@ -506,32 +590,50 @@ gdCtx.fillRect(-15,-15,30,30);
 gdCtx.shadowBlur=0;
 gdCtx.fillStyle='#ff0033';
 gdCtx.fillRect(-10,-10,20,20);
-}else if(gdPlayer.mode==='ship'){
-gdCtx.rotate(gdPlayer.rot);
+// Глаз
 gdCtx.fillStyle='#fff';
-gdCtx.shadowColor='#00aaff';gdCtx.shadowBlur=12;
-gdCtx.beginPath();gdCtx.ellipse(0,0,20,12,0,0,Math.PI*2);gdCtx.fill();
+gdCtx.fillRect(-5,-7,4,4);
+}
+else if(gdPlayer.mode==='ship'){
+gdCtx.rotate(gdPlayer.rot);
+// Корпус
+gdCtx.fillStyle='#fff';
+gdCtx.shadowColor='#00aaff';gdCtx.shadowBlur=15;
+gdCtx.beginPath();gdCtx.ellipse(0,0,22,10,0,0,Math.PI*2);gdCtx.fill();
 gdCtx.shadowBlur=0;
 gdCtx.fillStyle='#00aaff';
-gdCtx.beginPath();gdCtx.ellipse(0,0,14,8,0,0,Math.PI*2);gdCtx.fill();
-}else if(gdPlayer.mode==='ufo'){
+gdCtx.beginPath();gdCtx.ellipse(0,0,16,7,0,0,Math.PI*2);gdCtx.fill();
+// Кубик внутри
 gdCtx.fillStyle='#fff';
-gdCtx.shadowColor='#00ff66';gdCtx.shadowBlur=12;
-gdCtx.beginPath();gdCtx.ellipse(0,0,18,10,0,0,Math.PI*2);gdCtx.fill();
+gdCtx.fillRect(-8,-5,16,10);
+gdCtx.fillStyle='#ff0033';
+gdCtx.fillRect(-5,-3,10,6);
+}
+else if(gdPlayer.mode==='ufo'){
+// Тарелка
+gdCtx.fillStyle='#fff';
+gdCtx.shadowColor='#00ff66';gdCtx.shadowBlur=15;
+gdCtx.beginPath();gdCtx.ellipse(0,0,20,8,0,0,Math.PI*2);gdCtx.fill();
 gdCtx.shadowBlur=0;
 gdCtx.fillStyle='#00ff66';
-gdCtx.beginPath();gdCtx.ellipse(0,-3,12,7,0,0,Math.PI*2);gdCtx.fill();
+gdCtx.beginPath();gdCtx.ellipse(0,-2,14,6,0,0,Math.PI*2);gdCtx.fill();
+// Купол
+gdCtx.fillStyle='rgba(255,255,255,0.4)';
+gdCtx.beginPath();gdCtx.arc(0,-4,6,Math.PI,0);gdCtx.fill();
+// Лампочки
 gdCtx.fillStyle='#88ffaa';
-gdCtx.beginPath();gdCtx.arc(0,-5,4,0,Math.PI*2);gdCtx.fill();
+gdCtx.beginPath();gdCtx.arc(-12,3,2,0,Math.PI*2);gdCtx.fill();
+gdCtx.beginPath();gdCtx.arc(12,3,2,0,Math.PI*2);gdCtx.fill();
 }
 gdCtx.restore();
 }
 
+// Частицы
 gdParticles.forEach(p=>{
 if(p.portal){
 gdCtx.globalAlpha=p.life/30;
 gdCtx.strokeStyle=p.color;gdCtx.lineWidth=3;
-gdCtx.beginPath();gdCtx.arc(p.x,p.y,40-p.life,0,Math.PI*2);gdCtx.stroke();
+gdCtx.beginPath();gdCtx.arc(p.x+15,p.y+15,40-p.life,0,Math.PI*2);gdCtx.stroke();
 gdCtx.globalAlpha=1;
 }else{
 gdCtx.globalAlpha=p.life;
@@ -550,29 +652,55 @@ gdCtx.fillStyle=lvl.bg;
 gdCtx.fillRect(0,0,GD_W,GD_H);
 gdCtx.fillStyle=lvl.ground;
 gdCtx.fillRect(0,GD_GROUND,GD_W,GD_H-GD_GROUND);
-gdCtx.fillStyle='rgba(255,255,255,0.15)';
+gdCtx.fillStyle='rgba(255,255,255,0.2)';
 gdCtx.fillRect(0,GD_GROUND,GD_W,3);
 gdCtx.strokeStyle='rgba(255,255,255,0.04)';
 gdCtx.lineWidth=1;
 for(let x=0;x<GD_W;x+=40){gdCtx.beginPath();gdCtx.moveTo(x,0);gdCtx.lineTo(x,GD_H);gdCtx.stroke();}
 for(let y=0;y<GD_H;y+=40){gdCtx.beginPath();gdCtx.moveTo(0,y);gdCtx.lineTo(GD_W,y);gdCtx.stroke();}
+// Кубик на земле
+gdCtx.fillStyle='#fff';
+gdCtx.shadowColor='#ff0033';gdCtx.shadowBlur=15;
+gdCtx.fillRect(135,GD_GROUND-30,30,30);
+gdCtx.shadowBlur=0;
+gdCtx.fillStyle='#ff0033';
+gdCtx.fillRect(140,GD_GROUND-25,20,20);
+gdCtx.fillStyle='#fff';
+gdCtx.fillRect(145,GD_GROUND-22,4,4);
+// Текст
 gdCtx.fillStyle='#fff';
 gdCtx.font='bold 22px Orbitron';
 gdCtx.textAlign='center';gdCtx.textBaseline='middle';
-gdCtx.fillText(lvl.name,GD_W/2,GD_H/2-15);
+gdCtx.fillText(lvl.name,GD_W/2,120);
 gdCtx.font='14px Montserrat';
-gdCtx.fillStyle='rgba(255,255,255,0.3)';
-gdCtx.fillText('Нажми «Старт»',GD_W/2,GD_H/2+20);
+gdCtx.fillStyle='rgba(255,255,255,0.4)';
+gdCtx.fillText('Нажми «Старт», потом кликай / пробел',GD_W/2,155);
 }
 
-document.addEventListener('keydown',e=>{
-if(e.code==='Space'){if(!gdRunning)return;gdHolding=true;e.preventDefault();}
+// === УПРАВЛЕНИЕ ===
+// Клик по канвасу = прыжок
+gdCanvas.addEventListener('mousedown',e=>{
+if(!gdRunning)return;
+gdJumpRequested=true;
+e.preventDefault();
 });
-document.addEventListener('keyup',e=>{if(e.code==='Space')gdHolding=false;});
-gdCanvas.addEventListener('mousedown',()=>{if(gdRunning)gdHolding=true;});
-document.addEventListener('mouseup',()=>{gdHolding=false;});
-gdCanvas.addEventListener('touchstart',e=>{if(gdRunning)gdHolding=true;e.preventDefault();},{passive:false});
-gdCanvas.addEventListener('touchend',e=>{gdHolding=false;e.preventDefault();},{passive:false});
+gdCanvas.addEventListener('mouseup',()=>{});
+
+// Пробел = прыжок
+document.addEventListener('keydown',e=>{
+if(e.code==='Space'){
+if(gdRunning){gdJumpRequested=true;}
+e.preventDefault();
+}
+});
+document.addEventListener('keyup',e=>{});
+
+// Тач = прыжок
+gdCanvas.addEventListener('touchstart',e=>{
+if(gdRunning)gdJumpRequested=true;
+e.preventDefault();
+},{passive:false});
+gdCanvas.addEventListener('touchend',e=>{e.preventDefault();},{passive:false});
 
 gdDrawIdle();
 </script>
