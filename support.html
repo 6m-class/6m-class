@@ -93,18 +93,18 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,5vw,3rem);text-align:c
 </div>
 <div class="field">
 <label>Категория</label>
+<option value=" Баг"> Баг — что-то не работает</option>
 <select id="ticketCategory">
-<option value="🐛 Баг">🐛 Баг — что-то не работает</option>
-<option value="💡 Идея">💡 Идея — предложение по улучшению</option>
-<option value="❓ Вопрос">❓ Вопрос — нужен совет</option>
-<option value="⚠️ Жалоба">⚠️ Жалоба — что-то не так</option>
+<option value=" Идея"> Идея — предложение по улучшению</option>
+<option value=" Вопрос"> Вопрос — нужен совет</option>
+<option value=" Жалоба"> Жалоба — что-то не так</option>
 </select>
 </div>
 <div class="field">
 <label>Подробности</label>
 <textarea id="ticketBody" rows="4" placeholder="Опишите подробно что произошло, на какой странице, что вы делали..."></textarea>
 </div>
-<button class="btn btn-primary" id="submitBtn" onclick="submitTicket()">📤 Отправить</button>
+<button class="btn btn-primary" id="submitBtn" onclick="submitTicket()">-> Отправить</button>
 <div class="msg" id="formMsg"></div>
 </div>
 <h2 class="tickets-title">📋 Обращения и ответы</h2>
@@ -154,7 +154,7 @@ document.getElementById('ticketTitle').value='';
 document.getElementById('ticketBody').value='';
 setTimeout(loadTickets,1000);
 }catch(e){
-btn.disabled=false;btn.textContent='📤 Отправить';
+btn.disabled=false;btn.textContent='-> Отправить';
 document.getElementById('formMsg').textContent='❌ Ошибка: '+e.message;
 document.getElementById('formMsg').style.color='#ff5555';
 }
@@ -183,9 +183,9 @@ list.innerHTML=tickets.map(t=>`
 </div>
 <div class="ticket-meta">
 <span class="ticket-category">${esc((t.body||'').match(/\*\*Категория:\*\* (.+)/)?.[1]||'Обращение')}</span>
-<span class="ticket-date">📅 ${fmt(t.created_at)}</span>
-<span class="ticket-author">👤 ${esc(t.user.login)}</span>
-<span style="color:#888">💬 ${t.comments} ответ(ов)</span>
+<span class="ticket-date"> ${fmt(t.created_at)}</span>
+<span class="ticket-author"> ${esc(t.user.login)}</span>
+<span style="color:#888"> ${t.comments} ответ(ов)</span>
 </div>
 <div class="ticket-body">${esc((t.body||'').replace(/\*\*Категория:\*\* .+\n\n/,'').replace(/\n---\n_Отправлено через страницу поддержки_/,''))}</div>
 <div class="ticket-comments" id="comments-${t.number}" style="display:none">
