@@ -880,7 +880,7 @@ function loadAccounts(){
     document.getElementById('accountsBadge').textContent=accounts.length;
     document.getElementById('statAccounts').textContent=accounts.length;
     document.getElementById('accountsList').innerHTML=accounts.length?accounts.map((a,i)=>
-        `<div class="item"><div class="item-content"><div class="item-title">${esc(a.name)} ${a.role==='admin'?'👑':''}</div><div class="item-sub">Логин: ${esc(a.login)} · Роль: ${a.role==='admin'?'Админ':'Ученик'}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">✕</button></div></div>`
+        `<div class="item"><div class="item-content"><div class="item-title">${esc(a.name)} ${a.role==='admin'?'👑':''}</div><div class="item-sub">Логин: ${esc(a.login)} · Роль: ${a.role==='admin'?'Админ':'Ученик'}</div></div><div class="item-actions"><button class="btn btn-sm ${a.role==='admin'?'btn-outline':'btn-primary'}" onclick="toggleAdmin(${i})">${a.role==='admin'?'⬇️ Понизить':'👑 Сделать админом'}</button><button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">✕</button></div></div>`
     ).join(''):'<p style="color:#555;padding:10px">Аккаунтов пока нет</p>';
 }
 
@@ -903,6 +903,21 @@ async function addAccount(){
         document.getElementById('accName').value='';
         showMsg('msgAccount','✅ Аккаунт создан!','#00ff66');
         setTimeout(()=>loadAll(),1000);
+    }catch(e){
+        showMsg('msgAccount','❌ '+e.message,'#ff5555');
+    }
+}
+
+async function toggleAdmin(i){
+    try{
+        await freshLoadData();
+        if(Array.isArray(siteData.accounts)&&siteData.accounts[i]){
+            const acc=siteData.accounts[i];
+            acc.role=acc.role==='admin'?'student':'admin';
+            await pushData('Смена роли: '+acc.login+' → '+(acc.role==='admin'?'админ':'ученик'));
+            showMsg('msgAccount','✅ '+(acc.role==='admin'?'Назначен админом':'Понижен до ученика')+': '+acc.name,'#00ff66');
+            setTimeout(()=>loadAll(),1000);
+        }
     }catch(e){
         showMsg('msgAccount','❌ '+e.message,'#ff5555');
     }
