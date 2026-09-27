@@ -12,6 +12,7 @@
 [data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--glow-strong:rgba(0,255,102,0.8);--border:rgba(0,255,102,0.3);--shadow:rgba(0,255,102,0.2)}
 [data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--glow-strong:rgba(0,170,255,0.8);--border:rgba(0,170,255,0.3);--shadow:rgba(0,170,255,0.2)}
 [data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--glow-strong:rgba(170,0,255,0.8);--border:rgba(170,0,255,0.3);--shadow:rgba(170,0,255,0.2)}
+[data-theme="aero"]{--primary:#00ffff;--primary-rgb:0,255,255;--glow:rgba(0,255,255,0.15);--glow-strong:rgba(0,255,255,0.8);--border:rgba(0,255,255,0.3);--shadow:rgba(0,255,255,0.2)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;align-items:center;justify-content:center;padding:20px}
 .bg-glow{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:50vh;background:radial-gradient(ellipse at top,var(--glow),transparent 70%);z-index:-2;pointer-events:none}
@@ -28,7 +29,6 @@ body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-heigh
 .login-box button:hover{box-shadow:0 0 25px rgba(var(--primary-rgb),0.6);transform:translateY(-2px)}
 .login-box button:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .login-error{color:#ff5555;font-size:.85rem;margin-top:10px;min-height:20px}
-.login-hint{margin-top:20px;font-size:.75rem;color:#555}
 .back-btn{display:inline-block;margin-top:15px;color:#666;text-decoration:none;font-size:.8rem;transition:.3s}
 .back-btn:hover{color:var(--primary)}
 </style>
@@ -38,7 +38,7 @@ body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-heigh
 <div class="particles" id="particles"></div>
 <div class="login-box">
 <h1>Вход в <span>класс</span></h1>
-<p>Войдите, чтобы открыть чат</p>
+<p>Войдите, чтобы открыть профиль и чат</p>
 <input type="text" id="loginInput" placeholder="Логин" onkeydown="if(event.key==='Enter')document.getElementById('passInput').focus()">
 <input type="password" id="passInput" placeholder="Пароль" onkeydown="if(event.key==='Enter')doLogin()">
 <button id="loginBtn" onclick="doLogin()">🔑 Войти</button>
@@ -55,15 +55,7 @@ const urls=[
 `https://cdn.jsdelivr.net/gh/${REPO}@main/data.json?v=${Date.now()}`,
 `data.json?v=${Date.now()}`
 ];
-for(const url of urls){
-try{
-const c=new AbortController();
-const t=setTimeout(()=>c.abort(),8000);
-const r=await fetch(url,{cache:'no-store',signal:c.signal});
-clearTimeout(t);
-if(r.ok)return await r.json();
-}catch(e){continue}
-}
+for(const url of urls){try{const c=new AbortController();const t=setTimeout(()=>c.abort(),8000);const r=await fetch(url,{cache:'no-store',signal:c.signal});clearTimeout(t);if(r.ok)return await r.json();}catch(e){continue}}
 return null;
 }
 async function doLogin(){
@@ -80,28 +72,16 @@ const accounts=Array.isArray(data.accounts)?data.accounts:[];
 if(accounts.length===0){err.textContent='❌ Аккаунтов пока нет. Попроси админа создать.';btn.disabled=false;btn.textContent='🔑 Войти';return;}
 const acc=accounts.find(a=>a.login===login&&a.password===pass);
 if(!acc){err.textContent='❌ Неправильный логин или пароль';btn.disabled=false;btn.textContent='🔑 Войти';return;}
-localStorage.setItem('class_user',JSON.stringify({login:acc.login,name:acc.name,role:acc.role}));
-window.location.href='chat.html';
-}catch(e){
-err.textContent='❌ Ошибка: '+e.message;btn.disabled=false;btn.textContent='🔑 Войти';
+localStorage.setItem('class_user',JSON.stringify({login:acc.login,name:acc.name,role:acc.role,photo:acc.photo||''}));
+window.location.href='profile.html';
+}catch(e){err.textContent='❌ Ошибка: '+e.message;btn.disabled=false;btn.textContent='🔑 Войти';}
 }
-}
-// Проверка — уже залогинен?
+// Already logged in?
 const saved=localStorage.getItem('class_user');
-if(saved){window.location.href='chat.html';}
+if(saved){window.location.href='profile.html';}
 // Particles
-const isMobile=window.innerWidth<600;
-const pc=document.getElementById('particles');
-const count=isMobile?12:25;
-for(let i=0;i<count;i++){
-const p=document.createElement('div');p.classList.add('particle');
-const s=Math.random()*3+1;
-p.style.width=`${s}px`;p.style.height=`${s}px`;
-p.style.left=`${Math.random()*100}vw`;
-p.style.animationDuration=`${Math.random()*10+6}s`;
-p.style.animationDelay=`${Math.random()*5}s`;
-pc.appendChild(p);
-}
+const isMobile=window.innerWidth<600;const pc=document.getElementById('particles');const count=isMobile?12:25;
+for(let i=0;i<count;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=`${s}px`;p.style.height=`${s}px`;p.style.left=`${Math.random()*100}vw`;p.style.animationDuration=`${Math.random()*10+6}s`;p.style.animationDelay=`${Math.random()*5}s`;pc.appendChild(p);}
 </script>
 </body>
 </html>
