@@ -179,7 +179,7 @@ anim:'🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐨 🐯 🦁 🐮 🐷 🐸 🐵
 food:'🍕 🍔 🍟 🌭 🥪 🌮 🌯 🥙 🧆 🥚 🍳 🥘 🍲 🫕 🥞 🧇 🧀 🍖 🍗 🥩 🥓 🥨 🥯 🍩 🍪 🎂 🍰 🧁 🍫 🍬 🍭 🍦 🍨 🍧 🥧 🍎 🍏 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🥑 🥦 🥬 🥒 🌶️ 🫑 🌽 🥕 🧄 🧅 🥔 🍠'.split(' '),
 act:'⚽ 🏀 🏈 ⚾ 🥎 🎾 🏐 📉 🏉 🎱 🏓 🏸 🥅 🏒 🏑 🥍 🏏 ⛳ 🏹 🎣 🥊 🥋 🎽 ⛸️ 🥌 🎿 ⛷️ 🏂 🏋️ 🤼 🤸 🎯 🎮 🕹️ 🎲 🎰 🎳 🎪 🎭 🎨 🎬 🎤 🎧 🎼 🎹 🥁 🎷 🎺 🎸 🎻 🪕'.split(' '),
 obj:'💡 🔌 🔋 💻 🖥️ 🖨️ ⌨️ 🖱️ 💽 💾 💿 📀 📷 📸 🎥 🎞️ 📽️ 🎬 📺 📻 🎙️ 🎚️ 🎛️ 🧭 ⏰ ⏱️ ⏲️ 🕰️ ⌛ ⏳ 📡 🔦 🕯️ 🧯 🔧 🔨 ⚒️ 🛠️ ⚙️ 🗜️ ⚖️ 🔗 ⛓️ 🧰 🧲'.split(' '),
-flag:'🏁 🚩 🎌 🏴 🏳️ 🏳️‍🌈 🏴‍☠️'.split(' ')
+flag:'🏁 🚩  🏴 🏳️  🏴‍☠️'.split(' ')
 };
 let currentEmojiTab='smile';
 function toggleEmoji(){document.getElementById('emojiPanel').classList.toggle('open')}
@@ -215,7 +215,7 @@ const cls=isMe?'me':(parsed.role==='admin'?'admin':'other');
 const avatarHTML=getMsgAvatar(parsed.login||c.user.login,parsed.name);
 const row=document.createElement('div');
 row.className='msg-row '+cls;
-row.innerHTML=`${avatarHTML}<div class="msg-content"><div class="msg ${cls}"><div class="msg-author">${esc(parsed.name)}${parsed.role==='admin'?' 👑':''}</div>${esc(parsed.text)}</div><div class="msg-time">${fmt(c.created_at)}</div></div>`;
+row.innerHTML=`${avatarHTML}<div class="msg-content"><div class="msg ${cls}"><div class="msg-author">${esc(parsed.name)}${parsed.role==='admin'?' ':''}</div>${esc(parsed.text)}</div><div class="msg-time">${fmt(c.created_at)}</div></div>`;
 box.appendChild(row);
 });
 box.scrollTop=box.scrollHeight;
