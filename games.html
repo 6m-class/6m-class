@@ -47,8 +47,8 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .score-item{text-align:center}
 .score-label{font-size:.75rem;color:#666;text-transform:uppercase}
 .score-value{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--primary);font-weight:900}
-.race-hud{position:absolute;top:10px;left:10px;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--primary);text-shadow:0 0 10px var(--shadow);pointer-events:none}
 .race-wrap{position:relative;display:inline-block}
+.race-hud{position:absolute;top:10px;left:10px;font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--primary);text-shadow:0 0 10px rgba(var(--primary-rgb),0.5);pointer-events:none;z-index:10}
 @media(max-width:600px){.title{font-size:1.2rem;padding:15px}.game-tab{padding:10px 16px;font-size:.75rem}}
 </style>
 </head>
@@ -62,7 +62,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 <button class="logout-btn" onclick="logout()">Выйти</button>
 </nav>
-<div class="title">🎮 <span>Игры</span> класса</div>
+<div class="title">🎮 <span>Игры</span></div>
 <div class="game-tabs">
 <div class="game-tab active" onclick="switchGame('checkers',this)">♟️ Шашки</div>
 <div class="game-tab" onclick="switchGame('racing',this)">🏎️ Мини-гонки</div>
@@ -86,7 +86,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 
 <!-- ГОНОЧКИ -->
 <div class="game-section" id="game-racing">
-<div class="game-info">Уворачивайся от других машин. Чем дольше едешь — тем быстрее. Управление: ← → или A D.</div>
+<div class="game-info">Уворачивайся от машин, конусов и бочек. Чем дольше едешь — тем быстрее. Управление: ← → или A D, на телефоне — свайпы.</div>
 <div class="score-board">
 <div class="score-item"><div class="score-label">Очки</div><div class="score-value" id="raceScore">0</div></div>
 <div class="score-item"><div class="score-label">Рекорд</div><div class="score-value" id="raceBest">0</div></div>
@@ -94,7 +94,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-status" id="raceStatus">Нажми «Старт»</div>
 <div class="game-canvas-wrap">
 <div class="race-wrap">
-<canvas id="racingCanvas" width="320" height="500" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto;background:#111"></canvas>
+<canvas id="racingCanvas" width="320" height="500" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto;background:#222"></canvas>
 </div>
 </div>
 <div class="game-controls">
@@ -104,11 +104,8 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 
 <script>
-// ===== THEME =====
 function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
 applyStoredTheme();
-
-// ===== PARTICLES =====
 const isMobile=window.innerWidth<600;
 const pc=document.getElementById('particles');
 const count=isMobile?10:20;
@@ -121,9 +118,7 @@ p.style.animationDuration=(Math.random()*10+6)+'s';
 p.style.animationDelay=Math.random()*5+'s';
 pc.appendChild(p);
 }
-
 function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
-
 function switchGame(name,el){
 document.querySelectorAll('.game-tab').forEach(t=>t.classList.remove('active'));
 document.querySelectorAll('.game-section').forEach(s=>s.classList.remove('active'));
@@ -136,15 +131,8 @@ document.getElementById('game-'+name).classList.add('active');
 // ============================================================
 const chCanvas=document.getElementById('checkersCanvas');
 const chCtx=chCanvas.getContext('2d');
-const CH_SIZE=8;
-const CH_CELL=60;
-const CH_W=CH_CELL*CH_SIZE;
-
-let chBoard=[];
-let chSelected=null;
-let chTurn='white'; // white = player, black = CPU
-let chMustCapture=false;
-let chGameOver=false;
+const CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
+let chBoard=[],chSelected=null,chTurn='white',chMustCapture=false,chGameOver=false;
 
 function newCheckersGame(){
 chBoard=[];
@@ -158,83 +146,56 @@ else if(r>4)chBoard[r][c]={color:'white',king:false};
 }
 }
 }
-chSelected=null;
-chTurn='white';
-chGameOver=false;
-updateChStatus('Твой ход');
-updateChCounts();
-drawCheckers();
+chSelected=null;chTurn='white';chGameOver=false;
+updateChStatus('Твой ход');updateChCounts();drawCheckers();
 }
 
 function drawCheckers(){
-chCtx.fillStyle='#1a1a1a';
-chCtx.fillRect(0,0,CH_W,CH_W);
-for(let r=0;r<CH_SIZE;r++){
-for(let c=0;c<CH_SIZE;c++){
-const x=c*CH_CELL,y=r*CH_CELL;
-const dark=(r+c)%2===1;
-chCtx.fillStyle=dark?'#333':'#888';
-chCtx.fillRect(x,y,CH_CELL,CH_CELL);
+chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);
+for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
+const x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;
+chCtx.fillStyle=dark?'#333':'#888';chCtx.fillRect(x,y,CH_CELL,CH_CELL);
 const p=chBoard[r][c];
 if(p){
 chCtx.beginPath();
 chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);
-chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';
-chCtx.fill();
-chCtx.strokeStyle=p.color==='white'?'#999':'#444';
-chCtx.lineWidth=2;
-chCtx.stroke();
+chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';chCtx.fill();
+chCtx.strokeStyle=p.color==='white'?'#999':'#444';chCtx.lineWidth=2;chCtx.stroke();
 if(p.king){
-chCtx.fillStyle=p.color==='white'?'#ff0033':'#ff0033';
-chCtx.font='bold 20px Orbitron';
-chCtx.textAlign='center';
-chCtx.textBaseline='middle';
+chCtx.fillStyle='#ff0033';chCtx.font='bold 20px Orbitron';
+chCtx.textAlign='center';chCtx.textBaseline='middle';
 chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);
 }
 }
 }
-}
-// Highlight selected
 if(chSelected){
-const {r,c}=chSelected;
-chCtx.strokeStyle='#ff0033';
-chCtx.lineWidth=3;
+const{r,c}=chSelected;
+chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;
 chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);
-// Highlight valid moves
 const moves=getMovesForPiece(r,c);
 moves.forEach(m=>{
-chCtx.fillStyle='rgba(255,0,51,0.2)';
-if(m.capture){
-chCtx.fillStyle='rgba(0,255,102,0.3)';
-}
+chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';
 chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);
 });
 }
 }
 
 function getMovesForPiece(r,c){
-const p=chBoard[r][c];
-if(!p)return[];
+const p=chBoard[r][c];if(!p)return[];
 const moves=[];
 const dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:p.color==='white'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];
-// Captures
 for(const[dr,dc]of dirs){
-const tr=r+dr*2,tc=c+dc*2;
-const mr=r+dr,mc=c+dc;
+const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;
 if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){
 const mid=chBoard[mr][mc];
-if(mid&&mid.color!==p.color){
-moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});
+if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});
 }
 }
-}
-// Simple moves (only if no captures available globally)
 if(!chMustCapture){
 for(const[dr,dc]of dirs){
 const tr=r+dr,tc=c+dc;
-if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){
+if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)
 moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});
-}
 }
 }
 return moves;
@@ -246,11 +207,8 @@ const p=chBoard[r][c];
 if(p&&p.color===color){
 const dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:p.color==='white'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];
 for(const[dr,dc]of dirs){
-const tr=r+dr*2,tc=c+dc*2;
-const mr=r+dr,mc=c+dc;
-if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color){
-return true;
-}
+const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;
+if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;
 }
 }
 }
@@ -262,135 +220,85 @@ chMustCapture=hasAnyCaptures(color);
 const all=[];
 for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
 const p=chBoard[r][c];
-if(p&&p.color===color){
-all.push(...getMovesForPiece(r,c));
+if(p&&p.color===color)all.push(...getMovesForPiece(r,c));
 }
-}
-chMustCapture=false;
-return all;
+chMustCapture=false;return all;
 }
 
 function makeMove(move){
 const p=chBoard[move.fromR][move.fromC];
 chBoard[move.fromR][move.fromC]=null;
 chBoard[move.toR][move.toC]=p;
-if(move.capture){
-chBoard[move.capR][move.capC]=null;
-}
-// King promotion
-if(p.color==='white'&&move.toR===0){p.king=true;}
-if(p.color==='black'&&move.toR===CH_SIZE-1){p.king=true;}
+if(move.capture)chBoard[move.capR][move.capC]=null;
+if(p.color==='white'&&move.toR===0)p.king=true;
+if(p.color==='black'&&move.toR===CH_SIZE-1)p.king=true;
 }
 
 chCanvas.addEventListener('click',e=>{
 if(chGameOver||chTurn!=='white')return;
 const rect=chCanvas.getBoundingClientRect();
 const scale=CH_W/rect.width;
-const x=(e.clientX-rect.left)*scale;
-const y=(e.clientY-rect.top)*scale;
+const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;
 const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);
 if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;
-
 if(chSelected){
 const moves=getMovesForPiece(chSelected.r,chSelected.c);
 const move=moves.find(m=>m.toR===r&&m.toC===c);
 if(move){
 makeMove(move);
-// Check for additional captures
 const captures=getMovesForPiece(r,c).filter(m=>m.capture);
 if(move.capture&&captures.length>0){
-chSelected={r,c};
-chMustCapture=true;
-drawCheckers();
-updateChStatus('Бьёшь ещё!');
-return;
+chSelected={r,c};chMustCapture=true;drawCheckers();
+updateChStatus('Бьёшь ещё!');return;
 }
-chSelected=null;
-chMustCapture=false;
-chTurn='black';
-updateChCounts();
-drawCheckers();
+chSelected=null;chMustCapture=false;chTurn='black';
+updateChCounts();drawCheckers();
 updateChStatus('Ход компьютера...');
-setTimeout(cpuMove,600);
-return;
+setTimeout(cpuMove,600);return;
 }
 }
-// Select piece
 const p=chBoard[r][c];
 if(p&&p.color==='white'){
 const allMoves=getAllMoves('white');
 chMustCapture=allMoves.some(m=>m.capture);
-chSelected={r,c};
-drawCheckers();
+chSelected={r,c};drawCheckers();
 }
 });
 
 function cpuMove(){
 const allMoves=getAllMoves('black');
-if(allMoves.length===0){
-updateChStatus('Ты выиграл! 🎉','win');
-chGameOver=true;
-return;
-}
-// Prefer captures, then random
+if(allMoves.length===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
 const captures=allMoves.filter(m=>m.capture);
 const move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];
 makeMove(move);
-// Additional captures for CPU
-let moreCaptures=true;
-while(moreCaptures){
+let more=true;
+while(more){
 const caps=getMovesForPiece(move.toR,move.toC).filter(m=>m.capture);
-if(caps.length>0){
-const next=caps[Math.floor(Math.random()*caps.length)];
-makeMove(next);
-}else{
-moreCaptures=false;
+if(caps.length>0)makeMove(caps[Math.floor(Math.random()*caps.length)]);
+else more=false;
 }
-}
-chMustCapture=false;
-chTurn='white';
-updateChCounts();
-drawCheckers();
-// Check win/lose
-const whiteCount=countPieces('white');
-const blackCount=countPieces('black');
-if(whiteCount===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
-if(blackCount===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
-const whiteMoves=getAllMoves('white');
-if(whiteMoves.length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+chMustCapture=false;chTurn='white';updateChCounts();drawCheckers();
+if(countPieces('white')===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+if(countPieces('black')===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
+if(getAllMoves('white').length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
 updateChStatus('Твой ход');
 }
 
-function countPieces(color){
-let n=0;
-for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
-if(chBoard[r][c]&&chBoard[r][c].color===color)n++;
-}
-return n;
-}
-function updateChCounts(){
-document.getElementById('chMyPieces').textContent=countPieces('white');
-document.getElementById('chCpuPieces').textContent=countPieces('black');
-}
-function updateChStatus(text,cls){
-const el=document.getElementById('chStatus');
-el.textContent=text;
-el.className='game-status'+(cls?' '+cls:'');
-}
+function countPieces(color){let n=0;for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++)if(chBoard[r][c]&&chBoard[r][c].color===color)n++;return n;}
+function updateChCounts(){document.getElementById('chMyPieces').textContent=countPieces('white');document.getElementById('chCpuPieces').textContent=countPieces('black');}
+function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
 
 newCheckersGame();
 
 // ============================================================
-// МИНИ-ГОНКИ
+// МИНИ-ГОНКИ (исправлено)
 // ============================================================
 const rcCanvas=document.getElementById('racingCanvas');
 const rcCtx=rcCanvas.getContext('2d');
-const RC_W=320,RC_H=500;
-const RC_LANES=4;
-const RC_LANE_W=RC_W/RC_LANES;
+const RC_W=320,RC_H=500,RC_LANES=4,RC_LANE_W=RC_W/RC_LANES;
 
-let rcPlayer={lane:1.5,y:RC_H-100};
-let rcCars=[];
+let rcPlayer={lane:1.5,y:RC_H-90};
+let rcObstacles=[];
 let rcRoadOffset=0;
 let rcSpeed=3;
 let rcScore=0;
@@ -400,13 +308,12 @@ let rcKeys={};
 let rcBest=parseInt(localStorage.getItem('race_best')||'0');
 document.getElementById('raceBest').textContent=rcBest;
 
+// Цвета врагов
+const CAR_COLORS=['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff','#ff8800','#ff00ff'];
+
 function resetRace(){
-rcPlayer={lane:1.5,y:RC_H-100};
-rcCars=[];
-rcRoadOffset=0;
-rcSpeed=3;
-rcScore=0;
-rcRunning=false;
+rcPlayer={lane:1.5,y:RC_H-90};
+rcObstacles=[];rcRoadOffset=0;rcSpeed=3;rcScore=0;rcRunning=false;
 document.getElementById('raceScore').textContent='0';
 document.getElementById('raceStatus').textContent='Нажми «Старт»';
 document.getElementById('raceStatus').className='game-status';
@@ -418,23 +325,25 @@ drawRace();
 function startRace(){
 if(rcRunning)return;
 rcRunning=true;
-rcPlayer={lane:1.5,y:RC_H-100};
-rcCars=[];
-rcSpeed=3;
-rcScore=0;
-rcRoadOffset=0;
+rcPlayer={lane:1.5,y:RC_H-90};
+rcObstacles=[];rcSpeed=3;rcScore=0;rcRoadOffset=0;
 document.getElementById('raceStartBtn').disabled=true;
 document.getElementById('raceStatus').textContent='';
 document.getElementById('raceStatus').className='game-status';
 raceLoop();
 }
 
-function spawnCar(){
-const lane=Math.floor(Math.random()*RC_LANES);
-// Check no car near top
-const tooClose=rcCars.some(c=>c.y<80);
+function spawnObstacle(){
+// Не спавним слишком близко к другим
+const tooClose=rcObstacles.some(o=>o.y<100);
 if(tooClose)return;
-rcCars.push({lane,y:-40,color:['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff'][Math.floor(Math.random()*5)]});
+const lane=Math.floor(Math.random()*RC_LANES);
+const type=Math.random();
+let kind='car';
+if(type<0.3)kind='cone';
+else if(type<0.45)kind='barrel';
+else if(type<0.55)kind='oil';
+rcObstacles.push({lane,y:-50,kind,color:CAR_COLORS[Math.floor(Math.random()*CAR_COLORS.length)]});
 }
 
 function raceLoop(){
@@ -442,30 +351,32 @@ if(!rcRunning)return;
 rcRoadOffset+=rcSpeed;
 rcScore++;
 document.getElementById('raceScore').textContent=rcScore;
-// Increase speed gradually
-rcSpeed=3+Math.min(rcScore/300,5);
+rcSpeed=3+Math.min(rcScore/250,6);
 
-// Move player
-if(rcKeys.left&&rcPlayer.lane>0.5)rcPlayer.lane-=0.08;
-if(rcKeys.right&&rcPlayer.lane<RC_LANES-1.5)rcPlayer.lane+=0.08;
+// Движение игрока
+if(rcKeys.left&&rcPlayer.lane>0.5)rcPlayer.lane-=0.1;
+if(rcKeys.right&&rcPlayer.lane<RC_LANES-1.5)rcPlayer.lane+=0.1;
 
-// Spawn cars
-if(Math.random()<0.03+rcSpeed/200)spawnCar();
+// Спавн препятствий
+if(Math.random()<0.025+rcSpeed/250)spawnObstacle();
 
-// Move cars
-rcCars.forEach(c=>c.y+=rcSpeed);
-rcCars=rcCars.filter(c=>c.y<RC_H+50);
+// Движение препятствий
+rcObstacles.forEach(o=>o.y+=rcSpeed);
+rcObstacles=rcObstacles.filter(o=>o.y<RC_H+60);
 
-// Collision check
+// Проверка столкновений
 const px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2;
 const py=rcPlayer.y;
-for(const c of rcCars){
-const cx=c.lane*RC_LANE_W+RC_LANE_W/2;
-const cy=c.y;
-const dx=Math.abs(px-cx);
-const dy=Math.abs(py-cy);
-if(dx<RC_LANE_W*0.7&&dy<50){
-// Crash
+for(const o of rcObstacles){
+const ox=o.lane*RC_LANE_W+RC_LANE_W/2;
+const oy=o.y;
+const dx=Math.abs(px-ox);
+const dy=Math.abs(py-oy);
+// Размеры хитбокса по типу
+let hitW=RC_LANE_W*0.65,hitH=46;
+if(o.kind==='cone')hitH=30;
+if(o.kind==='oil'){hitW=RC_LANE_W*0.7;hitH=40;}
+if(dx<hitW&&dy<hitH){
 rcRunning=false;
 document.getElementById('raceStatus').textContent='💥 Авария! Очки: '+rcScore;
 document.getElementById('raceStatus').className='game-status lose';
@@ -478,6 +389,15 @@ document.getElementById('raceBest').textContent=rcBest;
 drawRace();
 return;
 }
+// Масляное пятно — скользит
+if(o.kind==='oil'&&dy<40&&dx<RC_LANE_W*0.7&&!o.slipped){
+o.slipped=true;
+// Случайный занос
+if(Math.random()<0.5){
+rcPlayer.lane+=Math.random()>0.5?0.5:-0.5;
+rcPlayer.lane=Math.max(0.5,Math.min(RC_LANES-1.5,rcPlayer.lane));
+}
+}
 }
 
 drawRace();
@@ -485,17 +405,19 @@ rcAnimId=requestAnimationFrame(raceLoop);
 }
 
 function drawRace(){
-// Road
-rcCtx.fillStyle='#222';
+// Дорога
+rcCtx.fillStyle='#2a2a2a';
 rcCtx.fillRect(0,0,RC_W,RC_H);
-// Grass
+
+// Обочина
 rcCtx.fillStyle='#1a3a1a';
-rcCtx.fillRect(-2,0,2,RC_H);
-rcCtx.fillRect(RC_W,0,2,RC_H);
-// Lane lines
-rcCtx.strokeStyle='#555';
+rcCtx.fillRect(0,0,3,RC_H);
+rcCtx.fillRect(RC_W-3,0,3,RC_H);
+
+// Разметка полос
+rcCtx.strokeStyle='rgba(255,255,255,0.3)';
 rcCtx.lineWidth=2;
-rcCtx.setLineDash([20,20]);
+rcCtx.setLineDash([25,20]);
 rcCtx.lineDashOffset=-rcRoadOffset;
 for(let i=1;i<RC_LANES;i++){
 rcCtx.beginPath();
@@ -505,45 +427,128 @@ rcCtx.stroke();
 }
 rcCtx.setLineDash([]);
 
-// Cars (enemies)
-rcCars.forEach(c=>{
-const x=c.lane*RC_LANE_W+RC_LANE_W/2;
-drawCar(x,c.y,c.color,'#000');
+// Бордюрные полосы сверху и снизу
+rcCtx.fillStyle='rgba(255,255,255,0.15)';
+rcCtx.fillRect(3,0,RC_W-6,4);
+rcCtx.fillRect(3,RC_H-4,RC_W-6,4);
+
+// Препятствия
+rcObstacles.forEach(o=>{
+const x=o.lane*RC_LANE_W+RC_LANE_W/2;
+const y=o.y;
+if(o.kind==='car')drawCar(x,y,o.color,'#000',false);
+else if(o.kind==='cone')drawCone(x,y);
+else if(o.kind==='barrel')drawBarrel(x,y);
+else if(o.kind==='oil')drawOil(x,y);
 });
 
-// Player
+// Игрок
 const px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2;
-drawCar(px,py,'#f0f0f0','#ff0033');
-
-// HUD already in HTML
+drawCar(px,rcPlayer.y,'#f0f0f0','#ff0033',true);
 }
 
-function drawCar(cx,cy,bodyColor,accentColor){
+function drawCar(cx,cy,bodyColor,accentColor,isPlayer){
 rcCtx.save();
 rcCtx.translate(cx,cy);
-// Body
+// Тень
+rcCtx.fillStyle='rgba(0,0,0,0.3)';
+rcCtx.fillRect(-17,-23,34,50);
+// Кузов
 rcCtx.fillStyle=bodyColor;
-rcCtx.beginPath();
-rcCtx.roundRect(-18,-25,36,50,6);
-rcCtx.fill();
-// Windshield
-rcCtx.fillStyle='rgba(0,0,0,0.4)';
-rcCtx.fillRect(-14,-18,28,12);
-rcCtx.fillRect(-14,8,28,12);
-// Accent stripe
+rcCtx.fillRect(-16,-24,32,48);
+// Капот/крыша
+rcCtx.fillStyle='rgba(0,0,0,0.35)';
+rcCtx.fillRect(-12,-18,24,10);
+rcCtx.fillRect(-12,8,24,10);
+// Полоса
 rcCtx.fillStyle=accentColor;
-rcCtx.fillRect(-18,-2,36,4);
-// Wheels
+rcCtx.fillRect(-16,-2,32,3);
+// Фары
+if(isPlayer){
+rcCtx.fillStyle='#ffff88';
+rcCtx.fillRect(-14,-24,6,3);
+rcCtx.fillRect(8,-24,6,3);
+}
+// Колёса
 rcCtx.fillStyle='#111';
-rcCtx.fillRect(-20,-18,4,10);
-rcCtx.fillRect(16,-18,4,10);
-rcCtx.fillRect(-20,10,4,10);
-rcCtx.fillRect(16,10,4,10);
+rcCtx.fillRect(-19,-18,4,10);
+rcCtx.fillRect(15,-18,4,10);
+rcCtx.fillRect(-19,10,4,10);
+rcCtx.fillRect(15,10,4,10);
 rcCtx.restore();
 }
 
-// Keyboard
+function drawCone(cx,cy){
+rcCtx.save();
+rcCtx.translate(cx,cy);
+// Тень
+rcCtx.fillStyle='rgba(0,0,0,0.3)';
+rcCtx.beginPath();rcCtx.arc(0,12,14,0,Math.PI*2);rcCtx.fill();
+// Конус
+rcCtx.fillStyle='#ff6600';
+rcCtx.beginPath();
+rcCtx.moveTo(0,-14);
+rcCtx.lineTo(-10,10);
+rcCtx.lineTo(10,10);
+rcCtx.closePath();rcCtx.fill();
+// Белая полоса
+rcCtx.fillStyle='#fff';
+rcCtx.beginPath();
+rcCtx.moveTo(-7,0);rcCtx.lineTo(7,0);
+rcCtx.lineTo(5,5);rcCtx.lineTo(-5,5);
+rcCtx.closePath();rcCtx.fill();
+// Основание
+rcCtx.fillStyle='#cc4400';
+rcCtx.fillRect(-11,10,22,3);
+rcCtx.restore();
+}
+
+function drawBarrel(cx,cy){
+rcCtx.save();
+rcCtx.translate(cx,cy);
+// Тень
+rcCtx.fillStyle='rgba(0,0,0,0.3)';
+rcCtx.beginPath();rcCtx.arc(0,14,15,0,Math.PI*2);rcCtx.fill();
+// Бочка
+rcCtx.fillStyle='#8b4513';
+rcCtx.fillRect(-12,-12,24,24);
+// Обод
+rcCtx.fillStyle='#a0522d';
+rcCtx.fillRect(-12,-12,24,3);
+rcCtx.fillRect(-12,9,24,3);
+// Знак опасности
+rcCtx.fillStyle='#ffcc00';
+rcCtx.beginPath();
+rcCtx.moveTo(0,-6);rcCtx.lineTo(5,3);rcCtx.lineTo(-5,3);
+rcCtx.closePath();rcCtx.fill();
+rcCtx.fillStyle='#000';rcCtx.font='bold 8px sans-serif';
+rcCtx.textAlign='center';rcCtx.textBaseline='middle';
+rcCtx.fillText('!',0,-1);
+rcCtx.restore();
+}
+
+function drawOil(cx,cy){
+rcCtx.save();
+rcCtx.translate(cx,cy);
+// Масляное пятно
+rcCtx.fillStyle='rgba(20,20,20,0.7)';
+rcCtx.beginPath();
+rcCtx.ellipse(0,0,28,16,0,0,Math.PI*2);
+rcCtx.fill();
+// Блики
+rcCtx.fillStyle='rgba(80,80,120,0.3)';
+rcCtx.beginPath();
+rcCtx.ellipse(-5,-3,10,5,0,0,Math.PI*2);
+rcCtx.fill();
+rcCtx.beginPath();
+rcCtx.ellipse(8,4,8,4,0,0,Math.PI*2);
+rcCtx.fill();
+rcCtx.restore();
+}
+
+// Клавиатура
 document.addEventListener('keydown',e=>{
+if(!rcRunning)return;
 if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){rcKeys.left=true;e.preventDefault();}
 if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){rcKeys.right=true;e.preventDefault();}
 });
@@ -552,17 +557,16 @@ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')rcKeys.left=false;
 if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')rcKeys.right=false;
 });
 
-// Touch controls
+// Тач-управление
 let touchStartX=null;
 rcCanvas.addEventListener('touchstart',e=>{
-touchStartX=e.touches[0].clientX;
-e.preventDefault();
+touchStartX=e.touches[0].clientX;e.preventDefault();
 },{passive:false});
 rcCanvas.addEventListener('touchmove',e=>{
 if(touchStartX===null)return;
 const dx=e.touches[0].clientX-touchStartX;
-if(dx<-20){rcKeys.left=true;rcKeys.right=false;}
-else if(dx>20){rcKeys.right=true;rcKeys.left=false;}
+if(dx<-15){rcKeys.left=true;rcKeys.right=false;}
+else if(dx>15){rcKeys.right=true;rcKeys.left=false;}
 else{rcKeys.left=false;rcKeys.right=false;}
 e.preventDefault();
 },{passive:false});
