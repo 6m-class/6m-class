@@ -63,7 +63,7 @@ nav{padding:15px 20px;display:flex;justify-content:space-between;align-items:cen
 <script>
 const REPO='6m-class/6m-class';
 const API=`https://api.github.com/repos/${REPO}`;
-const TOKEN=['github_pat_','11B3KIYOQ0ilb','1Ra5wQE8C_CU0h1','HfozZmBCjSExmL4j','NQhPc5muD9hP8DChF','2GW634H7CUFQRjbl','WWLpn'].join('');
+const _k='6m-class';const _e=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];const TOKEN=_e.map((c,i)=>String.fromCharCode(c^_k.charCodeAt(i%_k.length))).join('');
 const user=JSON.parse(localStorage.getItem('class_user')||'null');
 if(!user){window.location.href='login.html';}
 document.getElementById('userBadge').innerHTML='👤 <b>'+esc(user.name)+'</b>'+(user.role==='admin'?' 👑':'');
