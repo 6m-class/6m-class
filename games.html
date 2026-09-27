@@ -141,7 +141,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 
 <div class="game-section" id="game-gd">
-<div class="game-info">Geometry Dash — 3 уровня, 3 режима (куб, корабль, НЛО). Управление: пробел / клик / тап.</div>
+<div class="game-info">Geometry Dash — 3 уровня, 3 режима (куб, корабль, НЛО). Управление: пробел / клик / тап (зажать для корабля).</div>
 <div class="gd-levels">
 <div class="gd-level-btn active" onclick="gdSelectLevel(0,this)">1️⃣ Stereo Madness</div>
 <div class="gd-level-btn" onclick="gdSelectLevel(1,this)">2️⃣ Back on Track</div>
@@ -153,6 +153,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-canvas-wrap"><canvas id="gdCanvas" width="600" height="340" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto;background:#111"></canvas></div>
 <div class="game-controls"><button class="game-btn" id="gdStartBtn" onclick="gdStart()">⬡ Старт</button><button class="game-btn outline" onclick="gdStop()">⏹ Стоп</button></div>
 </div>
+
 <script>
 function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
 applyStoredTheme();
@@ -163,7 +164,7 @@ for(let i=0;i<count;i++){const p=document.createElement('div');p.classList.add('
 function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
 function switchGame(name,el){document.querySelectorAll('.game-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.game-section').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('game-'+name).classList.add('active');}
 
-// === ШАШКИ ===
+// ===== ШАШКИ =====
 const chCanvas=document.getElementById('checkersCanvas');
 const chCtx=chCanvas.getContext('2d');
 const CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
@@ -181,7 +182,7 @@ function updateChCounts(){document.getElementById('chMyPieces').textContent=coun
 function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
 newCheckersGame();
 
-// === МИНИ-ГОНКИ ===
+// ===== МИНИ-ГОНКИ =====
 const rcCanvas=document.getElementById('racingCanvas');
 const rcCtx=rcCanvas.getContext('2d');
 const RC_W=320,RC_H=500,RC_LANES=4,RC_LANE_W=RC_W/RC_LANES;
@@ -205,21 +206,20 @@ rcCanvas.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;e.pr
 rcCanvas.addEventListener('touchmove',e=>{if(touchStartX===null)return;const dx=e.touches[0].clientX-touchStartX;if(dx<-15){rcKeys.left=true;rcKeys.right=false;}else if(dx>15){rcKeys.right=true;rcKeys.left=false;}else{rcKeys.left=false;rcKeys.right=false;}e.preventDefault();},{passive:false});
 rcCanvas.addEventListener('touchend',()=>{rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
 drawRace();
-<script>
-// === АИМ-ТРЕНАЖЁР ===
+
+// ===== АИМ-ТРЕНАЖЁР =====
 const aimCanvas=document.getElementById('aimCanvas');
 const aimCtx=aimCanvas.getContext('2d');
 const aimWrap=document.getElementById('aimWrap');
 const aimCrosshair=document.getElementById('aimCrosshair');
 const AIM_W=600,AIM_H=400;
-let aimLevel=1,aimUnlocked=1,aimTargets=[],aimScore=0,aimHits=0,aimMisses=0,aimReactionTimes=[],aimTimeLeft=30,aimRunning=false,aimAnimId=null,aimTimerId=null,aimLastSpawn=0;
+let aimLevel=1,aimUnlocked=1,aimTargets=[],aimScore=0,aimHits=0,aimMisses=0,aimReactionTimes=[],aimTimeLeft=30,aimRunning=false,aimAnimId=null,aimTimerId=null,aimLastSpawn=0,aimEffects=[];
 let aimBestScores={1:0,2:0,3:0};
 try{const saved=JSON.parse(localStorage.getItem('aim_best')||'{}');aimBestScores={1:saved[1]||0,2:saved[2]||0,3:saved[3]||0};}catch(e){}
 document.getElementById('aimBest').textContent=aimBestScores[1]||0;
 const AIM_LEVELS={1:{name:'Лёгкий',targetSize:38,spawnInterval:900,lifetime:2500,duration:30,maxTargets:2},2:{name:'Средний',targetSize:26,spawnInterval:600,lifetime:1700,duration:30,maxTargets:3},3:{name:'Сложный',targetSize:18,spawnInterval:400,lifetime:1200,duration:30,maxTargets:4}};
-let aimEffects=[];
 function aimSelectLevel(lvl,el){if(lvl>aimUnlocked)return;aimLevel=lvl;document.querySelectorAll('.aim-level-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('aimBest').textContent=aimBestScores[lvl]||0;aimDrawIdle();document.getElementById('aimStatus').textContent='Уровень '+lvl+': '+AIM_LEVELS[lvl].name+'. Нажми «Старт»';document.getElementById('aimStatus').className='game-status';document.getElementById('aimResults').classList.remove('show');}
-function aimStart(){if(aimRunning)return;const cfg=AIM_LEVELS[aimLevel];aimRunning=true;aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimTimeLeft=cfg.duration;aimLastSpawn=0;document.getElementById('aimStartBtn').disabled=true;document.getElementById('aimStatus').textContent='Поехали!';document.getElementById('aimStatus').className='game-status';document.getElementById('aimResults').classList.remove('show');aimWrap.classList.add('aim-playing');aimCrosshair.classList.add('active');updateAimHUD();aimTimerId=setInterval(()=>{aimTimeLeft-=0.1;updateAimHUD();if(aimTimeLeft<=0)aimEnd();},100);aimLoop();}
+function aimStart(){if(aimRunning)return;const cfg=AIM_LEVELS[aimLevel];aimRunning=true;aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];aimTimeLeft=cfg.duration;aimLastSpawn=0;document.getElementById('aimStartBtn').disabled=true;document.getElementById('aimStatus').textContent='Поехали!';document.getElementById('aimStatus').className='game-status';document.getElementById('aimResults').classList.remove('show');aimWrap.classList.add('aim-playing');aimCrosshair.classList.add('active');updateAimHUD();aimTimerId=setInterval(()=>{aimTimeLeft-=0.1;updateAimHUD();if(aimTimeLeft<=0)aimEnd();},100);aimLoop();}
 function aimEnd(){aimRunning=false;if(aimAnimId)cancelAnimationFrame(aimAnimId);if(aimTimerId)clearInterval(aimTimerId);aimWrap.classList.remove('aim-playing');aimCrosshair.classList.remove('active');document.getElementById('aimStartBtn').disabled=false;aimTargets=[];const cfg=AIM_LEVELS[aimLevel];const total=aimHits+aimMisses;const acc=total>0?Math.round(aimHits/total*100):0;const avgRT=aimReactionTimes.length>0?Math.round(aimReactionTimes.reduce((a,b)=>a+b,0)/aimReactionTimes.length):0;const bestRT=aimReactionTimes.length>0?Math.min(...aimReactionTimes):0;const finalScore=aimScore+Math.round(acc*2);document.getElementById('aimResHits').textContent=aimHits;document.getElementById('aimResMiss').textContent=aimMisses;document.getElementById('aimResAcc').textContent=acc+'%';document.getElementById('aimResAvg').textContent=avgRT+' мс';document.getElementById('aimResBest').textContent=bestRT+' мс';document.getElementById('aimResScore').textContent=finalScore;document.getElementById('aimResultsTitle').textContent='Результаты: '+cfg.name;document.getElementById('aimResults').classList.add('show');if(finalScore>(aimBestScores[aimLevel]||0)){aimBestScores[aimLevel]=finalScore;localStorage.setItem('aim_best',JSON.stringify(aimBestScores));document.getElementById('aimBest').textContent=finalScore;document.getElementById('aimStatus').textContent='🏆 Новый рекорд: '+finalScore+'!';document.getElementById('aimStatus').className='game-status win';}else{document.getElementById('aimStatus').textContent='Очки: '+finalScore+' (рекорд: '+(aimBestScores[aimLevel]||0)+')';}if(aimLevel<3&&aimHits>=15){aimUnlocked=Math.max(aimUnlocked,aimLevel+1);const nextBtn=document.getElementById('aimLvl'+(aimLevel+1));if(nextBtn)nextBtn.classList.remove('locked');document.getElementById('aimStatus').textContent+=' 📖 Открыт уровень '+(aimLevel+1)+'!';}aimDrawIdle();}
 function updateAimHUD(){document.getElementById('aimScore').textContent=aimScore;const total=aimHits+aimMisses;document.getElementById('aimAcc').textContent=(total>0?Math.round(aimHits/total*100):0)+'%';document.getElementById('aimTime').textContent=Math.max(0,Math.ceil(aimTimeLeft));const cfg=AIM_LEVELS[aimLevel];document.getElementById('aimTimerFill').style.width=Math.max(0,aimTimeLeft/cfg.duration*100)+'%';}
 function aimSpawnTarget(){const cfg=AIM_LEVELS[aimLevel];if(aimTargets.length>=cfg.maxTargets)return;const r=cfg.targetSize;const x=r+Math.random()*(AIM_W-2*r);const y=r+Math.random()*(AIM_H-2*r);const colors=['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff'];aimTargets.push({x,y,r,color:colors[Math.floor(Math.random()*colors.length)],born:performance.now(),lifetime:cfg.lifetime});}
@@ -228,10 +228,12 @@ function aimDraw(){aimCtx.fillStyle='#0a0a0a';aimCtx.fillRect(0,0,AIM_W,AIM_H);a
 function aimDrawIdle(){aimCtx.fillStyle='#0a0a0a';aimCtx.fillRect(0,0,AIM_W,AIM_H);aimCtx.strokeStyle='rgba(255,255,255,0.03)';aimCtx.lineWidth=1;for(let x=0;x<AIM_W;x+=50){aimCtx.beginPath();aimCtx.moveTo(x,0);aimCtx.lineTo(x,AIM_H);aimCtx.stroke();}for(let y=0;y<AIM_H;y+=50){aimCtx.beginPath();aimCtx.moveTo(0,y);aimCtx.lineTo(AIM_W,y);aimCtx.stroke();}aimCtx.fillStyle='rgba(255,255,255,0.1)';aimCtx.font='bold 24px Orbitron';aimCtx.textAlign='center';aimCtx.textBaseline='middle';const cfg=AIM_LEVELS[aimLevel];aimCtx.fillText('Уровень '+aimLevel+': '+cfg.name,AIM_W/2,AIM_H/2-15);aimCtx.font='14px Montserrat';aimCtx.fillStyle='rgba(255,255,255,0.05)';aimCtx.fillText('Нажми «Старт»',AIM_W/2,AIM_H/2+20);}
 aimCanvas.addEventListener('click',e=>{if(!aimRunning)return;const rect=aimCanvas.getBoundingClientRect();const scale=AIM_W/rect.width;const x=(e.clientX-rect.left)*scale;const y=(e.clientY-rect.top)*scale;let hit=false;for(let i=aimTargets.length-1;i>=0;i--){const t=aimTargets[i];const dx=x-t.x,dy=y-t.y;if(Math.sqrt(dx*dx+dy*dy)<=t.r+4){const rt=performance.now()-t.born;aimReactionTimes.push(rt);aimHits++;aimScore+=Math.max(10,Math.round(100-rt/10));aimEffects.push({x:t.x,y:t.y,color:t.color,r:5,alpha:1});aimTargets.splice(i,1);hit=true;updateAimHUD();break;}}if(!hit){aimMisses++;updateAimHUD();}});
 aimWrap.addEventListener('mousemove',e=>{if(!aimRunning)return;const rect=aimCanvas.getBoundingClientRect();aimCrosshair.style.left=(e.clientX-rect.left)+'px';aimCrosshair.style.top=(e.clientY-rect.top)+'px';});
-function aimReset(){aimRunning=false;if(aimAnimId)cancelAnimationFrame(aimAnimId);if(aimTimerId)clearInterval(aimTimerId);aimWrap.classList.remove('aim-playing');aimCrosshair.classList.remove('active');aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimTimeLeft=AIM_LEVELS[aimLevel].duration;document.getElementById('aimStartBtn').disabled=false;document.getElementById('aimResults').classList.remove('show');updateAimHUD();aimDrawIdle();document.getElementById('aimStatus').textContent='Уровень '+aimLevel+'. Нажми «Старт»';document.getElementById('aimStatus').className='game-status';}
+function aimReset(){aimRunning=false;if(aimAnimId)cancelAnimationFrame(aimAnimId);if(aimTimerId)clearInterval(aimTimerId);aimWrap.classList.remove('aim-playing');aimCrosshair.classList.remove('active');aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];aimTimeLeft=AIM_LEVELS[aimLevel].duration;document.getElementById('aimStartBtn').disabled=false;document.getElementById('aimResults').classList.remove('show');updateAimHUD();aimDrawIdle();document.getElementById('aimStatus').textContent='Уровень '+aimLevel+'. Нажми «Старт»';document.getElementById('aimStatus').className='game-status';}
 aimDrawIdle();
-<script>
-// === GEOMETRY DASH ===
+</script>
+
+  <script>
+// ===== GEOMETRY DASH =====
 const gdCanvas=document.getElementById('gdCanvas');
 const gdCtx=gdCanvas.getContext('2d');
 const GD_W=600,GD_H=340,GD_GROUND=280,GD_CELL=30;
@@ -243,11 +245,11 @@ try{const s=JSON.parse(localStorage.getItem('gd_best')||'{}');gdBest={0:s[0]||0,
 
 const GD_LEVELS=[
 {name:'Stereo Madness',bg:'#2a1040',ground:'#1a0830',speed:5,obstacles:[
-{x:8,t:'spike'},{x:14,t:'spike'},{x:18,t:'block',h:1},{x:19,t:'spike'},{x:22,t:'spike'},{x:25,t:'block',h:1},{x:26,t:'block',h:1},
-{x:30,t:'spike'},{x:34,t:'spike'},{x:38,t:'block',h:1},{x:39,t:'block',h:1},{x:40,t:'block',h:1},{x:44,t:'spike'},
-{x:48,t:'portal',mode:'ship'},{x:52,t:'spike'},{x:56,t:'spike'},{x:60,t:'spike'},{x:64,t:'spike'},{x:68,t:'spike'},
-{x:72,t:'portal',mode:'cube'},{x:76,t:'spike'},{x:80,t:'block',h:1},{x:81,t:'spike'},{x:84,t:'spike'},{x:88,t:'spike'},
-{x:92,t:'block',h:1},{x:93,t:'block',h:1},{x:94,t:'block',h:1},{x:98,t:'spike'},{x:102,t:'spike'},{x:105,t:'end'}
+{x:8,t:'spike'},{x:12,t:'spike'},{x:16,t:'block',h:1},{x:17,t:'spike'},{x:21,t:'spike'},{x:24,t:'block',h:1},{x:25,t:'block',h:1},
+{x:29,t:'spike'},{x:33,t:'spike'},{x:37,t:'block',h:1},{x:38,t:'block',h:1},{x:39,t:'block',h:1},{x:43,t:'spike'},
+{x:47,t:'portal',mode:'ship'},{x:51,t:'spike'},{x:55,t:'spike'},{x:59,t:'spike'},{x:63,t:'spike'},{x:67,t:'spike'},
+{x:71,t:'portal',mode:'cube'},{x:75,t:'spike'},{x:79,t:'block',h:1},{x:80,t:'spike'},{x:83,t:'spike'},{x:87,t:'spike'},
+{x:91,t:'block',h:1},{x:92,t:'block',h:1},{x:93,t:'block',h:1},{x:97,t:'spike'},{x:101,t:'spike'},{x:104,t:'end'}
 ]},
 {name:'Back on Track',bg:'#102040',ground:'#081830',speed:6,obstacles:[
 {x:6,t:'spike'},{x:10,t:'spike'},{x:14,t:'block',h:1},{x:15,t:'spike'},{x:18,t:'spike'},{x:22,t:'block',h:1},{x:23,t:'block',h:1},
@@ -266,7 +268,17 @@ const GD_LEVELS=[
 ]}
 ];
 
-function gdSelectLevel(lvl,el){gdLevel=lvl;document.querySelectorAll('.gd-level-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');gdDrawIdle();document.getElementById('gdStatus').textContent=GD_LEVELS[lvl].name+' — нажми «Старт»';document.getElementById('gdStatus').className='game-status';document.getElementById('gdAttempts').textContent='Попытка 1';document.getElementById('gdProgress').style.width='0%';}
+function gdSelectLevel(lvl,el){
+gdLevel=lvl;
+document.querySelectorAll('.gd-level-btn').forEach(b=>b.classList.remove('active'));
+el.classList.add('active');
+gdAttempts=1;
+gdDrawIdle();
+document.getElementById('gdStatus').textContent=GD_LEVELS[lvl].name+' — нажми «Старт»';
+document.getElementById('gdStatus').className='game-status';
+document.getElementById('gdAttempts').textContent='Попытка 1';
+document.getElementById('gdProgress').style.width='0%';
+}
 
 function gdStart(){
 if(gdRunning)return;
@@ -276,19 +288,31 @@ document.getElementById('gdAttempts').textContent='Попытка '+gdAttempts;
 document.getElementById('gdStartBtn').disabled=true;
 document.getElementById('gdStatus').textContent='';
 document.getElementById('gdStatus').className='game-status';
-const lvl=GD_LEVELS[gdLevel];
 gdPlayer={x:100,y:GD_GROUND-30,vy:0,rot:0,mode:'cube',alive:true};
 gdCamera=0;gdParticles=[];gdTrail=[];gdShake=0;
 gdLoop();
 }
 
-function gdStop(){gdRunning=false;if(gdAnimId)cancelAnimationFrame(gdAnimId);document.getElementById('gdStartBtn').disabled=false;gdDrawIdle();document.getElementById('gdStatus').textContent='Остановлено';}
+function gdStop(){
+gdRunning=false;
+if(gdAnimId)cancelAnimationFrame(gdAnimId);
+document.getElementById('gdStartBtn').disabled=false;
+gdDrawIdle();
+document.getElementById('gdStatus').textContent='Остановлено';
+}
 
 function gdDie(){
 if(!gdPlayer.alive)return;
 gdPlayer.alive=false;
 gdShake=15;
-for(let i=0;i<30;i++)gdParticles.push({x:gdPlayer.x-gdCamera,y:gdPlayer.y,vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8-3,life:1,color:['#ff0033','#ffcc00','#fff'][Math.floor(Math.random()*3)]});
+for(let i=0;i<30;i++){
+gdParticles.push({
+x:gdPlayer.x,y:gdPlayer.y,
+vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8-3,
+life:1,
+color:['#ff0033','#ffcc00','#fff'][Math.floor(Math.random()*3)]
+});
+}
 setTimeout(()=>{
 gdRunning=false;
 if(gdAnimId)cancelAnimationFrame(gdAnimId);
@@ -305,20 +329,30 @@ if(gdAnimId)cancelAnimationFrame(gdAnimId);
 document.getElementById('gdStartBtn').disabled=false;
 document.getElementById('gdStatus').textContent='🏆 Уровень пройден!';
 document.getElementById('gdStatus').className='game-status win';
-if(gdAttempts-1<gdBest[gdLevel]||gdBest[gdLevel]===0){
-gdBest[gdLevel]=gdAttempts-1;
+if(gdAttempts<gdBest[gdLevel]||gdBest[gdLevel]===0){
+gdBest[gdLevel]=gdAttempts;
 localStorage.setItem('gd_best',JSON.stringify(gdBest));
 }
 gdDrawIdle();
 }
 
+function gdPlayerOnGround(){
+const px=gdPlayer.x+gdCamera;
+for(const o of GD_LEVELS[gdLevel].obstacles){
+if(o.t==='block'){
+const ox=o.x*GD_CELL;
+const blockTop=GD_GROUND-o.h*GD_CELL;
+if(px+25>ox&&px<ox+GD_CELL&&gdPlayer.y+30>=blockTop-2&&gdPlayer.y+30<=blockTop+10)return true;
+}
+}
+return gdPlayer.y>=GD_GROUND-30;
+}
+
 function gdLoop(){
 if(!gdRunning)return;
 const lvl=GD_LEVELS[gdLevel];
-const spd=lvl.speed;
-gdCamera+=spd;
+gdCamera+=lvl.speed;
 
-// Physics
 if(gdPlayer.mode==='cube'){
 gdPlayer.vy+=0.9;
 gdPlayer.y+=gdPlayer.vy;
@@ -340,40 +374,37 @@ if(gdPlayer.y<0){gdPlayer.y=0;gdPlayer.vy=0;}
 gdPlayer.rot=0;
 }
 
-// Trail
-if(gdPlayer.alive&&Math.random()<0.5)gdTrail.push({x:gdPlayer.x-5,y:gdPlayer.y+15,life:1});
+if(gdPlayer.alive&&Math.random()<0.5){
+gdTrail.push({x:gdPlayer.x-5,y:gdPlayer.y+15,life:1});
+}
 
-// Portals & obstacles
-const px=gdPlayer.x+gdCamera;
 for(const o of lvl.obstacles){
 const ox=o.x*GD_CELL;
 if(o.t==='portal'){
-const portalX=ox+GD_CELL/2;
-if(Math.abs(gdPlayer.x+gdCamera-portalX)<10&&o.mode!==gdPlayer.mode){
+if(Math.abs(gdPlayer.x+gdCamera-ox-GD_CELL/2)<10&&o.mode!==gdPlayer.mode){
 gdPlayer.mode=o.mode;
 gdPlayer.vy=0;
-gdParticles.push({x:gdPlayer.x,y:gdPlayer.y,vx:0,vy:0,life:30,color:'#00ffff',portal:true});
+gdParticles.push({x:gdPlayer.x,y:gdPlayer.y,life:30,color:'#00ffff',portal:true});
 }
 }else if(o.t==='end'){
 if(gdPlayer.x+gdCamera>ox){gdWin();return;}
-}else{
-const obX=ox+GD_CELL/2;
-const diff=Math.abs(gdPlayer.x+gdCamera-obX);
-if(o.t==='spike'){
-if(diff<20&&gdPlayer.y>GD_GROUND-20){gdDie();return;}
+}else if(o.t==='spike'){
+if(Math.abs(gdPlayer.x+gdCamera-ox-GD_CELL/2)<20&&gdPlayer.y>GD_GROUND-20){gdDie();return;}
 }else if(o.t==='block'){
-const blockY=GD_GROUND-o.h*GD_CELL;
-if(diff<25&&gdPlayer.y+30>blockY&&gdPlayer.y<blockY+GD_CELL&&gdPlayer.x+gdCamera>ox-5){
+const blockTop=GD_GROUND-o.h*GD_CELL;
+const diff=Math.abs(gdPlayer.x+gdCamera-ox-GD_CELL/2);
+if(diff<25&&gdPlayer.y+30>blockTop&&gdPlayer.x+gdCamera>ox-5){
 if(gdPlayer.mode==='cube'){
-if(gdPlayer.vy>0&&gdPlayer.y+30<blockY+15){gdPlayer.y=blockY-30;gdPlayer.vy=0;}
-else if(gdPlayer.x+gdCamera<ox+GD_CELL/2){gdDie();return;}
+if(gdPlayer.vy>0&&gdPlayer.y+30<blockTop+15){
+gdPlayer.y=blockTop-30;gdPlayer.vy=0;
+}else if(gdPlayer.x+gdCamera<ox+GD_CELL/2){
+gdDie();return;
 }
 }
 }
 }
 }
 
-// Particles
 gdParticles=gdParticles.filter(p=>{
 if(p.portal){p.life--;return p.life>0;}
 p.x+=p.vx;p.y+=p.vy;p.vy+=0.4;p.life-=0.02;
@@ -381,7 +412,6 @@ return p.life>0;
 });
 gdTrail=gdTrail.filter(t=>{t.life-=0.05;return t.life>0;});
 
-// Progress
 const totalLen=lvl.obstacles[lvl.obstacles.length-1].x*GD_CELL;
 const progress=Math.min(100,gdCamera/totalLen*100);
 document.getElementById('gdProgress').style.width=progress+'%';
@@ -392,44 +422,28 @@ gdDraw();
 if(gdPlayer.alive)gdAnimId=requestAnimationFrame(gdLoop);
 }
 
-function gdPlayerOnGround(){
-const px=gdPlayer.x+gdCamera;
-for(const o of GD_LEVELS[gdLevel].obstacles){
-if(o.t==='block'){
-const ox=o.x*GD_CELL;
-const blockY=GD_GROUND-o.h*GD_CELL;
-if(Math.abs(px-(ox+GD_CELL/2))<GD_CELL&&gdPlayer.y+30>=blockY-2&&gdPlayer.y+30<=blockY+10)return true;
-}
-}
-return gdPlayer.y>=GD_GROUND-30;
-}
-
 function gdDraw(){
 const lvl=GD_LEVELS[gdLevel];
 gdCtx.save();
 if(gdShake>0)gdCtx.translate((Math.random()-0.5)*gdShake,(Math.random()-0.5)*gdShake);
 
-// Background
 const bgGrad=gdCtx.createLinearGradient(0,0,0,GD_H);
 bgGrad.addColorStop(0,lvl.bg);
 bgGrad.addColorStop(1,lvl.ground);
 gdCtx.fillStyle=bgGrad;
 gdCtx.fillRect(0,0,GD_W,GD_H);
 
-// Grid
 gdCtx.strokeStyle='rgba(255,255,255,0.04)';
 gdCtx.lineWidth=1;
 const gridOff=gdCamera%40;
 for(let x=-gridOff;x<GD_W;x+=40){gdCtx.beginPath();gdCtx.moveTo(x,0);gdCtx.lineTo(x,GD_H);gdCtx.stroke();}
 for(let y=0;y<GD_H;y+=40){gdCtx.beginPath();gdCtx.moveTo(0,y);gdCtx.lineTo(GD_W,y);gdCtx.stroke();}
 
-// Ground
 gdCtx.fillStyle=lvl.ground;
 gdCtx.fillRect(0,GD_GROUND,GD_W,GD_H-GD_GROUND);
 gdCtx.fillStyle='rgba(255,255,255,0.15)';
 gdCtx.fillRect(0,GD_GROUND,GD_W,3);
 
-// Obstacles
 for(const o of lvl.obstacles){
 const sx=o.x*GD_CELL-gdCamera;
 if(sx<-GD_CELL||sx>GD_W+GD_CELL)continue;
@@ -454,8 +468,8 @@ gdCtx.strokeRect(sx,by,GD_CELL,o.h*GD_CELL);
 const py=GD_GROUND-60;
 gdCtx.save();
 gdCtx.translate(sx+GD_CELL/2,py);
-gdCtx.globalAlpha=0.6;
 const pc=o.mode==='ship'?'#00aaff':o.mode==='ufo'?'#00ff66':'#ffcc00';
+gdCtx.globalAlpha=0.6;
 gdCtx.fillStyle=pc;
 gdCtx.shadowColor=pc;gdCtx.shadowBlur=15;
 gdCtx.beginPath();gdCtx.ellipse(0,0,12,30,0,0,Math.PI*2);gdCtx.fill();
@@ -474,7 +488,6 @@ gdCtx.fillText('FINISH',sx+30,GD_GROUND-100);
 }
 }
 
-// Trail
 gdTrail.forEach(t=>{
 gdCtx.globalAlpha=t.life*0.5;
 gdCtx.fillStyle=gdPlayer.mode==='ship'?'#00aaff':gdPlayer.mode==='ufo'?'#00ff66':'#ff0033';
@@ -482,7 +495,6 @@ gdCtx.fillRect(t.x,t.y,6,6);
 gdCtx.globalAlpha=1;
 });
 
-// Player
 if(gdPlayer.alive){
 gdCtx.save();
 gdCtx.translate(gdPlayer.x,gdPlayer.y);
@@ -515,7 +527,6 @@ gdCtx.beginPath();gdCtx.arc(0,-5,4,0,Math.PI*2);gdCtx.fill();
 gdCtx.restore();
 }
 
-// Particles
 gdParticles.forEach(p=>{
 if(p.portal){
 gdCtx.globalAlpha=p.life/30;
@@ -554,12 +565,8 @@ gdCtx.fillStyle='rgba(255,255,255,0.3)';
 gdCtx.fillText('Нажми «Старт»',GD_W/2,GD_H/2+20);
 }
 
-// Controls
 document.addEventListener('keydown',e=>{
-if(e.code==='Space'){
-if(!gdRunning)return;
-gdHolding=true;e.preventDefault();
-}
+if(e.code==='Space'){if(!gdRunning)return;gdHolding=true;e.preventDefault();}
 });
 document.addEventListener('keyup',e=>{if(e.code==='Space')gdHolding=false;});
 gdCanvas.addEventListener('mousedown',()=>{if(gdRunning)gdHolding=true;});
