@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Игры | Самый лучший класс</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="settings.js"></script>
+<style>
+:root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2)}
+[data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
+[data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--border:rgba(0,255,102,0.3);--shadow:rgba(0,255,102,0.2)}
+[data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--border:rgba(0,170,255,0.3);--shadow:rgba(0,170,255,0.2)}
+[data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--border:rgba(170,0,255,0.3);--shadow:rgba(170,0,255,0.2)}
+[data-theme="aero"]{--primary:#00ffff;--primary-rgb:0,255,255;--glow:rgba(0,255,255,0.15);--border:rgba(0,255,255,0.3);--shadow:rgba(0,255,255,0.2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-glow{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:40vh;background:radial-gradient(ellipse at top,var(--glow),transparent 70%);z-index:-2;pointer-events:none}
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 5px var(--primary);animation:floatUp linear infinite;opacity:0}
+@keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}50%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(5,5,5,0.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-left{display:flex;gap:10px;align-items:center}
+.nav-btn{color:#fff;text-decoration:none;font-weight:700;text-transform:uppercase;font-size:.85rem;padding:8px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;transition:.3s;cursor:pointer}
+.nav-btn:hover{border-color:var(--primary);color:var(--primary)}
+.logout-btn{padding:8px 16px;border:1px solid rgba(255,80,80,0.3);border-radius:4px;background:transparent;color:#ff5555;font-size:.85rem;cursor:pointer;transition:.3s;font-family:'Montserrat',sans-serif;font-weight:700}
+.logout-btn:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
+.title{text-align:center;padding:20px;font-family:'Orbitron',sans-serif;font-size:1.6rem;text-transform:uppercase}
+.title span{color:var(--primary)}
+.game-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;padding:0 20px}
+.game-tab{padding:12px 24px;border:1px solid var(--border);border-radius:10px;background:rgba(20,20,20,0.6);color:#aaa;cursor:pointer;font-weight:700;font-size:.9rem;transition:.3s;text-transform:uppercase}
+.game-tab:hover{border-color:var(--primary);color:var(--primary)}
+.game-tab.active{background:var(--primary);color:#000;border-color:var(--primary)}
+.game-section{display:none;max-width:700px;margin:0 auto;padding:0 20px 40px}
+.game-section.active{display:block}
+.game-info{text-align:center;margin-bottom:15px;color:#888;font-size:.85rem}
+.game-canvas-wrap{display:flex;justify-content:center}
+.game-status{text-align:center;margin:15px 0;font-size:1rem;font-weight:700;min-height:24px}
+.game-status.win{color:#00ff66}
+.game-status.lose{color:#ff5555}
+.game-controls{display:flex;gap:10px;justify-content:center;margin-top:15px;flex-wrap:wrap}
+.game-btn{padding:10px 24px;border:none;border-radius:8px;background:var(--primary);color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s}
+.game-btn:hover{box-shadow:0 0 20px var(--shadow);transform:translateY(-2px)}
+.game-btn.outline{background:transparent;border:1px solid var(--border);color:#aaa}
+.game-btn.outline:hover{border-color:var(--primary);color:var(--primary)}
+.score-board{display:flex;justify-content:center;gap:30px;margin:15px 0}
+.score-item{text-align:center}
+.score-label{font-size:.75rem;color:#666;text-transform:uppercase}
+.score-value{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--primary);font-weight:900}
+.race-hud{position:absolute;top:10px;left:10px;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--primary);text-shadow:0 0 10px var(--shadow);pointer-events:none}
+.race-wrap{position:relative;display:inline-block}
+@media(max-width:600px){.title{font-size:1.2rem;padding:15px}.game-tab{padding:10px 16px;font-size:.75rem}}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="particles" id="particles"></div>
+<nav>
+<div class="nav-left">
+<a href="index.html" class="nav-btn">← Главная</a>
+<a href="chat.html" class="nav-btn">💬 Чат</a>
+</div>
+<button class="logout-btn" onclick="logout()">Выйти</button>
+</nav>
+<div class="title">🎮 <span>Игры</span> класса</div>
+<div class="game-tabs">
+<div class="game-tab active" onclick="switchGame('checkers',this)">♟️ Шашки</div>
+<div class="game-tab" onclick="switchGame('racing',this)">🏎️ Мини-гонки</div>
+</div>
+
+<!-- ШАШКИ -->
+<div class="game-section active" id="game-checkers">
+<div class="game-info">Классические шашки 8×8. Бьёшь — ходишь ещё раз. Дойди до последней линии — станешь дамкой.</div>
+<div class="score-board">
+<div class="score-item"><div class="score-label">Твои</div><div class="score-value" id="chMyPieces">12</div></div>
+<div class="score-item"><div class="score-label">Компьютер</div><div class="score-value" id="chCpuPieces">12</div></div>
+</div>
+<div class="game-status" id="chStatus">Твой ход</div>
+<div class="game-canvas-wrap">
+<canvas id="checkersCanvas" width="480" height="480" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto"></canvas>
+</div>
+<div class="game-controls">
+<button class="game-btn" onclick="newCheckersGame()">🔄 Новая игра</button>
+</div>
+</div>
+
+<!-- ГОНОЧКИ -->
+<div class="game-section" id="game-racing">
+<div class="game-info">Уворачивайся от других машин. Чем дольше едешь — тем быстрее. Управление: ← → или A D.</div>
+<div class="score-board">
+<div class="score-item"><div class="score-label">Очки</div><div class="score-value" id="raceScore">0</div></div>
+<div class="score-item"><div class="score-label">Рекорд</div><div class="score-value" id="raceBest">0</div></div>
+</div>
+<div class="game-status" id="raceStatus">Нажми «Старт»</div>
+<div class="game-canvas-wrap">
+<div class="race-wrap">
+<canvas id="racingCanvas" width="320" height="500" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto;background:#111"></canvas>
+</div>
+</div>
+<div class="game-controls">
+<button class="game-btn" id="raceStartBtn" onclick="startRace()">🏁 Старт</button>
+<button class="game-btn outline" onclick="resetRace()">🔄 Заново</button>
+</div>
+</div>
+
+<script>
+// ===== THEME =====
+function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
+applyStoredTheme();
+
+// ===== PARTICLES =====
+const isMobile=window.innerWidth<600;
+const pc=document.getElementById('particles');
+const count=isMobile?10:20;
+for(let i=0;i<count;i++){
+const p=document.createElement('div');p.classList.add('particle');
+const s=Math.random()*3+1;
+p.style.width=s+'px';p.style.height=s+'px';
+p.style.left=Math.random()*100+'vw';
+p.style.animationDuration=(Math.random()*10+6)+'s';
+p.style.animationDelay=Math.random()*5+'s';
+pc.appendChild(p);
+}
+
+function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
+
+function switchGame(name,el){
+document.querySelectorAll('.game-tab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.game-section').forEach(s=>s.classList.remove('active'));
+el.classList.add('active');
+document.getElementById('game-'+name).classList.add('active');
+}
+
+// ============================================================
+// ШАШКИ
+// ============================================================
+const chCanvas=document.getElementById('checkersCanvas');
+const chCtx=chCanvas.getContext('2d');
+const CH_SIZE=8;
+const CH_CELL=60;
+const CH_W=CH_CELL*CH_SIZE;
+
+let chBoard=[];
+let chSelected=null;
+let chTurn='white'; // white = player, black = CPU
+let chMustCapture=false;
+let chGameOver=false;
+
+function newCheckersGame(){
+chBoard=[];
+for(let r=0;r<CH_SIZE;r++){
+chBoard[r]=[];
+for(let c=0;c<CH_SIZE;c++){
+chBoard[r][c]=null;
+if((r+c)%2===1){
+if(r<3)chBoard[r][c]={color:'black',king:false};
+else if(r>4)chBoard[r][c]={color:'white',king:false};
+}
+}
+}
+chSelected=null;
+chTurn='white';
+chGameOver=false;
+updateChStatus('Твой ход');
+updateChCounts();
+drawCheckers();
+}
+
+function drawCheckers(){
+chCtx.fillStyle='#1a1a1a';
+chCtx.fillRect(0,0,CH_W,CH_W);
+for(let r=0;r<CH_SIZE;r++){
+for(let c=0;c<CH_SIZE;c++){
+const x=c*CH_CELL,y=r*CH_CELL;
+const dark=(r+c)%2===1;
+chCtx.fillStyle=dark?'#333':'#888';
+chCtx.fillRect(x,y,CH_CELL,CH_CELL);
+const p=chBoard[r][c];
+if(p){
+chCtx.beginPath();
+chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);
+chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';
+chCtx.fill();
+chCtx.strokeStyle=p.color==='white'?'#999':'#444';
+chCtx.lineWidth=2;
+chCtx.stroke();
+if(p.king){
+chCtx.fillStyle=p.color==='white'?'#ff0033':'#ff0033';
+chCtx.font='bold 20px Orbitron';
+chCtx.textAlign='center';
+chCtx.textBaseline='middle';
+chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);
+}
+}
+}
+}
+// Highlight selected
+if(chSelected){
+const {r,c}=chSelected;
+chCtx.strokeStyle='#ff0033';
+chCtx.lineWidth=3;
+chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);
+// Highlight valid moves
+const moves=getMovesForPiece(r,c);
+moves.forEach(m=>{
+chCtx.fillStyle='rgba(255,0,51,0.2)';
+if(m.capture){
+chCtx.fillStyle='rgba(0,255,102,0.3)';
+}
+chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);
+});
+}
+}
+
+function getMovesForPiece(r,c){
+const p=chBoard[r][c];
+if(!p)return[];
+const moves=[];
+const dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:p.color==='white'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];
+// Captures
+for(const[dr,dc]of dirs){
+const tr=r+dr*2,tc=c+dc*2;
+const mr=r+dr,mc=c+dc;
+if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){
+const mid=chBoard[mr][mc];
+if(mid&&mid.color!==p.color){
+moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});
+}
+}
+}
+// Simple moves (only if no captures available globally)
+if(!chMustCapture){
+for(const[dr,dc]of dirs){
+const tr=r+dr,tc=c+dc;
+if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){
+moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});
+}
+}
+}
+return moves;
+}
+
+function hasAnyCaptures(color){
+for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
+const p=chBoard[r][c];
+if(p&&p.color===color){
+const dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:p.color==='white'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];
+for(const[dr,dc]of dirs){
+const tr=r+dr*2,tc=c+dc*2;
+const mr=r+dr,mc=c+dc;
+if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color){
+return true;
+}
+}
+}
+}
+return false;
+}
+
+function getAllMoves(color){
+chMustCapture=hasAnyCaptures(color);
+const all=[];
+for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
+const p=chBoard[r][c];
+if(p&&p.color===color){
+all.push(...getMovesForPiece(r,c));
+}
+}
+chMustCapture=false;
+return all;
+}
+
+function makeMove(move){
+const p=chBoard[move.fromR][move.fromC];
+chBoard[move.fromR][move.fromC]=null;
+chBoard[move.toR][move.toC]=p;
+if(move.capture){
+chBoard[move.capR][move.capC]=null;
+}
+// King promotion
+if(p.color==='white'&&move.toR===0){p.king=true;}
+if(p.color==='black'&&move.toR===CH_SIZE-1){p.king=true;}
+}
+
+chCanvas.addEventListener('click',e=>{
+if(chGameOver||chTurn!=='white')return;
+const rect=chCanvas.getBoundingClientRect();
+const scale=CH_W/rect.width;
+const x=(e.clientX-rect.left)*scale;
+const y=(e.clientY-rect.top)*scale;
+const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);
+if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;
+
+if(chSelected){
+const moves=getMovesForPiece(chSelected.r,chSelected.c);
+const move=moves.find(m=>m.toR===r&&m.toC===c);
+if(move){
+makeMove(move);
+// Check for additional captures
+const captures=getMovesForPiece(r,c).filter(m=>m.capture);
+if(move.capture&&captures.length>0){
+chSelected={r,c};
+chMustCapture=true;
+drawCheckers();
+updateChStatus('Бьёшь ещё!');
+return;
+}
+chSelected=null;
+chMustCapture=false;
+chTurn='black';
+updateChCounts();
+drawCheckers();
+updateChStatus('Ход компьютера...');
+setTimeout(cpuMove,600);
+return;
+}
+}
+// Select piece
+const p=chBoard[r][c];
+if(p&&p.color==='white'){
+const allMoves=getAllMoves('white');
+chMustCapture=allMoves.some(m=>m.capture);
+chSelected={r,c};
+drawCheckers();
+}
+});
+
+function cpuMove(){
+const allMoves=getAllMoves('black');
+if(allMoves.length===0){
+updateChStatus('Ты выиграл! 🎉','win');
+chGameOver=true;
+return;
+}
+// Prefer captures, then random
+const captures=allMoves.filter(m=>m.capture);
+const move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];
+makeMove(move);
+// Additional captures for CPU
+let moreCaptures=true;
+while(moreCaptures){
+const caps=getMovesForPiece(move.toR,move.toC).filter(m=>m.capture);
+if(caps.length>0){
+const next=caps[Math.floor(Math.random()*caps.length)];
+makeMove(next);
+}else{
+moreCaptures=false;
+}
+}
+chMustCapture=false;
+chTurn='white';
+updateChCounts();
+drawCheckers();
+// Check win/lose
+const whiteCount=countPieces('white');
+const blackCount=countPieces('black');
+if(whiteCount===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+if(blackCount===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
+const whiteMoves=getAllMoves('white');
+if(whiteMoves.length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+updateChStatus('Твой ход');
+}
+
+function countPieces(color){
+let n=0;
+for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
+if(chBoard[r][c]&&chBoard[r][c].color===color)n++;
+}
+return n;
+}
+function updateChCounts(){
+document.getElementById('chMyPieces').textContent=countPieces('white');
+document.getElementById('chCpuPieces').textContent=countPieces('black');
+}
+function updateChStatus(text,cls){
+const el=document.getElementById('chStatus');
+el.textContent=text;
+el.className='game-status'+(cls?' '+cls:'');
+}
+
+newCheckersGame();
+
+// ============================================================
+// МИНИ-ГОНКИ
+// ============================================================
+const rcCanvas=document.getElementById('racingCanvas');
+const rcCtx=rcCanvas.getContext('2d');
+const RC_W=320,RC_H=500;
+const RC_LANES=4;
+const RC_LANE_W=RC_W/RC_LANES;
+
+let rcPlayer={lane:1.5,y:RC_H-100};
+let rcCars=[];
+let rcRoadOffset=0;
+let rcSpeed=3;
+let rcScore=0;
+let rcRunning=false;
+let rcAnimId=null;
+let rcKeys={};
+let rcBest=parseInt(localStorage.getItem('race_best')||'0');
+document.getElementById('raceBest').textContent=rcBest;
+
+function resetRace(){
+rcPlayer={lane:1.5,y:RC_H-100};
+rcCars=[];
+rcRoadOffset=0;
+rcSpeed=3;
+rcScore=0;
+rcRunning=false;
+document.getElementById('raceScore').textContent='0';
+document.getElementById('raceStatus').textContent='Нажми «Старт»';
+document.getElementById('raceStatus').className='game-status';
+document.getElementById('raceStartBtn').disabled=false;
+if(rcAnimId)cancelAnimationFrame(rcAnimId);
+drawRace();
+}
+
+function startRace(){
+if(rcRunning)return;
+rcRunning=true;
+rcPlayer={lane:1.5,y:RC_H-100};
+rcCars=[];
+rcSpeed=3;
+rcScore=0;
+rcRoadOffset=0;
+document.getElementById('raceStartBtn').disabled=true;
+document.getElementById('raceStatus').textContent='';
+document.getElementById('raceStatus').className='game-status';
+raceLoop();
+}
+
+function spawnCar(){
+const lane=Math.floor(Math.random()*RC_LANES);
+// Check no car near top
+const tooClose=rcCars.some(c=>c.y<80);
+if(tooClose)return;
+rcCars.push({lane,y:-40,color:['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff'][Math.floor(Math.random()*5)]});
+}
+
+function raceLoop(){
+if(!rcRunning)return;
+rcRoadOffset+=rcSpeed;
+rcScore++;
+document.getElementById('raceScore').textContent=rcScore;
+// Increase speed gradually
+rcSpeed=3+Math.min(rcScore/300,5);
+
+// Move player
+if(rcKeys.left&&rcPlayer.lane>0.5)rcPlayer.lane-=0.08;
+if(rcKeys.right&&rcPlayer.lane<RC_LANES-1.5)rcPlayer.lane+=0.08;
+
+// Spawn cars
+if(Math.random()<0.03+rcSpeed/200)spawnCar();
+
+// Move cars
+rcCars.forEach(c=>c.y+=rcSpeed);
+rcCars=rcCars.filter(c=>c.y<RC_H+50);
+
+// Collision check
+const px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2;
+const py=rcPlayer.y;
+for(const c of rcCars){
+const cx=c.lane*RC_LANE_W+RC_LANE_W/2;
+const cy=c.y;
+const dx=Math.abs(px-cx);
+const dy=Math.abs(py-cy);
+if(dx<RC_LANE_W*0.7&&dy<50){
+// Crash
+rcRunning=false;
+document.getElementById('raceStatus').textContent='💥 Авария! Очки: '+rcScore;
+document.getElementById('raceStatus').className='game-status lose';
+document.getElementById('raceStartBtn').disabled=false;
+if(rcScore>rcBest){
+rcBest=rcScore;
+localStorage.setItem('race_best',rcBest);
+document.getElementById('raceBest').textContent=rcBest;
+}
+drawRace();
+return;
+}
+}
+
+drawRace();
+rcAnimId=requestAnimationFrame(raceLoop);
+}
+
+function drawRace(){
+// Road
+rcCtx.fillStyle='#222';
+rcCtx.fillRect(0,0,RC_W,RC_H);
+// Grass
+rcCtx.fillStyle='#1a3a1a';
+rcCtx.fillRect(-2,0,2,RC_H);
+rcCtx.fillRect(RC_W,0,2,RC_H);
+// Lane lines
+rcCtx.strokeStyle='#555';
+rcCtx.lineWidth=2;
+rcCtx.setLineDash([20,20]);
+rcCtx.lineDashOffset=-rcRoadOffset;
+for(let i=1;i<RC_LANES;i++){
+rcCtx.beginPath();
+rcCtx.moveTo(i*RC_LANE_W,0);
+rcCtx.lineTo(i*RC_LANE_W,RC_H);
+rcCtx.stroke();
+}
+rcCtx.setLineDash([]);
+
+// Cars (enemies)
+rcCars.forEach(c=>{
+const x=c.lane*RC_LANE_W+RC_LANE_W/2;
+drawCar(x,c.y,c.color,'#000');
+});
+
+// Player
+const px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2;
+drawCar(px,py,'#f0f0f0','#ff0033');
+
+// HUD already in HTML
+}
+
+function drawCar(cx,cy,bodyColor,accentColor){
+rcCtx.save();
+rcCtx.translate(cx,cy);
+// Body
+rcCtx.fillStyle=bodyColor;
+rcCtx.beginPath();
+rcCtx.roundRect(-18,-25,36,50,6);
+rcCtx.fill();
+// Windshield
+rcCtx.fillStyle='rgba(0,0,0,0.4)';
+rcCtx.fillRect(-14,-18,28,12);
+rcCtx.fillRect(-14,8,28,12);
+// Accent stripe
+rcCtx.fillStyle=accentColor;
+rcCtx.fillRect(-18,-2,36,4);
+// Wheels
+rcCtx.fillStyle='#111';
+rcCtx.fillRect(-20,-18,4,10);
+rcCtx.fillRect(16,-18,4,10);
+rcCtx.fillRect(-20,10,4,10);
+rcCtx.fillRect(16,10,4,10);
+rcCtx.restore();
+}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){rcKeys.left=true;e.preventDefault();}
+if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){rcKeys.right=true;e.preventDefault();}
+});
+document.addEventListener('keyup',e=>{
+if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')rcKeys.left=false;
+if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')rcKeys.right=false;
+});
+
+// Touch controls
+let touchStartX=null;
+rcCanvas.addEventListener('touchstart',e=>{
+touchStartX=e.touches[0].clientX;
+e.preventDefault();
+},{passive:false});
+rcCanvas.addEventListener('touchmove',e=>{
+if(touchStartX===null)return;
+const dx=e.touches[0].clientX-touchStartX;
+if(dx<-20){rcKeys.left=true;rcKeys.right=false;}
+else if(dx>20){rcKeys.right=true;rcKeys.left=false;}
+else{rcKeys.left=false;rcKeys.right=false;}
+e.preventDefault();
+},{passive:false});
+rcCanvas.addEventListener('touchend',()=>{rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
+
+drawRace();
+</script>
+</body>
+</html>
