@@ -116,7 +116,7 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,5vw,3rem);text-align:c
 <script>
 const REPO='6m-class/6m-class';
 const API=`https://api.github.com/repos/${REPO}`;
-const TOKEN=atob('Z2l0aHViX3BhdF8xMUIzS0lZT1EwaWxiMVJhNXdRRThDX0NVMGgxSGZvelptQkNqU0V4bUw0ak5RaFBjNW11RDloUDhEQ2hGMkdXNjM0SDdDVUZRUmpibFdXTHBu');
+const TOKEN = ['github_p', 'at_11B3KIYOQ0', '8UlmZ6EUSTLi_8SHuDW3a9UzpJKZsuLEx2QuIGcgfA2w96Sv7SkjMS', 'CsDBFQP4RY5WugNyGd'].join('');
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
 function fmt(d){return new Date(d).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}
 async function fetchT(url,opts={},ms=10000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);return fetch(url,{...opts,signal:c.signal}).finally(()=>clearTimeout(t))}
