@@ -35,27 +35,27 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .chat-title{font-family:'Orbitron',sans-serif;font-size:1.1rem;text-transform:uppercase;text-align:center;flex-shrink:0;padding:8px}
 .chat-title span{color:var(--primary)}
 #chatBox{flex:1;overflow-y:auto;padding:15px 20px;display:flex;flex-direction:column;gap:10px}
-
-/* Pinned section */
 .pinned-section{background:rgba(var(--primary-rgb),0.08);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
 .pinned-header{font-size:.75rem;color:var(--primary);font-weight:700;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:4px}
 .pinned-msg{display:flex;gap:8px;align-items:flex-start;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:6px}
 .pinned-msg:last-child{margin-bottom:0}
-.pinned-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--primary);object-fit:cover;flex-shrink:0;background:rgba(var(--primary-rgb),0.1)}
-.pinned-avatar-ph{width:28px;height:28px;border-radius:50%;border:2px solid var(--primary);background:rgba(var(--primary-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--primary);flex-shrink:0}
+.pinned-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--primary);object-fit:cover;flex-shrink:0;background:rgba(var(--primary-rgb),0.1);cursor:pointer;transition:.2s}
+.pinned-avatar:hover{opacity:.8;transform:scale(1.1)}
+.pinned-avatar-ph{width:28px;height:28px;border-radius:50%;border:2px solid var(--primary);background:rgba(var(--primary-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--primary);flex-shrink:0;cursor:pointer;transition:.2s}
+.pinned-avatar-ph:hover{opacity:.8;transform:scale(1.1)}
 .pinned-content{flex:1;min-width:0}
 .pinned-author{font-size:.7rem;font-weight:700;opacity:.8}
 .pinned-text{font-size:.85rem;line-height:1.3;word-wrap:break-word;margin-top:2px}
-
-/* Messages */
 .msg-row{display:flex;gap:8px;align-items:flex-start;max-width:85%;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .msg-row.me{flex-direction:row-reverse;align-self:flex-end}
 .msg-row.other{align-self:flex-start}
 .msg-row.admin{align-self:flex-start}
 .msg-row.system{align-self:center;max-width:90%}
-.msg-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--primary);object-fit:cover;flex-shrink:0;background:rgba(var(--primary-rgb),0.1)}
-.msg-avatar-ph{width:32px;height:32px;border-radius:50%;border:2px solid var(--primary);background:rgba(var(--primary-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--primary);flex-shrink:0}
+.msg-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--primary);object-fit:cover;flex-shrink:0;background:rgba(var(--primary-rgb),0.1);cursor:pointer;transition:.2s}
+.msg-avatar:hover{opacity:.8;transform:scale(1.1)}
+.msg-avatar-ph{width:32px;height:32px;border-radius:50%;border:2px solid var(--primary);background:rgba(var(--primary-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--primary);flex-shrink:0;cursor:pointer;transition:.2s}
+.msg-avatar-ph:hover{opacity:.8;transform:scale(1.1)}
 .msg-content{display:flex;flex-direction:column;min-width:0}
 .msg{padding:10px 15px;border-radius:12px;font-size:.9rem;line-height:1.4;word-wrap:break-word;position:relative}
 .msg.other{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08)}
@@ -67,21 +67,15 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .msg-time{font-size:.65rem;opacity:.5;margin-top:3px}
 .msg.edited{font-size:.65rem;opacity:.4;font-style:italic}
 .msg.system{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);font-size:.8rem;color:#666;text-align:center}
-
-/* Admin actions */
 .msg-actions{display:flex;gap:4px;margin-top:4px;opacity:.6;transition:.2s}
 .msg-actions button{padding:4px 8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;cursor:pointer;font-size:.8rem;transition:.2s;color:#aaa}
 .msg-actions button:hover{border-color:var(--primary);color:var(--primary);background:rgba(var(--primary-rgb),0.1)}
 .msg-actions button.danger:hover{border-color:#ff4444;color:#ff4444;background:rgba(255,68,68,0.1)}
 .msg-actions button.pinned-active{border-color:var(--primary);color:var(--primary)}
-
-/* Edit inline */
 .edit-input{width:100%;min-height:60px;padding:8px;background:rgba(0,0,0,0.3);border:1px solid var(--primary);border-radius:8px;color:#fff;font-size:.9rem;font-family:'Montserrat',sans-serif;resize:vertical;outline:none}
 .edit-btns{display:flex;gap:6px;margin-top:6px}
 .edit-save{padding:6px 14px;background:var(--primary);border:none;border-radius:6px;color:#000;font-weight:700;cursor:pointer;font-size:.8rem;font-family:'Montserrat',sans-serif}
 .edit-cancel{padding:6px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#fff;cursor:pointer;font-size:.8rem;font-family:'Montserrat',sans-serif}
-
-/* Emoji */
 .emoji-panel{display:none;position:fixed;bottom:65px;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:rgba(17,17,17,0.98);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:12px;z-index:100;box-shadow:0 -5px 30px rgba(0,0,0,0.5);animation:slideUp .2s ease}
 .emoji-panel.open{display:block}
 @keyframes slideUp{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
@@ -93,8 +87,6 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .emoji-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .emoji-btn{font-size:1.4rem;padding:6px;text-align:center;cursor:pointer;border-radius:6px;transition:.15s;background:transparent;border:none}
 .emoji-btn:hover{background:rgba(255,255,255,0.08);transform:scale(1.2)}
-
-/* Input */
 .input-bar{display:flex;gap:8px;padding:12px 20px;background:rgba(5,5,5,0.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);flex-shrink:0;align-items:center;position:relative}
 .input-bar input{flex:1;padding:12px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:.9rem;outline:none;transition:.3s;font-family:'Montserrat',sans-serif}
 .input-bar input:focus{border-color:var(--primary);box-shadow:0 0 12px var(--shadow)}
@@ -103,6 +95,19 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .send-btn{padding:12px 20px;background:var(--primary);border:none;border-radius:8px;color:#000;font-weight:900;cursor:pointer;transition:.3s;font-family:'Orbitron',sans-serif;font-size:1.1rem;line-height:1}
 .send-btn:hover{box-shadow:0 0 20px var(--shadow);transform:translateY(-2px)}
 .send-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.profile-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.profile-modal.open{display:flex}
+.profile-modal-card{background:rgba(20,20,20,0.95);border:1px solid var(--border);border-radius:16px;padding:30px;width:90%;max-width:350px;text-align:center;box-shadow:0 0 60px rgba(var(--primary-rgb),0.2);animation:fadeIn .2s ease}
+.profile-modal-avatar{width:90px;height:90px;border-radius:50%;border:3px solid var(--primary);object-fit:cover;margin:0 auto 15px;display:block;box-shadow:0 0 20px var(--shadow)}
+.profile-modal-avatar-ph{width:90px;height:90px;border-radius:50%;border:3px solid var(--primary);background:rgba(var(--primary-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:2rem;font-family:'Orbitron',sans-serif;font-weight:900;color:var(--primary);margin:0 auto 15px}
+.profile-modal-name{font-family:'Orbitron',sans-serif;font-size:1.3rem;margin-bottom:5px}
+.profile-modal-info{display:flex;gap:20px;justify-content:center;margin:15px 0}
+.profile-modal-info .info-item{text-align:center}
+.profile-modal-info .info-label{font-size:.7rem;color:#555;text-transform:uppercase;margin-bottom:2px}
+.profile-modal-info .info-value{font-size:1rem;font-weight:700}
+.profile-modal-info .info-value span{color:var(--primary)}
+.profile-modal-close{margin-top:15px;padding:10px 24px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem;transition:.3s}
+.profile-modal-close:hover{border-color:var(--primary);color:var(--primary)}
 @media(max-width:600px){nav{padding:8px 12px;flex-wrap:wrap;gap:8px}.msg-row{max-width:95%}.input-bar{padding:10px 12px}.emoji-grid{grid-template-columns:repeat(6,1fr)}.nav-right{flex-wrap:wrap}}
 </style>
 </head>
@@ -116,6 +121,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 <div class="nav-right">
 <a href="profile.html" class="nav-btn">Профиль</a>
+<a href="games.html" class="nav-btn">🎮 Игры</a>
 <div class="user-badge" id="userBadge"></div>
 </div>
 </nav>
@@ -139,6 +145,18 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <input type="text" id="msgInput" placeholder="Напишите сообщение..." onkeydown="if(event.key==='Enter')sendMsg()" maxlength="500">
 <button class="send-btn" id="sendBtn" onclick="sendMsg()">→</button>
 </div>
+<div class="profile-modal" id="profileModal" onclick="if(event.target===this)closeProfileModal()">
+<div class="profile-modal-card">
+<div id="profileModalAvatar"></div>
+<div class="profile-modal-name" id="profileModalName"></div>
+<div class="profile-modal-info">
+<div class="info-item"><div class="info-label">Логин</div><div class="info-value" id="profileModalLogin"></div></div>
+<div class="info-item"><div class="info-label">Роль</div><div class="info-value" id="profileModalRole"></div></div>
+<div class="info-item"><div class="info-label">Сообщений</div><div class="info-value" id="profileModalMsgCount"><span>0</span></div></div>
+</div>
+<button class="profile-modal-close" onclick="closeProfileModal()">Закрыть</button>
+</div>
+</div>
 <script src="settings.js"></script>
 <script>
 const REPO='6m-class/6m-class';
@@ -148,14 +166,13 @@ const TOKEN=_e.map((c,i)=>String.fromCharCode(c^_k.charCodeAt(i%_k.length))).joi
 const user=JSON.parse(localStorage.getItem('class_user')||'null');
 if(!user){window.location.href='login.html';}
 const isAdmin=user.role==='admin';
-
 let avatarCache={};
+let allAccounts=[];
 let commentsCache={};
 let pinnedIds=[];
 let chatIssueNum=null;
 let isSending=false;
 let editingId=null;
-
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
 function fmt(d){return new Date(d).toLocaleString('ru-RU',{hour:'2-digit',minute:'2-digit'})}
 async function fetchJSON(url,opts={},ms=10000){
@@ -168,14 +185,21 @@ return data;
 const headers={'Authorization':`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
 function encodeB64(str){const bytes=new TextEncoder().encode(str);let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 
+// ===== ACCOUNTS =====
+async function loadAllAccounts(){
+try{
+const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/accounts.json?t=${Date.now()}`,{cache:'no-store'});
+if(resp.ok){allAccounts=await resp.json();if(!Array.isArray(allAccounts))allAccounts=[];}
+}catch(e){allAccounts=[];}
+}
+
 // ===== AVATARS =====
 async function loadAvatars(){
 try{
-const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?t=${Date.now()}`,{cache:'no-store'});
+const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/accounts.json?t=${Date.now()}`,{cache:'no-store'});
 const data=await resp.json();
-const accounts=Array.isArray(data.accounts)?data.accounts:[];
 avatarCache={};
-accounts.forEach(a=>{if(a.login&&a.avatar)avatarCache[a.login]=a.avatar;});
+if(Array.isArray(data)){data.forEach(a=>{if(a.login&&a.avatar)avatarCache[a.login]=a.avatar;});}
 renderNavAvatar();
 }catch(e){}
 }
@@ -191,15 +215,48 @@ badge.innerHTML=`<div class="nav-avatar-ph">${esc(letter)}</div> <b>${esc(user.n
 }
 function getAvatarHTML(login,name){
 const url=avatarCache[login];
-if(url)return `<img class="msg-avatar" src="${url}?t=${Date.now()}" alt="">`;
+const safeLogin=esc(login||'');
+const safeName=esc(name||'');
+const click=`showProfileModal('${safeLogin}','${safeName}')`;
+if(url)return `<img class="msg-avatar" src="${url}?t=${Date.now()}" alt="" onclick="${click}">`;
 const letter=(name||'?')[0].toUpperCase();
-return `<div class="msg-avatar-ph">${esc(letter)}</div>`;
+return `<div class="msg-avatar-ph" onclick="${click}">${esc(letter)}</div>`;
 }
 function getPinnedAvatarHTML(login,name){
 const url=avatarCache[login];
-if(url)return `<img class="pinned-avatar" src="${url}?t=${Date.now()}" alt="">`;
+const safeLogin=esc(login||'');
+const safeName=esc(name||'');
+const click=`showProfileModal('${safeLogin}','${safeName}')`;
+if(url)return `<img class="pinned-avatar" src="${url}?t=${Date.now()}" alt="" onclick="${click}">`;
 const letter=(name||'?')[0].toUpperCase();
-return `<div class="pinned-avatar-ph">${esc(letter)}</div>`;
+return `<div class="pinned-avatar-ph" onclick="${click}">${esc(letter)}</div>`;
+}
+
+// ===== PROFILE MODAL =====
+function showProfileModal(login,name){
+const acc=allAccounts.find(a=>a.login===login);
+const dispName=acc?acc.name:name;
+document.getElementById('profileModalName').innerHTML=esc(dispName)+(acc&&acc.role==='admin'?' 👑':'');
+document.getElementById('profileModalLogin').textContent=login;
+document.getElementById('profileModalRole').innerHTML=acc&&acc.role==='admin'?'<span>Админ 👑</span>':'Ученик';
+let count=0;
+Object.values(commentsCache).forEach(c=>{
+const p=c.parsed;
+if((p.login===login)||(p.name===name))count++;
+});
+document.getElementById('profileModalMsgCount').innerHTML=`<span>${count}</span>`;
+const av=document.getElementById('profileModalAvatar');
+const avatarUrl=acc&&acc.avatar?acc.avatar:(avatarCache[login]||null);
+if(avatarUrl){
+av.innerHTML=`<img class="profile-modal-avatar" src="${avatarUrl}?t=${Date.now()}" alt="">`;
+}else{
+const letter=(dispName||'?')[0].toUpperCase();
+av.innerHTML=`<div class="profile-modal-avatar-ph">${esc(letter)}</div>`;
+}
+document.getElementById('profileModal').classList.add('open');
+}
+function closeProfileModal(){
+document.getElementById('profileModal').classList.remove('open');
 }
 
 // ===== PINNED =====
@@ -240,23 +297,18 @@ const r=await fetchJSON(`${API}/issues`,{method:'POST',headers:{...headers,'Cont
 chatIssueNum=r.number;
 }catch(e){}
 }
-
 async function loadMessages(){
 if(!chatIssueNum)return;
 try{
 const comments=await fetchJSON(`${API}/issues/${chatIssueNum}/comments?per_page=100&t=${Date.now()}`,{cache:'no-store',headers},10000);
-// Cache comments
 commentsCache={};
 comments.forEach(c=>{
 let parsed;
 try{parsed=JSON.parse(c.body);}catch(e){parsed={name:c.user.login,text:c.body,role:'student',login:c.user.login};}
 commentsCache[c.id]={parsed,raw:c,commentId:c.id};
 });
-
 const box=document.getElementById('chatBox');
 box.innerHTML='';
-
-// Pinned section
 const pinned=comments.filter(c=>pinnedIds.includes(c.id));
 if(pinned.length>0){
 const psec=document.createElement('div');
@@ -267,20 +319,15 @@ const cached=commentsCache[c.id];
 const p=cached.parsed;
 const avHTML=getPinnedAvatarHTML(p.login||c.user.login,p.name);
 let pinActions='';
-if(isAdmin){
-pinActions=`<button onclick="togglePin(${c.id})" class="pinned-active" title="Открепить">📌</button>`;
-}
+if(isAdmin){pinActions=`<button onclick="togglePin(${c.id})" class="pinned-active" title="Открепить">📌</button>`;}
 psec.innerHTML+=`<div class="pinned-msg">${avHTML}<div class="pinned-content"><div class="pinned-author">${esc(p.name)}${p.role==='admin'?' 👑':''}</div><div class="pinned-text">${esc(p.text)}</div></div><div class="msg-actions">${pinActions}</div></div>`;
 });
 box.appendChild(psec);
 }
-
-// All messages
 if(comments.length===0){
 box.innerHTML='<div class="msg-row system"><div class="msg system">Сообщений пока нет. Напиши первым!</div></div>';
 return;
 }
-
 comments.forEach(c=>{
 const cached=commentsCache[c.id];
 const p=cached.parsed;
@@ -288,7 +335,6 @@ const isMe=p.name===user.name||(p.login===user.login);
 const cls=isMe?'me':(p.role==='admin'?'admin':'other');
 const isPinned=pinnedIds.includes(c.id);
 const avHTML=getAvatarHTML(p.login||c.user.login,p.name);
-
 let actionsHTML='';
 if(isAdmin){
 actionsHTML=`<div class="msg-actions">
@@ -297,21 +343,17 @@ actionsHTML=`<div class="msg-actions">
 <button onclick="deleteMsg(${c.id})" class="danger" title="Удалить">🗑️</button>
 </div>`;
 }
-
 const editedTag=p.edited?'<span class="msg edited">(изменено)</span>':'';
 const pinBadge=isPinned?'📌 ':'';
-
 const row=document.createElement('div');
 row.className='msg-row '+cls;
 row.dataset.cid=c.id;
 row.innerHTML=`${avHTML}<div class="msg-content"><div class="msg ${cls}"><div class="msg-author">${esc(p.name)}${p.role==='admin'?' 👑':''}</div><div class="msg-text">${pinBadge}${esc(p.text)}</div><div class="msg-time">${fmt(c.created_at)} ${editedTag}</div></div>${actionsHTML}</div>`;
 box.appendChild(row);
 });
-
 box.scrollTop=box.scrollHeight;
 }catch(e){}
 }
-
 async function sendMsg(){
 const input=document.getElementById('msgInput');
 const text=input.value.trim();
@@ -329,12 +371,11 @@ isSending=false;
 document.getElementById('sendBtn').disabled=false;
 }
 
-// ===== ADMIN ACTIONS =====
+// ===== ADMIN =====
 async function deleteMsg(commentId){
 if(!confirm('Удалить это сообщение?'))return;
 try{
 await fetch(`${API}/issues/comments/${commentId}`,{method:'DELETE',headers});
-// Remove from pinned if pinned
 if(pinnedIds.includes(commentId)){
 pinnedIds=pinnedIds.filter(id=>id!==commentId);
 await savePinned();
@@ -342,7 +383,6 @@ await savePinned();
 await loadMessages();
 }catch(e){alert('Ошибка удаления: '+(e.message||'нет прав'));}
 }
-
 function startEdit(commentId){
 editingId=commentId;
 const cached=commentsCache[commentId];
@@ -358,7 +398,6 @@ const inp=document.getElementById('editInput');
 inp.focus();
 inp.setSelectionRange(inp.value.length,inp.value.length);
 }
-
 async function saveEdit(commentId){
 const inp=document.getElementById('editInput');
 if(!inp)return;
@@ -378,12 +417,7 @@ editingId=null;
 await loadMessages();
 }catch(e){alert('Ошибка: '+e.message);}
 }
-
-function cancelEdit(){
-editingId=null;
-loadMessages();
-}
-
+function cancelEdit(){editingId=null;loadMessages();}
 async function togglePin(commentId){
 try{
 if(pinnedIds.includes(commentId)){
@@ -395,7 +429,6 @@ await savePinned();
 await loadMessages();
 }catch(e){alert('Ошибка: '+e.message);}
 }
-
 async function savePinned(){
 try{
 const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?t=${Date.now()}`,{cache:'no-store'});
@@ -411,9 +444,7 @@ body:JSON.stringify({message:'Update pinned messages',content:newDataB64,sha:dat
 },15000);
 }catch(e){throw e;}
 }
-
 function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
-
 document.addEventListener('click',e=>{
 const panel=document.getElementById('emojiPanel');
 const toggle=document.querySelector('.emoji-toggle');
@@ -421,18 +452,18 @@ if(panel.classList.contains('open')&&!panel.contains(e.target)&&!toggle.contains
 panel.classList.remove('open');
 }
 });
-
 (async()=>{
 renderEmojis();
 await loadAvatars();
+await loadAllAccounts();
 await loadPinned();
 await findChatIssue();
 await loadMessages();
 setInterval(loadMessages,5000);
 setInterval(loadAvatars,30000);
 setInterval(loadPinned,15000);
+setInterval(loadAllAccounts,30000);
 })();
-
 const isMobile=window.innerWidth<600;
 const pc=document.getElementById('particles');
 const count=isMobile?10:20;
