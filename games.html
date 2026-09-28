@@ -78,37 +78,30 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="particles" id="particles"></div>
 <nav>
 <div class="nav-left">
-<a href="index.html" class="nav-btn">← Главная</a>
-<a href="chat.html" class="nav-btn">💬 Чат</a>
+<a href="index.html" class="nav-btn">&#8592; Главная</a>
+<a href="chat.html" class="nav-btn">&#128172; Чат</a>
 </div>
 <button class="logout-btn" onclick="logout()">Выйти</button>
 </nav>
-<div class="title">🎮 <span>Игры</span> класса</div>
+<div class="title">&#127918; <span>Игры</span> класса</div>
 <div class="game-tabs">
-<div class="game-tab active" onclick="switchGame('checkers',this)">♟️ Шашки</div>
-<div class="game-tab" onclick="switchGame('racing',this)">🏎️ Мини-гонки</div>
-<div class="game-tab" onclick="switchGame('aim',this)">🎯 Аим-тренажёр</div>
-<div class="game-tab" onclick="switchGame('flappy',this)">🐦 Flappy Bird</div>
+<div class="game-tab active" onclick="switchGame('checkers',this)">&#9823;&#65039; Шашки</div>
+<div class="game-tab" onclick="switchGame('racing',this)">&#127946;&#65039; Мини-гонки</div>
+<div class="game-tab" onclick="switchGame('aim',this)">&#127919; Аим-тренажёр</div>
+<div class="game-tab" onclick="switchGame('flappy',this)">&#128038; Flappy Bird</div>
 </div>
 
-// ===== ШАШКИ =====
-const chCanvas=document.getElementById('checkersCanvas');
-const chCtx=chCanvas.getContext('2d');
-const CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
-let chBoard=[],chSelected=null,chTurn='white',chMustCapture=false,chGameOver=false;
-function newCheckersGame(){chBoard=[];for(let r=0;r<CH_SIZE;r++){chBoard[r]=[];for(let c=0;c<CH_SIZE;c++){chBoard[r][c]=null;if((r+c)%2===1){if(r<3)chBoard[r][c]={color:'black',king:false};else if(r>4)chBoard[r][c]={color:'white',king:false};}}}chSelected=null;chTurn='white';chGameOver=false;updateChStatus('Твой ход');updateChCounts();drawCheckers();}
-function drawCheckers(){chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;chCtx.fillStyle=dark?'#333':'#888';chCtx.fillRect(x,y,CH_CELL,CH_CELL);const p=chBoard[r][c];if(p){chCtx.beginPath();chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';chCtx.fill();chCtx.strokeStyle=p.color==='white'?'#999':'#444';chCtx.lineWidth=2;chCtx.stroke();if(p.king){chCtx.fillStyle='#ff0033';chCtx.font='bold 20px Orbitron';chCtx.textAlign='center';chCtx.textBaseline='middle';chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);}}}if(chSelected){const{r,c}=chSelected;chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);const moves=getMovesForPiece(r,c);moves.forEach(m=>{chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);});}}
-function getMovesForPiece(r,c){const p=chBoard[r][c];if(!p)return[];const moves=[];const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){const mid=chBoard[mr][mc];if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});}}if(!chMustCapture){for(const[dr,dc]of dirs){const tr=r+dr,tc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}}return moves;}
-function hasAnyCaptures(color){for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color){const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;}}}return false;}
-function getAllMoves(color){chMustCapture=hasAnyCaptures(color);const all=[];for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color)all.push(...getMovesForPiece(r,c));}chMustCapture=false;return all;}
-function makeMove(move){const p=chBoard[move.fromR][move.fromC];chBoard[move.fromR][move.fromC]=null;chBoard[move.toR][move.toC]=p;if(move.capture)chBoard[move.capR][move.capC]=null;if(move.toR===0||move.toR===CH_SIZE-1)p.king=true;}
-chCanvas.addEventListener('click',e=>{if(chGameOver||chTurn!=='white')return;const rect=chCanvas.getBoundingClientRect();const scale=CH_W/rect.width;const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;if(chSelected){const moves=getMovesForPiece(chSelected.r,chSelected.c);const move=moves.find(m=>m.toR===r&&m.toC===c);if(move){makeMove(move);const captures=getMovesForPiece(r,c).filter(m=>m.capture);if(move.capture&&captures.length>0){chSelected={r,c};chMustCapture=true;drawCheckers();updateChStatus('Бьёшь ещё!');return;}chSelected=null;chMustCapture=false;chTurn='black';updateChCounts();drawCheckers();updateChStatus('Ход компьютера...');setTimeout(cpuMove,600);return;}}const p=chBoard[r][c];if(p&&p.color==='white'){const allMoves=getAllMoves('white');chMustCapture=allMoves.some(m=>m.capture);chSelected={r,c};drawCheckers();}});
-function cpuMove(){const allMoves=getAllMoves('black');if(allMoves.length===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}const captures=allMoves.filter(m=>m.capture);const move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];makeMove(move);let more=true;while(more){const caps=getMovesForPiece(move.toR,move.toC).filter(m=>m.capture);if(caps.length>0)makeMove(caps[Math.floor(Math.random()*caps.length)]);else more=false;}chMustCapture=false;chTurn='white';updateChCounts();drawCheckers();if(countPieces('white')===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}if(countPieces('black')===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}if(getAllMoves('white').length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}updateChStatus('Твой ход');}
-function countPieces(color){let n=0;for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++)if(chBoard[r][c]&&chBoard[r][c].color===color)n++;return n;}
-function updateChCounts(){document.getElementById('chMyPieces').textContent=countPieces('white');document.getElementById('chCpuPieces').textContent=countPieces('black');}
-function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
-newCheckersGame();
-
+<!-- ШАШКИ -->
+<div class="game-section active" id="game-checkers">
+<div class="game-info">Классические шашки 8×8. Бьёшь — ходишь ещё раз. Дойди до любой стороны — станешь дамкой. Ходить и бить можно во все стороны.</div>
+<div class="score-board">
+<div class="score-item"><div class="score-label">Твои</div><div class="score-value" id="chMyPieces">12</div></div>
+<div class="score-item"><div class="score-label">Компьютер</div><div class="score-value" id="chCpuPieces">12</div></div>
+</div>
+<div class="game-status" id="chStatus">Твой ход</div>
+<div class="game-canvas-wrap"><canvas id="checkersCanvas" width="480" height="480" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto"></canvas></div>
+<div class="game-controls"><button class="game-btn" onclick="newCheckersGame()">&#128260; Новая игра</button></div>
+</div>
 
 <!-- ГОНОЧКИ -->
 <div class="game-section" id="game-racing">
@@ -119,7 +112,7 @@ newCheckersGame();
 </div>
 <div class="game-status" id="raceStatus">Нажми «Старт»</div>
 <div class="game-canvas-wrap"><div class="race-wrap"><canvas id="racingCanvas" width="320" height="500" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto;background:#222"></canvas></div></div>
-<div class="game-controls"><button class="game-btn" id="raceStartBtn" onclick="startRace()">🏁 Старт</button><button class="game-btn outline" onclick="resetRace()">🔄 Заново</button></div>
+<div class="game-controls"><button class="game-btn" id="raceStartBtn" onclick="startRace()">&#127941;&#65039; Старт</button><button class="game-btn outline" onclick="resetRace()">&#128260; Заново</button></div>
 </div>
 
 <!-- АИМ -->
@@ -139,7 +132,7 @@ newCheckersGame();
 <div class="aim-timer-bar"><div class="aim-timer-fill" id="aimTimerFill"></div></div>
 <div class="game-status" id="aimStatus">Выбери уровень и нажми «Старт»</div>
 <div class="game-canvas-wrap"><div class="aim-canvas-wrap" id="aimWrap"><canvas id="aimCanvas" width="600" height="400" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto;background:#0a0a0a"></canvas><div class="aim-crosshair" id="aimCrosshair"><div class="aim-crosshair-dot"></div></div></div></div>
-<div class="game-controls"><button class="game-btn" id="aimStartBtn" onclick="aimStart()">🎯 Старт</button><button class="game-btn outline" onclick="aimReset()">🔄 Сброс</button></div>
+<div class="game-controls"><button class="game-btn" id="aimStartBtn" onclick="aimStart()">&#127919; Старт</button><button class="game-btn outline" onclick="aimReset()">&#128260; Сброс</button></div>
 <div class="aim-results" id="aimResults"><h3 id="aimResultsTitle">Результаты</h3><div class="aim-stat"><span class="aim-stat-label">Попаданий</span><span class="aim-stat-val" id="aimResHits">0</span></div><div class="aim-stat"><span class="aim-stat-label">Промахов</span><span class="aim-stat-val" id="aimResMiss">0</span></div><div class="aim-stat"><span class="aim-stat-label">Точность</span><span class="aim-stat-val" id="aimResAcc">0%</span></div><div class="aim-stat"><span class="aim-stat-label">Среднее время реакции</span><span class="aim-stat-val" id="aimResAvg">0 мс</span></div><div class="aim-stat"><span class="aim-stat-label">Лучшая реакция</span><span class="aim-stat-val" id="aimResBest">0 мс</span></div><div class="aim-stat"><span class="aim-stat-label">Очки</span><span class="aim-stat-val" id="aimResScore">0</span></div></div>
 </div>
 
@@ -152,7 +145,7 @@ newCheckersGame();
 </div>
 <div class="game-status" id="fbStatus">Нажми «Старт»</div>
 <div class="game-canvas-wrap"><canvas id="flappyCanvas" width="400" height="500" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto"></canvas></div>
-<div class="game-controls"><button class="game-btn" id="fbStartBtn" onclick="fbStart()">🐦 Старт</button><button class="game-btn outline" onclick="fbReset()">🔄 Заново</button></div>
+<div class="game-controls"><button class="game-btn" id="fbStartBtn" onclick="fbStart()">&#128038; Старт</button><button class="game-btn outline" onclick="fbReset()">&#128260; Заново</button></div>
 </div>
 
 <script>
@@ -164,25 +157,162 @@ const count=isMobile?10:20;
 for(let i=0;i<count;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
 function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
 function switchGame(name,el){document.querySelectorAll('.game-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.game-section').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('game-'+name).classList.add('active');}
-
+</script>
+<script>
 // ===== ШАШКИ =====
 const chCanvas=document.getElementById('checkersCanvas');
 const chCtx=chCanvas.getContext('2d');
 const CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
 let chBoard=[],chSelected=null,chTurn='white',chMustCapture=false,chGameOver=false;
-function newCheckersGame(){chBoard=[];for(let r=0;r<CH_SIZE;r++){chBoard[r]=[];for(let c=0;c<CH_SIZE;c++){chBoard[r][c]=null;if((r+c)%2===1){if(r<3)chBoard[r][c]={color:'black',king:false};else if(r>4)chBoard[r][c]={color:'white',king:false};}}}chSelected=null;chTurn='white';chGameOver=false;updateChStatus('Твой ход');updateChCounts();drawCheckers();}
-function drawCheckers(){chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;chCtx.fillStyle=dark?'#333':'#888';chCtx.fillRect(x,y,CH_CELL,CH_CELL);const p=chBoard[r][c];if(p){chCtx.beginPath();chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';chCtx.fill();chCtx.strokeStyle=p.color==='white'?'#999':'#444';chCtx.lineWidth=2;chCtx.stroke();if(p.king){chCtx.fillStyle='#ff0033';chCtx.font='bold 20px Orbitron';chCtx.textAlign='center';chCtx.textBaseline='middle';chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);}}}if(chSelected){const{r,c}=chSelected;chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);const moves=getMovesForPiece(r,c);moves.forEach(m=>{chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);});}}
-function getMovesForPiece(r,c){const p=chBoard[r][c];if(!p)return[];const moves=[];const dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:p.color==='white'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){const mid=chBoard[mr][mc];if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});}}if(!chMustCapture){for(const[dr,dc]of dirs){const tr=r+dr,tc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}}return moves;}
-function hasAnyCaptures(color){for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color){const dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:p.color==='white'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;}}}return false;}
-function getAllMoves(color){chMustCapture=hasAnyCaptures(color);const all=[];for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color)all.push(...getMovesForPiece(r,c));}chMustCapture=false;return all;}
-function makeMove(move){const p=chBoard[move.fromR][move.fromC];chBoard[move.fromR][move.fromC]=null;chBoard[move.toR][move.toC]=p;if(move.capture)chBoard[move.capR][move.capC]=null;if(p.color==='white'&&move.toR===0)p.king=true;if(p.color==='black'&&move.toR===CH_SIZE-1)p.king=true;}
-chCanvas.addEventListener('click',e=>{if(chGameOver||chTurn!=='white')return;const rect=chCanvas.getBoundingClientRect();const scale=CH_W/rect.width;const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;if(chSelected){const moves=getMovesForPiece(chSelected.r,chSelected.c);const move=moves.find(m=>m.toR===r&&m.toC===c);if(move){makeMove(move);const captures=getMovesForPiece(r,c).filter(m=>m.capture);if(move.capture&&captures.length>0){chSelected={r,c};chMustCapture=true;drawCheckers();updateChStatus('Бьёшь ещё!');return;}chSelected=null;chMustCapture=false;chTurn='black';updateChCounts();drawCheckers();updateChStatus('Ход компьютера...');setTimeout(cpuMove,600);return;}}const p=chBoard[r][c];if(p&&p.color==='white'){const allMoves=getAllMoves('white');chMustCapture=allMoves.some(m=>m.capture);chSelected={r,c};drawCheckers();}});
-function cpuMove(){const allMoves=getAllMoves('black');if(allMoves.length===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}const captures=allMoves.filter(m=>m.capture);const move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];makeMove(move);let more=true;while(more){const caps=getMovesForPiece(move.toR,move.toC).filter(m=>m.capture);if(caps.length>0)makeMove(caps[Math.floor(Math.random()*caps.length)]);else more=false;}chMustCapture=false;chTurn='white';updateChCounts();drawCheckers();if(countPieces('white')===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}if(countPieces('black')===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}if(getAllMoves('white').length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}updateChStatus('Твой ход');}
+function newCheckersGame(){
+  chBoard=[];
+  for(let r=0;r<CH_SIZE;r++){
+    chBoard[r]=[];
+    for(let c=0;c<CH_SIZE;c++){
+      chBoard[r][c]=null;
+      if((r+c)%2===1){
+        if(r<3)chBoard[r][c]={color:'black',king:false};
+        else if(r>4)chBoard[r][c]={color:'white',king:false};
+      }
+    }
+  }
+  chSelected=null;chTurn='white';chGameOver=false;
+  updateChStatus('Твой ход');updateChCounts();drawCheckers();
+}
+function drawCheckers(){
+  chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);
+  for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
+    const x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;
+    chCtx.fillStyle=dark?'#333':'#888';
+    chCtx.fillRect(x,y,CH_CELL,CH_CELL);
+    const p=chBoard[r][c];
+    if(p){
+      chCtx.beginPath();
+      chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);
+      chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';
+      chCtx.fill();
+      chCtx.strokeStyle=p.color==='white'?'#999':'#444';
+      chCtx.lineWidth=2;chCtx.stroke();
+      if(p.king){
+        chCtx.fillStyle='#ff0033';
+        chCtx.font='bold 20px Orbitron';
+        chCtx.textAlign='center';chCtx.textBaseline='middle';
+        chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);
+      }
+    }
+  }
+  if(chSelected){
+    const{r,c}=chSelected;
+    chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;
+    chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);
+    const moves=getMovesForPiece(r,c);
+    moves.forEach(m=>{
+      chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';
+      chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);
+    });
+  }
+}
+function getMovesForPiece(r,c){
+  const p=chBoard[r][c];if(!p)return[];
+  const moves=[];
+  const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];
+  for(const[dr,dc]of dirs){
+    const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;
+    if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){
+      const mid=chBoard[mr][mc];
+      if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});
+    }
+  }
+  if(!chMustCapture){
+    for(const[dr,dc]of dirs){
+      const tr=r+dr,tc=c+dc;
+      if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)
+        moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});
+    }
+  }
+  return moves;
+}
+function hasAnyCaptures(color){
+  for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
+    const p=chBoard[r][c];
+    if(p&&p.color===color){
+      const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];
+      for(const[dr,dc]of dirs){
+        const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;
+        if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;
+      }
+    }
+  }
+  return false;
+}
+function getAllMoves(color){
+  chMustCapture=hasAnyCaptures(color);
+  const all=[];
+  for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){
+    const p=chBoard[r][c];
+    if(p&&p.color===color)all.push(...getMovesForPiece(r,c));
+  }
+  chMustCapture=false;return all;
+}
+function makeMove(move){
+  const p=chBoard[move.fromR][move.fromC];
+  chBoard[move.fromR][move.fromC]=null;
+  chBoard[move.toR][move.toC]=p;
+  if(move.capture)chBoard[move.capR][move.capC]=null;
+  if(move.toR===0||move.toR===CH_SIZE-1)p.king=true;
+}
+chCanvas.addEventListener('click',e=>{
+  if(chGameOver||chTurn!=='white')return;
+  const rect=chCanvas.getBoundingClientRect();
+  const scale=CH_W/rect.width;
+  const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;
+  const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);
+  if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;
+  if(chSelected){
+    const moves=getMovesForPiece(chSelected.r,chSelected.c);
+    const move=moves.find(m=>m.toR===r&&m.toC===c);
+    if(move){
+      makeMove(move);
+      const captures=getMovesForPiece(r,c).filter(m=>m.capture);
+      if(move.capture&&captures.length>0){
+        chSelected={r,c};chMustCapture=true;drawCheckers();updateChStatus('Бьёшь ещё!');return;
+      }
+      chSelected=null;chMustCapture=false;chTurn='black';
+      updateChCounts();drawCheckers();updateChStatus('Ход компьютера...');
+      setTimeout(cpuMove,600);return;
+    }
+  }
+  const p=chBoard[r][c];
+  if(p&&p.color==='white'){
+    const allMoves=getAllMoves('white');
+    chMustCapture=allMoves.some(m=>m.capture);
+    chSelected={r,c};drawCheckers();
+  }
+});
+function cpuMove(){
+  const allMoves=getAllMoves('black');
+  if(allMoves.length===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
+  const captures=allMoves.filter(m=>m.capture);
+  const move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];
+  makeMove(move);
+  let more=true;
+  while(more){
+    const caps=getMovesForPiece(move.toR,move.toC).filter(m=>m.capture);
+    if(caps.length>0)makeMove(caps[Math.floor(Math.random()*caps.length)]);
+    else more=false;
+  }
+  chMustCapture=false;chTurn='white';updateChCounts();drawCheckers();
+  if(countPieces('white')===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+  if(countPieces('black')===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
+  if(getAllMoves('white').length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+  updateChStatus('Твой ход');
+}
 function countPieces(color){let n=0;for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++)if(chBoard[r][c]&&chBoard[r][c].color===color)n++;return n;}
 function updateChCounts(){document.getElementById('chMyPieces').textContent=countPieces('white');document.getElementById('chCpuPieces').textContent=countPieces('black');}
 function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
 newCheckersGame();
-
+</script>
+<script>
 // ===== МИНИ-ГОНКИ =====
 const rcCanvas=document.getElementById('racingCanvas');
 const rcCtx=rcCanvas.getContext('2d');
@@ -207,7 +337,8 @@ rcCanvas.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;e.pr
 rcCanvas.addEventListener('touchmove',e=>{if(touchStartX===null)return;const dx=e.touches[0].clientX-touchStartX;if(dx<-15){rcKeys.left=true;rcKeys.right=false;}else if(dx>15){rcKeys.right=true;rcKeys.left=false;}else{rcKeys.left=false;rcKeys.right=false;}e.preventDefault();},{passive:false});
 rcCanvas.addEventListener('touchend',()=>{rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
 drawRace();
-
+</script>
+<script>
 // ===== АИМ-ТРЕНАЖЁР =====
 const aimCanvas=document.getElementById('aimCanvas');
 const aimCtx=aimCanvas.getContext('2d');
@@ -231,14 +362,15 @@ aimCanvas.addEventListener('click',e=>{if(!aimRunning)return;const rect=aimCanva
 aimWrap.addEventListener('mousemove',e=>{if(!aimRunning)return;const rect=aimCanvas.getBoundingClientRect();aimCrosshair.style.left=(e.clientX-rect.left)+'px';aimCrosshair.style.top=(e.clientY-rect.top)+'px';});
 function aimReset(){aimRunning=false;if(aimAnimId)cancelAnimationFrame(aimAnimId);if(aimTimerId)clearInterval(aimTimerId);aimWrap.classList.remove('aim-playing');aimCrosshair.classList.remove('active');aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];aimTimeLeft=AIM_LEVELS[aimLevel].duration;document.getElementById('aimStartBtn').disabled=false;document.getElementById('aimResults').classList.remove('show');updateAimHUD();aimDrawIdle();document.getElementById('aimStatus').textContent='Уровень '+aimLevel+'. Нажми «Старт»';document.getElementById('aimStatus').className='game-status';}
 aimDrawIdle();
-
+</script>
+<script>
 // ===== FLAPPY BIRD =====
 const fbCanvas=document.getElementById('flappyCanvas');
 const fbCtx=fbCanvas.getContext('2d');
 const FB_W=400,FB_H=500;
 const FB_GROUND_Y=440;
-const FB_GRAVITY=0.125;
-const FB_JUMP=-4;
+const FB_GRAVITY=0.100;
+const FB_JUMP=-3;
 const FB_PIPE_W=62;
 const FB_PIPE_GAP=140;
 const FB_PIPE_SPACING=200;
@@ -334,24 +466,16 @@ function fbDeathLoop(){
 
 function fbLoop(){
   if(!fbRunning||fbDead)return;
-
-  // Птица
   fbBird.vy+=FB_GRAVITY;
   fbBird.y+=fbBird.vy;
   fbBird.rot=Math.max(-0.5,Math.min(1.4,fbBird.vy*0.09));
   fbBird.wingPhase+=0.3;
-
-  // Облака
   fbClouds.forEach(c=>{
     c.x-=c.speed;
     if(c.x<-70){c.x=FB_W+30;c.y=30+Math.random()*180;c.scale=0.5+Math.random()*0.5;}
   });
-
-  // Земля
   fbGroundOffset+=FB_PIPE_SPEED;
   if(fbGroundOffset>=24)fbGroundOffset=0;
-
-  // Трубы
   fbPipes.forEach(p=>p.x-=FB_PIPE_SPEED);
   if(fbPipes.length===0||fbPipes[fbPipes.length-1].x<FB_W-FB_PIPE_SPACING){
     fbPipes.push({x:FB_W,gapY:130+Math.random()*170,passed:false});
@@ -364,8 +488,6 @@ function fbLoop(){
     }
   });
   fbPipes=fbPipes.filter(p=>p.x>-FB_PIPE_W);
-
-  // Коллизии
   if(fbBird.y+15>FB_GROUND_Y){fbBird.y=FB_GROUND_Y-15;fbDie();return;}
   if(fbBird.y-15<0){fbBird.y=15;fbBird.vy=0;}
   for(const p of fbPipes){
@@ -375,41 +497,26 @@ function fbLoop(){
       if(fbBird.y-15<topY||fbBird.y+15>botY){fbDie();return;}
     }
   }
-
   if(fbFlash>0)fbFlash-=0.05;
-
   fbDraw();
   fbAnimId=requestAnimationFrame(fbLoop);
 }
 
 function fbDraw(){
-  // Небо
   const sky=fbCtx.createLinearGradient(0,0,0,FB_H);
   sky.addColorStop(0,'#4ec0ca');
   sky.addColorStop(0.6,'#71c5cf');
   sky.addColorStop(1,'#9bd8df');
   fbCtx.fillStyle=sky;
   fbCtx.fillRect(0,0,FB_W,FB_H);
-
-  // Облака
   fbClouds.forEach(c=>fbDrawCloud(c.x,c.y,c.scale));
-
-  // Трубы
   fbPipes.forEach(p=>fbDrawPipe(p));
-
-  // Земля
   fbDrawGround();
-
-  // Птица
   fbDrawBird();
-
-  // Вспышка смерти
   if(fbFlash>0){
     fbCtx.fillStyle='rgba(255,255,255,'+fbFlash+')';
     fbCtx.fillRect(0,0,FB_W,FB_H);
   }
-
-  // Счёт
   if(fbRunning&&!fbDead){
     fbCtx.fillStyle='#fff';
     fbCtx.strokeStyle='rgba(0,0,0,0.4)';
@@ -420,8 +527,6 @@ function fbDraw(){
     fbCtx.strokeText(fbScore,FB_W/2,25);
     fbCtx.fillText(fbScore,FB_W/2,25);
   }
-
-  // Если не запущена — подсказка
   if(!fbRunning&&!fbDead){
     fbCtx.fillStyle='rgba(255,255,255,0.5)';
     fbCtx.font='bold 18px Montserrat';
@@ -449,56 +554,40 @@ function fbDrawPipe(p){
   const topH=p.gapY-FB_PIPE_GAP/2;
   const botY=p.gapY+FB_PIPE_GAP/2;
   const botH=FB_GROUND_Y-botY;
-
-  // Тело трубы (верх)
   const grad1=fbCtx.createLinearGradient(p.x,0,p.x+FB_PIPE_W,0);
   grad1.addColorStop(0,'#5a8f29');
   grad1.addColorStop(0.3,'#7ec850');
   grad1.addColorStop(0.5,'#94d858');
   grad1.addColorStop(0.7,'#7ec850');
   grad1.addColorStop(1,'#4a7a20');
-
   fbCtx.fillStyle=grad1;
   fbCtx.fillRect(p.x,0,FB_PIPE_W,topH);
-  // Колпак сверху
   fbCtx.fillRect(p.x-4,topH-26,FB_PIPE_W+8,26);
-
-  // Тело трубы (низ)
   fbCtx.fillStyle=grad1;
   fbCtx.fillRect(p.x,botY,FB_PIPE_W,botH);
-  // Колпак снизу
   fbCtx.fillRect(p.x-4,botY,FB_PIPE_W+8,26);
-
-  // Обводка
   fbCtx.strokeStyle='#3d6b15';
   fbCtx.lineWidth=2;
   fbCtx.strokeRect(p.x,0,FB_PIPE_W,topH);
   fbCtx.strokeRect(p.x-4,topH-26,FB_PIPE_W+8,26);
   fbCtx.strokeRect(p.x,botY,FB_PIPE_W,botH);
   fbCtx.strokeRect(p.x-4,botY,FB_PIPE_W+8,26);
-
-  // Блик
   fbCtx.fillStyle='rgba(255,255,255,0.2)';
   fbCtx.fillRect(p.x+6,0,6,topH);
   fbCtx.fillRect(p.x+6,botY,6,botH);
 }
 
 function fbDrawGround(){
-  // Земля
   const grad=fbCtx.createLinearGradient(0,FB_GROUND_Y,0,FB_H);
   grad.addColorStop(0,'#ded895');
   grad.addColorStop(0.3,'#d6c97e');
   grad.addColorStop(1,'#c4a850');
   fbCtx.fillStyle=grad;
   fbCtx.fillRect(0,FB_GROUND_Y,FB_W,FB_H-FB_GROUND_Y);
-
-  // Верхняя линия земли
   fbCtx.fillStyle='#7ec850';
   fbCtx.fillRect(0,FB_GROUND_Y-3,FB_W,3);
   fbCtx.fillStyle='#5a8f29';
   fbCtx.fillRect(0,FB_GROUND_Y,FB_W,2);
-
-  // Текстура — диагональные полосы
   fbCtx.fillStyle='rgba(180,160,80,0.4)';
   for(let x=-24;x<FB_W+24;x+=24){
     fbCtx.fillRect(x-fbGroundOffset,FB_GROUND_Y+5,12,3);
@@ -513,33 +602,23 @@ function fbDrawBird(){
   fbCtx.save();
   fbCtx.translate(bx,by);
   fbCtx.rotate(fbBird.rot);
-
-  // Тень
   fbCtx.fillStyle='rgba(0,0,0,0.15)';
   fbCtx.beginPath();
   fbCtx.ellipse(2,2,18,14,0,0,Math.PI*2);
   fbCtx.fill();
-
-  // Тело
   fbCtx.fillStyle='#f7d51d';
   fbCtx.beginPath();
   fbCtx.ellipse(0,0,17,13,0,0,Math.PI*2);
   fbCtx.fill();
-
-  // Животик
   fbCtx.fillStyle='#f0e0a0';
   fbCtx.beginPath();
   fbCtx.ellipse(-2,5,12,8,0,0,Math.PI*2);
   fbCtx.fill();
-
-  // Обводка
   fbCtx.strokeStyle='#c9a015';
   fbCtx.lineWidth=2;
   fbCtx.beginPath();
   fbCtx.ellipse(0,0,17,13,0,0,Math.PI*2);
   fbCtx.stroke();
-
-  // Крыло (анимация)
   const wingY=Math.sin(fbBird.wingPhase)*5;
   fbCtx.fillStyle='#e6b800';
   fbCtx.beginPath();
@@ -548,8 +627,6 @@ function fbDrawBird(){
   fbCtx.strokeStyle='#c9a015';
   fbCtx.lineWidth=1.5;
   fbCtx.stroke();
-
-  // Глаз
   fbCtx.fillStyle='#fff';
   fbCtx.beginPath();
   fbCtx.arc(8,-5,6,0,Math.PI*2);
@@ -557,20 +634,14 @@ function fbDrawBird(){
   fbCtx.strokeStyle='#c9a015';
   fbCtx.lineWidth=1.5;
   fbCtx.stroke();
-
-  // Зрачок
   fbCtx.fillStyle='#222';
   fbCtx.beginPath();
   fbCtx.arc(10,-5,3,0,Math.PI*2);
   fbCtx.fill();
-
-  // Блик в глазу
   fbCtx.fillStyle='#fff';
   fbCtx.beginPath();
   fbCtx.arc(11,-6,1,0,Math.PI*2);
   fbCtx.fill();
-
-  // Клюв
   fbCtx.fillStyle='#ff6b35';
   fbCtx.beginPath();
   fbCtx.moveTo(14,-2);
@@ -581,8 +652,6 @@ function fbDrawBird(){
   fbCtx.strokeStyle='#cc5020';
   fbCtx.lineWidth=1.5;
   fbCtx.stroke();
-
-  // Нижняя часть клюва
   fbCtx.fillStyle='#e65520';
   fbCtx.beginPath();
   fbCtx.moveTo(14,3);
@@ -590,17 +659,14 @@ function fbDrawBird(){
   fbCtx.lineTo(14,5);
   fbCtx.closePath();
   fbCtx.fill();
-
   fbCtx.restore();
 }
 
-// Управление
 fbCanvas.addEventListener('mousedown',e=>{
   if(fbRunning&&!fbDead){fbJump();}
   else if(!fbRunning&&!fbDead){fbStart();}
   e.preventDefault();
 });
-
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'){
     if(fbRunning&&!fbDead){fbJump();}
@@ -608,13 +674,11 @@ document.addEventListener('keydown',e=>{
     e.preventDefault();
   }
 });
-
 fbCanvas.addEventListener('touchstart',e=>{
   if(fbRunning&&!fbDead){fbJump();}
   else if(!fbRunning&&!fbDead){fbStart();}
   e.preventDefault();
 },{passive:false});
-
 fbDraw();
 </script>
 </body>
