@@ -180,7 +180,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="casino-tab" onclick="switchCasino('wheel',this)">🎡 Колесо фортуны</div>
 </div>
 <div class="casino-section active" id="casino-slots">
-<div class="game-info">Прокрут — 5 🪙. Совпадение 333, 777 или 999 = выплата x5 (25 🪙).</div>
+<div class="game-info">Совпадение 333, 777 или 999 = выплата x5 от ставки.</div>
 <div class="slots-machine">
 <div class="slots-reels">
 <div class="slot-reel" id="reel1">0</div>
@@ -188,11 +188,16 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="slot-reel" id="reel3">0</div>
 </div>
 <div class="slots-result" id="slotsResult"></div>
-<button class="game-btn" id="slotsSpinBtn" onclick="spinSlots()">🎰 Крутить (5 🪙)</button>
+<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px">
+<span style="font-size:.85rem;color:#888">Ставка:</span>
+<input type="number" id="slotsBet" value="5" min="1" max="9999" style="width:70px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none">
+<span style="font-size:1.1rem">🪙</span>
+</div>
+<button class="game-btn" id="slotsSpinBtn" onclick="spinSlots()">🎰 Крутить</button>
 </div>
 </div>
 <div class="casino-section" id="casino-wheel">
-<div class="game-info">Прокрут — 10 🪙. 10 секторов: числа добавляют монеты, множители умножают ставку.</div>
+<div class="game-info">Числа добавляют монеты пропорционально ставке, множители умножают ставку.</div>
 <div class="wheel-container">
 <div class="wheel-canvas-wrap">
 <div class="wheel-pointer"></div>
@@ -200,7 +205,12 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="wheel-center">🎯</div>
 </div>
 <div class="wheel-result" id="wheelResult"></div>
-<button class="game-btn" id="wheelSpinBtn" onclick="spinWheel()">🎡 Крутить (10 🪙)</button>
+<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px">
+<span style="font-size:.85rem;color:#888">Ставка:</span>
+<input type="number" id="wheelBet" value="10" min="1" max="9999" style="width:70px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none">
+<span style="font-size:1.1rem">🪙</span>
+</div>
+<button class="game-btn" id="wheelSpinBtn" onclick="spinWheel()">🎡 Крутить</button>
 <br><br>
 <button class="game-btn outline" onclick="resetBalance()">🔄 Сбросить баланс</button>
 </div>
