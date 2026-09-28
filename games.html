@@ -358,7 +358,7 @@ document.getElementById('slotsResult').className='slots-result';
 const reels=['reel1','reel2','reel3'];
 reels.forEach(id=>{const el=document.getElementById(id);el.classList.add('spinning');el.textContent='';});
 const winNums=['333','777','999'];
-const winChance=0.86; // 20% шанс выигрыша — меняй это число
+const winChance=0.45; // 20% шанс выигрыша — меняй это число
 let results;
 if(Math.random()<winChance){
 const win=winNums[Math.floor(Math.random()*3)];
