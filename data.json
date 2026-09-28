@@ -201,6 +201,13 @@
       "password": "TEST2",
       "role": "student",
       "avatar": ""
+    },
+    {
+      "name": "TEST3",
+      "login": "TEST3",
+      "password": "TEST3",
+      "role": "student",
+      "avatar": ""
     }
   ],
   "pinned": []
