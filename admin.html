@@ -96,6 +96,12 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .support-reply-form{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:15px;margin-top:12px}
 .support-reply-form .field{margin-bottom:10px}
 .support-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.test-result{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:15px;margin-top:15px;max-height:400px;overflow-y:auto}
+.test-result-item{padding:10px;border-bottom:1px solid var(--border);font-size:.85rem;font-family:monospace}
+.test-result-item:last-child{border-bottom:none}
+.test-result-item .ok{color:#00ff66}
+.test-result-item .err{color:#ff5555}
+.test-result-item .info{color:#aaa}
 @media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -147,6 +153,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="tab" onclick="switchTab('support',this)">💬 Поддержка</div>
             <div class="tab" onclick="switchTab('accounts',this)">🔑 Аккаунты</div>
             <div class="tab" onclick="switchTab('theme',this)">🎨 Тема</div>
+            <div class="tab" onclick="switchTab('test',this)">🧪 Тест</div>
             <div class="tab" onclick="switchTab('settings',this)">⚙️ Настройки</div>
         </div>
 
@@ -286,7 +293,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
         <!-- ===== АККАУНТЫ ===== -->
         <div class="section" id="sec-accounts">
             <div class="card">
-                <div class="card-header"><div class="card-title">🔑 Регистрация аккаунтов</div><div class="card-badge" id="accountsBadge">0</div></div>
+                <div class="card-header"><div class="card-title">🔑 Регистрация аккаунтов (accounts.json)</div><div class="card-badge" id="accountsBadge">0</div></div>
                 <div class="field"><label>Логин</label><input type="text" id="accLogin" placeholder="ivan"></div>
                 <div class="field"><label>Пароль</label><input type="text" id="accPassword" placeholder="1234"></div>
                 <div class="field"><label>Имя</label><input type="text" id="accName" placeholder="Иван Иванов"></div>
@@ -315,6 +322,23 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
+        <!-- ===== ТЕСТ ===== -->
+        <div class="section" id="sec-test">
+            <div class="card">
+                <div class="card-header"><div class="card-title">🧪 Генератор тестовых аккаунтов</div></div>
+                <p style="color:#666;font-size:.85rem;margin-bottom:20px;">Создаёт случайные аккаунты с рандомными именами, логинами и паролями. Пишет в <b>accounts.json</b>.</p>
+                <div class="field"><label>Сколько аккаунтов создать?</label><input type="number" id="testCount" value="5" min="1" max="50"></div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px">
+                    <button class="btn btn-primary" id="testGenBtn" onclick="generateTestAccounts()">🎲 Сгенерировать</button>
+                    <button class="btn btn-danger" onclick="clearTestResults()">🧹 Очистить лог</button>
+                </div>
+                <div class="msg" id="msgTest"></div>
+                <div class="test-result" id="testResult">
+                    <div class="test-result-item info">Лог появится здесь после генерации...</div>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== НАСТРОЙКИ ===== -->
         <div class="section" id="sec-settings">
             <div class="card">
@@ -337,6 +361,8 @@ let USER = localStorage.getItem('gh_user') || '';
 let BRANCH = 'main';
 let siteData = {};
 let dataSha = '';
+let accountsData = [];
+let accountsSha = '';
 let actCardsDraft = [];
 
 async function api(path, opts = {}) {
@@ -414,8 +440,47 @@ async function freshLoadData() {
     return siteData;
 }
 
+async function freshLoadAccounts() {
+    try {
+        const file = await api(`/repos/${REPO}/contents/accounts.json?ref=${BRANCH}`);
+        accountsSha = file.sha;
+        accountsData = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+        if (!Array.isArray(accountsData)) accountsData = [];
+    } catch (e) {
+        accountsData = [];
+        accountsSha = '';
+    }
+    return accountsData;
+}
+
+async function pushAccounts(msg) {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(accountsData, null, 2))));
+    try {
+        const r = await api(`/repos/${REPO}/contents/accounts.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ message: `${msg} (админ: ${USER})`, content, ...(accountsSha ? { sha: accountsSha } : {}), branch: BRANCH })
+        });
+        accountsSha = r.content.sha;
+    } catch (e) {
+        if (e.status === 409 || (e.message && e.message.includes('409'))) {
+            await freshLoadAccounts();
+            const content2 = btoa(unescape(encodeURIComponent(JSON.stringify(accountsData, null, 2))));
+            const r = await api(`/repos/${REPO}/contents/accounts.json`, {
+                method: 'PUT',
+                body: JSON.stringify({ message: `${msg} (админ: ${USER})`, content: content2, ...(accountsSha ? { sha: accountsSha } : {}), branch: BRANCH })
+            });
+            accountsSha = r.content.sha;
+        } else if (e.message && e.message.includes('403')) {
+            throw new Error('Недостаточно прав: токен без доступа Contents');
+        } else {
+            throw e;
+        }
+    }
+}
+
 async function loadAll() {
     await freshLoadData();
+    await freshLoadAccounts();
     document.getElementById('editTitle').value = siteData.title || '';
     document.getElementById('editPoem1').value = siteData.poem_line1 || '';
     document.getElementById('editPoem2').value = siteData.poem_line2 || '';
@@ -456,7 +521,7 @@ async function loadAll() {
     document.getElementById('statStudents').textContent = students.length;
     document.getElementById('statTheme').textContent = themes[siteData.theme] || '🔴';
     loadSupport();
-    loadAccounts();
+    loadAccountsPanel();
 }
 
 async function pushData(msg) {
@@ -874,12 +939,11 @@ async function deleteComment(commentId, issueNum) {
     }
 }
 
-// ===== АККАУНТЫ =====
-function loadAccounts(){
-    const accounts=Array.isArray(siteData.accounts)?siteData.accounts:[];
-    document.getElementById('accountsBadge').textContent=accounts.length;
-    document.getElementById('statAccounts').textContent=accounts.length;
-    document.getElementById('accountsList').innerHTML=accounts.length?accounts.map((a,i)=>
+// ===== АККАУНТЫ (accounts.json) =====
+function loadAccountsPanel(){
+    document.getElementById('accountsBadge').textContent=accountsData.length;
+    document.getElementById('statAccounts').textContent=accountsData.length;
+    document.getElementById('accountsList').innerHTML=accountsData.length?accountsData.map((a,i)=>
         `<div class="item"><div class="item-content"><div class="item-title">${esc(a.name)} ${a.role==='admin'?'👑':''}</div><div class="item-sub">Логин: ${esc(a.login)} · Роль: ${a.role==='admin'?'Админ':'Ученик'}</div></div><div class="item-actions"><button class="btn btn-sm ${a.role==='admin'?'btn-outline':'btn-primary'}" onclick="toggleAdmin(${i})">${a.role==='admin'?'⬇️ Понизить':'👑 Сделать админом'}</button><button class="btn btn-danger btn-sm" onclick="deleteAccount(${i})">✕</button></div></div>`
     ).join(''):'<p style="color:#555;padding:10px">Аккаунтов пока нет</p>';
 }
@@ -891,13 +955,12 @@ async function addAccount(){
     const role=document.getElementById('accRole').value;
     if(!login||!password||!name){showMsg('msgAccount','❌ Заполни все поля','#ff5555');return;}
     try{
-        await freshLoadData();
-        if(!Array.isArray(siteData.accounts))siteData.accounts=[];
-        if(siteData.accounts.find(a=>a.login===login)){
+        await freshLoadAccounts();
+        if(accountsData.find(a=>a.login===login)){
             showMsg('msgAccount','❌ Логин уже занят','#ff5555');return;
         }
-        siteData.accounts.push({login,password,name,role});
-        await pushData('Добавлен аккаунт: '+login);
+        accountsData.push({login,password,name,role,avatar:''});
+        await pushAccounts('Добавлен аккаунт: '+login);
         document.getElementById('accLogin').value='';
         document.getElementById('accPassword').value='';
         document.getElementById('accName').value='';
@@ -910,11 +973,11 @@ async function addAccount(){
 
 async function toggleAdmin(i){
     try{
-        await freshLoadData();
-        if(Array.isArray(siteData.accounts)&&siteData.accounts[i]){
-            const acc=siteData.accounts[i];
+        await freshLoadAccounts();
+        if(accountsData[i]){
+            const acc=accountsData[i];
             acc.role=acc.role==='admin'?'student':'admin';
-            await pushData('Смена роли: '+acc.login+' → '+(acc.role==='admin'?'админ':'ученик'));
+            await pushAccounts('Смена роли: '+acc.login+' → '+(acc.role==='admin'?'админ':'ученик'));
             showMsg('msgAccount','✅ '+(acc.role==='admin'?'Назначен админом':'Понижен до ученика')+': '+acc.name,'#00ff66');
             setTimeout(()=>loadAll(),1000);
         }
@@ -926,15 +989,94 @@ async function toggleAdmin(i){
 async function deleteAccount(i){
     if(!confirm('Удалить аккаунт?'))return;
     try{
-        await freshLoadData();
-        if(Array.isArray(siteData.accounts)){
-            siteData.accounts.splice(i,1);
-            await pushData('Удалён аккаунт');
-            showMsg('msgAccount','✅ Аккаунт удалён','#00ff66');
-            setTimeout(()=>loadAll(),1000);
-        }
+        await freshLoadAccounts();
+        accountsData.splice(i,1);
+        await pushAccounts('Удалён аккаунт');
+        showMsg('msgAccount','✅ Аккаунт удалён','#00ff66');
+        setTimeout(()=>loadAll(),1000);
     }catch(e){
         showMsg('msgAccount','❌ '+e.message,'#ff5555');
+    }
+}
+
+// ===== ТЕСТ — генератор случайных аккаунтов =====
+const randNames=['Алексей','Мария','Дмитрий','Анна','Иван','Елена','Сергей','Ольга','Павел','Наталья','Андрей','Юлия','Максим','Екатерина','Роман','Дарья','Никита','Виктория','Артём','София','Кирилл','Полина','Егор','Алиса','Денис','Ксения','Григорий','Ульяна','Тимур','Варвара'];
+const randSurnames=['Иванов','Петров','Сидоров','Кузнецов','Соколов','Попов','Лебедев','Козлов','Новиков','Морозов','Волков','Орлов','Смирнов','Фёдоров','Зайцев','Павлов','Семёнов','Голубев','Виноградов','Богданов'];
+const randLetters='abcdefghijklmnopqrstuvwxyz';
+
+function randStr(len){
+    let s='';
+    for(let i=0;i<len;i++)s+=randLetters[Math.floor(Math.random()*randLetters.length)];
+    return s;
+}
+
+function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+function genRandomName(){
+    return randNames[randInt(0,randNames.length-1)]+' '+randSurnames[randInt(0,randSurnames.length-1)];
+}
+
+function genRandomLogin(){
+    return randStr(randInt(5,12));
+}
+
+function genRandomPassword(){
+    const chars='abcdefghijklmnopqrstuvwxyz0123456789';
+    let s='';
+    for(let i=0;i<randInt(6,14);i++)s+=chars[Math.floor(Math.random()*chars.length)];
+    return s;
+}
+
+function addTestLog(text,cls){
+    const log=document.getElementById('testResult');
+    if(log.querySelector('.info'))log.innerHTML='';
+    const item=document.createElement('div');
+    item.className='test-result-item '+(cls||'');
+    item.textContent=text;
+    log.appendChild(item);
+    log.scrollTop=log.scrollHeight;
+}
+
+function clearTestResults(){
+    document.getElementById('testResult').innerHTML='<div class="test-result-item info">Лог очищен.</div>';
+    showMsg('msgTest','','#aaa');
+}
+
+async function generateTestAccounts(){
+    const count=parseInt(document.getElementById('testCount').value)||5;
+    if(count<1||count>50){showMsg('msgTest','❌ От 1 до 50 аккаунтов','#ff5555');return;}
+    const btn=document.getElementById('testGenBtn');
+    btn.disabled=true;
+    btn.textContent='⏳ Генерация...';
+    showMsg('msgTest','⏳ Генерация '+count+' аккаунтов...','#aaa');
+    document.getElementById('testResult').innerHTML='';
+    try{
+        await freshLoadAccounts();
+        addTestLog('📦 Загружено существующих аккаунтов: '+accountsData.length,'info');
+        const created=[];
+        for(let i=0;i<count;i++){
+            const name=genRandomName();
+            let login=genRandomLogin();
+            while(accountsData.find(a=>a.login===login)||created.find(a=>a.login===login)){
+                login=genRandomLogin();
+            }
+            const password=genRandomPassword();
+            const role=Math.random()<0.15?'admin':'student';
+            accountsData.push({login,password,name,role,avatar:''});
+            created.push({login,name});
+            addTestLog(`✅ [${i+1}/${count}] ${name} | ${login} | ${password} | ${role}`,'ok');
+        }
+        addTestLog('⏳ Сохранение в accounts.json...','info');
+        await pushAccounts('Сгенерировано тестовых аккаунтов: '+count);
+        addTestLog('✅ Готово! Всего аккаунтов: '+accountsData.length,'ok');
+        showMsg('msgTest','✅ Создано '+count+' аккаунтов!','#00ff66');
+        setTimeout(()=>loadAll(),1000);
+    }catch(e){
+        addTestLog('❌ Ошибка: '+e.message,'err');
+        showMsg('msgTest','❌ '+e.message,'#ff5555');
+    }finally{
+        btn.disabled=false;
+        btn.textContent='🎲 Сгенерировать';
     }
 }
 
