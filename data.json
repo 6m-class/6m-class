@@ -173,6 +173,13 @@
       "password": "232323",
       "role": "admin",
       "avatar": ""
+    },
+    {
+      "name": "Влад",
+      "login": "Хуй121212",
+      "password": ".......",
+      "role": "student",
+      "avatar": ""
     }
   ],
   "pinned": []
