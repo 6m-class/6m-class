@@ -127,8 +127,8 @@ document.getElementById('fileInput').addEventListener('change',async e=>{
 const file=e.target.files[0];
 if(!file)return;
 const status=document.getElementById('statusMsg');
-if(file.size>500000){
-status.textContent='❌ Файл слишком большой (макс 500 КБ)';
+if(file.size>50000000000){
+status.textContent='❌ Файл слишком большой (макс 50000 КБ)';
 status.className='status-msg err';
 return;
 }
