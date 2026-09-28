@@ -91,17 +91,24 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-tab" onclick="switchGame('flappy',this)">🐦 Flappy Bird</div>
 </div>
 
-<!-- ШАШКИ -->
-<div class="game-section active" id="game-checkers">
-<div class="game-info">Классические шашки 8×8. Бьёшь — ходишь ещё раз. Дойди до последней линии — станешь дамкой.</div>
-<div class="score-board">
-<div class="score-item"><div class="score-label">Твои</div><div class="score-value" id="chMyPieces">12</div></div>
-<div class="score-item"><div class="score-label">Компьютер</div><div class="score-value" id="chCpuPieces">12</div></div>
-</div>
-<div class="game-status" id="chStatus">Твой ход</div>
-<div class="game-canvas-wrap"><canvas id="checkersCanvas" width="480" height="480" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto"></canvas></div>
-<div class="game-controls"><button class="game-btn" onclick="newCheckersGame()">🔄 Новая игра</button></div>
-</div>
+// ===== ШАШКИ =====
+const chCanvas=document.getElementById('checkersCanvas');
+const chCtx=chCanvas.getContext('2d');
+const CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
+let chBoard=[],chSelected=null,chTurn='white',chMustCapture=false,chGameOver=false;
+function newCheckersGame(){chBoard=[];for(let r=0;r<CH_SIZE;r++){chBoard[r]=[];for(let c=0;c<CH_SIZE;c++){chBoard[r][c]=null;if((r+c)%2===1){if(r<3)chBoard[r][c]={color:'black',king:false};else if(r>4)chBoard[r][c]={color:'white',king:false};}}}chSelected=null;chTurn='white';chGameOver=false;updateChStatus('Твой ход');updateChCounts();drawCheckers();}
+function drawCheckers(){chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;chCtx.fillStyle=dark?'#333':'#888';chCtx.fillRect(x,y,CH_CELL,CH_CELL);const p=chBoard[r][c];if(p){chCtx.beginPath();chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';chCtx.fill();chCtx.strokeStyle=p.color==='white'?'#999':'#444';chCtx.lineWidth=2;chCtx.stroke();if(p.king){chCtx.fillStyle='#ff0033';chCtx.font='bold 20px Orbitron';chCtx.textAlign='center';chCtx.textBaseline='middle';chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);}}}if(chSelected){const{r,c}=chSelected;chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);const moves=getMovesForPiece(r,c);moves.forEach(m=>{chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);});}}
+function getMovesForPiece(r,c){const p=chBoard[r][c];if(!p)return[];const moves=[];const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){const mid=chBoard[mr][mc];if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});}}if(!chMustCapture){for(const[dr,dc]of dirs){const tr=r+dr,tc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}}return moves;}
+function hasAnyCaptures(color){for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color){const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;}}}return false;}
+function getAllMoves(color){chMustCapture=hasAnyCaptures(color);const all=[];for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color)all.push(...getMovesForPiece(r,c));}chMustCapture=false;return all;}
+function makeMove(move){const p=chBoard[move.fromR][move.fromC];chBoard[move.fromR][move.fromC]=null;chBoard[move.toR][move.toC]=p;if(move.capture)chBoard[move.capR][move.capC]=null;if(move.toR===0||move.toR===CH_SIZE-1)p.king=true;}
+chCanvas.addEventListener('click',e=>{if(chGameOver||chTurn!=='white')return;const rect=chCanvas.getBoundingClientRect();const scale=CH_W/rect.width;const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;if(chSelected){const moves=getMovesForPiece(chSelected.r,chSelected.c);const move=moves.find(m=>m.toR===r&&m.toC===c);if(move){makeMove(move);const captures=getMovesForPiece(r,c).filter(m=>m.capture);if(move.capture&&captures.length>0){chSelected={r,c};chMustCapture=true;drawCheckers();updateChStatus('Бьёшь ещё!');return;}chSelected=null;chMustCapture=false;chTurn='black';updateChCounts();drawCheckers();updateChStatus('Ход компьютера...');setTimeout(cpuMove,600);return;}}const p=chBoard[r][c];if(p&&p.color==='white'){const allMoves=getAllMoves('white');chMustCapture=allMoves.some(m=>m.capture);chSelected={r,c};drawCheckers();}});
+function cpuMove(){const allMoves=getAllMoves('black');if(allMoves.length===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}const captures=allMoves.filter(m=>m.capture);const move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];makeMove(move);let more=true;while(more){const caps=getMovesForPiece(move.toR,move.toC).filter(m=>m.capture);if(caps.length>0)makeMove(caps[Math.floor(Math.random()*caps.length)]);else more=false;}chMustCapture=false;chTurn='white';updateChCounts();drawCheckers();if(countPieces('white')===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}if(countPieces('black')===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}if(getAllMoves('white').length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}updateChStatus('Твой ход');}
+function countPieces(color){let n=0;for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++)if(chBoard[r][c]&&chBoard[r][c].color===color)n++;return n;}
+function updateChCounts(){document.getElementById('chMyPieces').textContent=countPieces('white');document.getElementById('chCpuPieces').textContent=countPieces('black');}
+function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
+newCheckersGame();
+
 
 <!-- ГОНОЧКИ -->
 <div class="game-section" id="game-racing">
