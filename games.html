@@ -347,8 +347,10 @@ function switchCasino(name,el){document.querySelectorAll('.casino-tab').forEach(
 let slotsSpinning=false;
 function spinSlots(){
 if(slotsSpinning)return;
-if(casinoBalance<5){document.getElementById('slotsResult').textContent='Недостаточно монет!';document.getElementById('slotsResult').className='slots-result';return;}
-casinoBalance-=5;updateBalance();
+let bet=parseInt(document.getElementById('slotsBet').value)||1;
+if(bet<1)bet=1;
+if(casinoBalance<bet){document.getElementById('slotsResult').textContent='Недостаточно монет!';document.getElementById('slotsResult').className='slots-result';return;}
+casinoBalance-=bet;updateBalance();
 slotsSpinning=true;
 document.getElementById('slotsSpinBtn').disabled=true;
 document.getElementById('slotsResult').textContent='Крутится...';
@@ -367,15 +369,16 @@ slotsSpinning=false;
 document.getElementById('slotsSpinBtn').disabled=false;
 const combo=results.join('');
 if(winNums.includes(combo)){
-casinoBalance+=25;updateBalance();
-document.getElementById('slotsResult').textContent='🎉 '+combo+' — ВЫИГРЫШ! +25 🪙';
+const prize=bet*5;
+casinoBalance+=prize;updateBalance();
+document.getElementById('slotsResult').textContent='🎉 '+combo+' — ВЫИГРЫШ! +'+prize+' 🪙';
 document.getElementById('slotsResult').className='slots-result win';
 }else{
 document.getElementById('slotsResult').textContent=combo+' — повезёт в следующий раз!';
 }
-if(casinoBalance<5){casinoBalance=100;updateBalance();document.getElementById('slotsResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}
+if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('slotsResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}
 }
-},500+i*600);
+},300+i*250);
 });
 }
 
@@ -426,18 +429,20 @@ wheelCtx.stroke();
 drawWheel(0);
 function spinWheel(){
 if(wheelSpinning)return;
-if(casinoBalance<10){document.getElementById('wheelResult').textContent='Недостаточно монет!';document.getElementById('wheelResult').className='wheel-result';return;}
-casinoBalance-=10;updateBalance();
+let bet=parseInt(document.getElementById('wheelBet').value)||1;
+if(bet<1)bet=1;
+if(casinoBalance<bet){document.getElementById('wheelResult').textContent='Недостаточно монет!';document.getElementById('wheelResult').className='wheel-result';return;}
+casinoBalance-=bet;updateBalance();
 wheelSpinning=true;
 document.getElementById('wheelSpinBtn').disabled=true;
 document.getElementById('wheelResult').textContent='Крутится...';
 document.getElementById('wheelResult').className='wheel-result';
 const targetIndex=Math.floor(Math.random()*WHEEL_SIZE);
 const sectorAngle=(Math.PI*2)/WHEEL_SIZE;
-const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*5+Math.random()*sectorAngle*0.6-sectorAngle*0.3;
+const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;
 const startAngle=wheelAngle;
 const totalRotation=targetAngle-startAngle;
-const duration=3500;
+const duration=1200;
 const startTime=performance.now();
 function animate(now){
 const elapsed=now-startTime;
@@ -453,24 +458,25 @@ const sector=WHEEL_SECTORS[targetIndex];
 let prize=0,msg='';
 if(sector.startsWith('x')){
 const mult=parseInt(sector.substring(1));
-prize=10*mult;
+prize=bet*mult;
 msg='🎉 '+sector+' — ставка x'+mult+' = +'+prize+' 🪙!';
 }else{
-prize=parseInt(sector);
+prize=Math.round(parseInt(sector)*bet/10);
 msg='Выпал сектор '+sector+' → +'+prize+' 🪙';
 }
 casinoBalance+=prize;updateBalance();
 document.getElementById('wheelResult').textContent=msg;
 document.getElementById('wheelResult').className='wheel-result win';
-if(casinoBalance<5){
+if(casinoBalance<1){
 setTimeout(()=>{
-if(casinoBalance<5){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}
-},2000);
+if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}
+},1000);
 }
 }
 }
 requestAnimationFrame(animate);
 }
+
 </script>
 </body>
 </html>
