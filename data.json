@@ -13,31 +13,106 @@
   "teacher_name": "Карпетян Артур Арменович",
   "teacher_role": "Классный руководитель",
   "students": [
-    {"name": "Архипов Иван", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790451896536.jpg"},
-    {"name": "Белоусов Георгий", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542110603.jpg"},
-    {"name": "Блинов Михаил", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542133076.jpg"},
-    {"name": "Галактионов Матвей", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542155941.jpg"},
-    {"name": "Галимов Захар", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542179224.jpg"},
-    {"name": "Гереева Таисия", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542218286.jpg"},
-    {"name": "Головина Лилия", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542246190.jpg"},
-    {"name": "Граудина Екатерина", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542278412.jpg"},
-    {"name": "Дорошкевич Дарья", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542313596.jpg"},
-    {"name": "Ермаков Максим", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542347298.jpg"},
-    {"name": "Журавлёва Анастасия", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542403411.jpg"},
-    {"name": "Журавлёва Милана", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542429795.jpg"},
-    {"name": "Казакова Варвара", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542465492.jpg"},
-    {"name": "Казаченко Алексей", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542489772.jpg"},
-    {"name": "Комаров Михаил", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542512083.jpg"},
-    {"name": "Куропова Вероника", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542551286.jpg"},
-    {"name": "Милютин Владислав", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542577077.jpg"},
-    {"name": "Молодцов Семён", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542599291.jpg"},
-    {"name": "Новиков Константин", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542636192.jpg"},
-    {"name": "Русин Егор", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542678367.jpg"},
-    {"name": "Смирнова Лика", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542705908.jpg"},
-    {"name": "Субботин Максим 👑", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542737598.jpg"},
-    {"name": "Харламов Максим 👑", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542770416.jpg"},
-    {"name": "Хлопотова Ева", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542794413.jpg"},
-    {"name": "Хортова Аделина", "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542819720.jpg"}
+    {
+      "name": "Архипов Иван",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790451896536.jpg"
+    },
+    {
+      "name": "Белоусов Георгий",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542110603.jpg"
+    },
+    {
+      "name": "Блинов Михаил",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542133076.jpg"
+    },
+    {
+      "name": "Галактионов Матвей",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542155941.jpg"
+    },
+    {
+      "name": "Галимов Захар",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542179224.jpg"
+    },
+    {
+      "name": "Гереева Таисия",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542218286.jpg"
+    },
+    {
+      "name": "Головина Лилия",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542246190.jpg"
+    },
+    {
+      "name": "Граудина Екатерина",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542278412.jpg"
+    },
+    {
+      "name": "Дорошкевич Дарья",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542313596.jpg"
+    },
+    {
+      "name": "Ермаков Максим",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542347298.jpg"
+    },
+    {
+      "name": "Журавлёва Анастасия",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542403411.jpg"
+    },
+    {
+      "name": "Журавлёва Милана",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542429795.jpg"
+    },
+    {
+      "name": "Казакова Варвара",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542465492.jpg"
+    },
+    {
+      "name": "Казаченко Алексей",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542489772.jpg"
+    },
+    {
+      "name": "Комаров Михаил",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542512083.jpg"
+    },
+    {
+      "name": "Куропова Вероника",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542551286.jpg"
+    },
+    {
+      "name": "Милютин Владислав",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542577077.jpg"
+    },
+    {
+      "name": "Молодцов Семён",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542599291.jpg"
+    },
+    {
+      "name": "Новиков Константин",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542636192.jpg"
+    },
+    {
+      "name": "Русин Егор",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542678367.jpg"
+    },
+    {
+      "name": "Смирнова Лика",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542705908.jpg"
+    },
+    {
+      "name": "Субботин Максим 👑",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542737598.jpg"
+    },
+    {
+      "name": "Харламов Максим 👑",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542770416.jpg"
+    },
+    {
+      "name": "Хлопотова Ева",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542794413.jpg"
+    },
+    {
+      "name": "Хортова Аделина",
+      "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/student_1790542819720.jpg"
+    }
   ],
   "activities_page": {
     "title": "Олимпиадная математика. Пн",
@@ -84,5 +159,14 @@
     "role": "Классный руководитель",
     "photo": "https://raw.githubusercontent.com/6m-class/6m-class/main/photos/teacher_1790451683391.jpg"
   },
-  "pinned": []
+  "pinned": [],
+  "accounts": [
+    {
+      "name": "BETATEST",
+      "login": "BETATEST",
+      "password": "BETATEST",
+      "role": "student",
+      "avatar": ""
+    }
+  ]
 }
