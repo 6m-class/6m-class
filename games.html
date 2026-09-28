@@ -357,8 +357,17 @@ document.getElementById('slotsResult').textContent='Крутится...';
 document.getElementById('slotsResult').className='slots-result';
 const reels=['reel1','reel2','reel3'];
 reels.forEach(id=>{const el=document.getElementById(id);el.classList.add('spinning');el.textContent='';});
-const results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];
 const winNums=['333','777','999'];
+const winChance=0.80; // 20% шанс выигрыша — меняй это число
+let results;
+if(Math.random()<winChance){
+  const win=winNums[Math.floor(Math.random()*3)];
+  results=[parseInt(win[0]),parseInt(win[1]),parseInt(win[2])];
+}else{
+  do{
+    results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];
+  }while(winNums.includes(results.join('')));
+}
 reels.forEach((id,i)=>{
 setTimeout(()=>{
 const el=document.getElementById(id);
@@ -380,7 +389,7 @@ if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('s
 }
 },300+i*250);
 });
-}
+
 
 // --- КОЛЕСО ФОРТУНЫ ---
 const wheelCanvas=document.getElementById('wheelCanvas');
