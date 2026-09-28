@@ -1,1 +1,44 @@
-
+[
+  {
+    "login": "Maksyta",
+    "password": "Maksyta",
+    "name": "Субботин Максим",
+    "role": "admin",
+    "avatar": "https://raw.githubusercontent.com/6m-class/6m-class/main/avatars/Maksyta_1790580246259.png"
+  },
+  {
+    "name": "Максим Харламов",
+    "login": "Maxim",
+    "password": "232323",
+    "role": "admin",
+    "avatar": ""
+  },
+  {
+    "name": "Влад",
+    "login": "Хуй121212",
+    "password": ".......",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "name": "Bylk",
+    "login": "Вдевжнажн",
+    "password": "дdgdgdyd",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "name": "Bylka",
+    "login": "Hgybvf",
+    "password": "ggtufd",
+    "role": "student",
+    "avatar": "https://raw.githubusercontent.com/6m-class/6m-class/main/avatars/Hgybvf_1790591358939.jpg"
+  },
+  {
+    "name": "TEST2",
+    "login": "TEST2",
+    "password": "TEST2",
+    "role": "student",
+    "avatar": ""
+  }
+]
