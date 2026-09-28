@@ -47,5 +47,40 @@
     "password": "TESTER",
     "role": "student",
     "avatar": ""
+  },
+  {
+    "login": "hjbwtxpexgl",
+    "password": "ly8mv7m",
+    "name": "Сергей Виноградов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "werru",
+    "password": "ojou4df",
+    "name": "Варвара Сидоров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "yehjope",
+    "password": "xtkbl9f",
+    "name": "Наталья Сидоров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "bwauczzg",
+    "password": "gkl6ga5jf6",
+    "name": "Мария Соколов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "ewkgwzziwqtp",
+    "password": "gveyop",
+    "name": "Юлия Волков",
+    "role": "student",
+    "avatar": ""
   }
 ]
