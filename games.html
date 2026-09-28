@@ -94,6 +94,23 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:5;box-shadow:0 0 15px var(--shadow)}
 .wheel-result{font-size:1.1rem;font-weight:700;margin:15px 0;min-height:28px}
 .wheel-result.win{color:#00ff66}
+.durak-difficulty{display:flex;gap:10px;justify-content:center;margin-bottom:15px;flex-wrap:wrap}
+.durak-table{max-width:600px;margin:0 auto;text-align:center}
+.durak-ai-hand{display:flex;gap:4px;justify-content:center;margin-bottom:15px;min-height:60px}
+.durak-card-back{width:40px;height:56px;background:rgba(255,0,51,0.15);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.durak-battle{min-height:80px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:15px;padding:10px;background:rgba(20,20,20,0.4);border-radius:10px;border:1px solid var(--border)}
+.durak-pair{display:flex;flex-direction:column;gap:2px;align-items:center}
+.durak-card{width:50px;height:70px;background:#1a1a1a;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:1rem;user-select:none}
+.durak-card.defense{margin-left:25px;opacity:.85}
+.durak-card.clickable{cursor:pointer;transition:.2s}
+.durak-card.clickable:hover{border-color:var(--primary);box-shadow:0 0 15px var(--shadow);transform:translateY(-3px)}
+.durak-suit{font-size:1.2rem}
+.durak-deck-info{display:flex;gap:20px;justify-content:center;align-items:center;margin-bottom:15px;flex-wrap:wrap}
+.durak-info-item{font-size:.85rem;color:#888}
+.durak-player-hand{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:80px;margin-bottom:15px}
+.durak-status{text-align:center;margin:15px 0;font-size:1rem;font-weight:700;min-height:24px}
+.credit-box{background:rgba(20,20,20,0.8);border:2px solid var(--border);border-radius:16px;padding:25px;text-align:center;max-width:400px;margin:0 auto}
+.credit-timer{font-size:2rem;font-family:'Orbitron',sans-serif;color:var(--primary);font-weight:900;margin:10px 0}
 </style>
 </head>
 <body>
@@ -113,11 +130,11 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-tab" onclick="switchGame('aim',this)">&#127919; Аим-тренажёр</div>
 <div class="game-tab" onclick="switchGame('flappy',this)">&#128038; Flappy Bird</div>
 <div class="game-tab" onclick="switchGame('casino',this)">&#127920; Казино</div>
+<div class="game-tab" onclick="switchGame('durak',this)">&#129528; Дурак</div>
 </div>
-
 <!-- ШАШКИ -->
 <div class="game-section active" id="game-checkers">
-<div class="game-info">Классические шашки 8×8. Бьёшь — ходишь ещё раз. Дойди до любой стороны — станешь дамкой. Ходить и бить можно во все стороны.</div>
+<div class="game-info">Классические шашки 8&#215;8. Бьёшь — ходишь ещё раз. Дойди до любой стороны — станешь дамкой. Ходить и бить можно во все стороны.</div>
 <div class="score-board">
 <div class="score-item"><div class="score-label">Твои</div><div class="score-value" id="chMyPieces">12</div></div>
 <div class="score-item"><div class="score-label">Компьютер</div><div class="score-value" id="chCpuPieces">12</div></div>
@@ -126,10 +143,9 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-canvas-wrap"><canvas id="checkersCanvas" width="480" height="480" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto"></canvas></div>
 <div class="game-controls"><button class="game-btn" onclick="newCheckersGame()">&#128260; Новая игра</button></div>
 </div>
-
 <!-- ГОНОЧКИ -->
 <div class="game-section" id="game-racing">
-<div class="game-info">Уворачивайся от машин, конусов и бочек. Управление: ← → или A D, на телефоне — свайпы.</div>
+<div class="game-info">Уворачивайся от машин, конусов и бочек. Управление: &#8592; &#8594; или A D, на телефоне — свайпы.</div>
 <div class="score-board">
 <div class="score-item"><div class="score-label">Очки</div><div class="score-value" id="raceScore">0</div></div>
 <div class="score-item"><div class="score-label">Рекорд</div><div class="score-value" id="raceBest">0</div></div>
@@ -138,7 +154,6 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-canvas-wrap"><div class="race-wrap"><canvas id="racingCanvas" width="320" height="500" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto;background:#222"></canvas></div></div>
 <div class="game-controls"><button class="game-btn" id="raceStartBtn" onclick="startRace()">&#127941;&#65039; Старт</button><button class="game-btn outline" onclick="resetRace()">&#128260; Заново</button></div>
 </div>
-
 <!-- АИМ -->
 <div class="game-section" id="game-aim">
 <div class="game-info">Кликай по целям как можно быстрее и точнее. Пройди 3 уровня — каждый сложнее предыдущего.</div>
@@ -159,7 +174,6 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-controls"><button class="game-btn" id="aimStartBtn" onclick="aimStart()">&#127919; Старт</button><button class="game-btn outline" onclick="aimReset()">&#128260; Сброс</button></div>
 <div class="aim-results" id="aimResults"><h3 id="aimResultsTitle">Результаты</h3><div class="aim-stat"><span class="aim-stat-label">Попаданий</span><span class="aim-stat-val" id="aimResHits">0</span></div><div class="aim-stat"><span class="aim-stat-label">Промахов</span><span class="aim-stat-val" id="aimResMiss">0</span></div><div class="aim-stat"><span class="aim-stat-label">Точность</span><span class="aim-stat-val" id="aimResAcc">0%</span></div><div class="aim-stat"><span class="aim-stat-label">Среднее время реакции</span><span class="aim-stat-val" id="aimResAvg">0 мс</span></div><div class="aim-stat"><span class="aim-stat-label">Лучшая реакция</span><span class="aim-stat-val" id="aimResBest">0 мс</span></div><div class="aim-stat"><span class="aim-stat-label">Очки</span><span class="aim-stat-val" id="aimResScore">0</span></div></div>
 </div>
-
 <!-- FLAPPY BIRD -->
 <div class="game-section" id="game-flappy">
 <div class="game-info">Кликай / пробел / тап — птица взлетает. Не врезайся в трубы.</div>
@@ -171,13 +185,13 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-canvas-wrap"><canvas id="flappyCanvas" width="400" height="500" style="border-radius:8px;box-shadow:0 0 40px rgba(var(--primary-rgb),0.2);max-width:100%;height:auto"></canvas></div>
 <div class="game-controls"><button class="game-btn" id="fbStartBtn" onclick="fbStart()">&#128038; Старт</button><button class="game-btn outline" onclick="fbReset()">&#128260; Заново</button></div>
 </div>
-
 <!-- КАЗИНО -->
 <div class="game-section" id="game-casino">
 <div class="casino-balance" id="casinoBalance"><span class="coin-icon">🪙</span> <span id="balanceNum">100</span></div>
 <div class="casino-tabs">
 <div class="casino-tab active" onclick="switchCasino('slots',this)">🎰 Слоты</div>
 <div class="casino-tab" onclick="switchCasino('wheel',this)">🎡 Колесо фортуны</div>
+<div class="casino-tab" onclick="switchCasino('credit',this)">💰 Кредит</div>
 </div>
 <div class="casino-section active" id="casino-slots">
 <div class="game-info">Совпадение 333, 777 или 999 = выплата x5 от ставки.</div>
@@ -214,6 +228,40 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <br><br>
 <button class="game-btn outline" onclick="resetBalance()">🔄 Сбросить баланс</button>
 </div>
+</div>
+<div class="casino-section" id="casino-credit">
+<div class="credit-box">
+<div class="game-info">Возьми 10,000,000 🪙 в кредит. Через 5 минут они списываются автоматически.</div>
+<button class="game-btn" onclick="takeCredit()">💰 Взять кредит 10М</button>
+<div id="creditStatus" style="margin:10px 0;font-weight:700;min-height:24px"></div>
+<div id="creditTimer" class="credit-timer"></div>
+</div>
+</div>
+</div>
+<!-- ДУРАК -->
+<div class="game-section" id="game-durak">
+<div class="game-info">Карточная игра Дурак. Победи компьютер. Выигрыш = ставка × множитель сложности.</div>
+<div class="durak-difficulty">
+<div class="aim-level-btn active" onclick="dSelectDiff(1,this)">Изи ×100</div>
+<div class="aim-level-btn" onclick="dSelectDiff(2,this)">Норм ×1000</div>
+<div class="aim-level-btn" onclick="dSelectDiff(3,this)">Хард ×10000</div>
+</div>
+<div class="durak-table">
+<div class="durak-ai-hand" id="durakAiHand"></div>
+<div class="durak-battle" id="durakBattle"></div>
+<div class="durak-deck-info" id="durakDeckInfo"></div>
+<div class="durak-player-hand" id="durakPlayerHand"></div>
+</div>
+<div class="durak-status" id="durakStatus">Выбери сложность и нажми «Начать»</div>
+<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px">
+<span style="font-size:.85rem;color:#888">Ставка:</span>
+<input type="number" id="durakBet" value="5" min="1" max="9999" style="width:70px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none">
+<span style="font-size:1.1rem">🪙</span>
+</div>
+<div class="game-controls">
+<button class="game-btn" id="durakStartBtn" onclick="dStartGame()">🃏 Начать</button>
+<button class="game-btn outline" id="durakDoneBtn" onclick="dPlayerDone()" style="display:none">✅ Готово</button>
+<button class="game-btn outline" id="durakTakeBtn" onclick="dPlayerTake()" style="display:none">📥 Взять</button>
 </div>
 </div>
 <script>
@@ -297,23 +345,9 @@ aimDrawIdle();
 // ===== FLAPPY BIRD =====
 const fbCanvas=document.getElementById('flappyCanvas');
 const fbCtx=fbCanvas.getContext('2d');
-const FB_W=400,FB_H=500;
-const FB_GROUND_Y=440;
-const FB_GRAVITY=0.1;
-const FB_JUMP=-3;
-const FB_PIPE_W=62;
-const FB_PIPE_GAP=140;
-const FB_PIPE_SPACING=200;
-const FB_PIPE_SPEED=2.5;
+const FB_W=400,FB_H=500,FB_GROUND_Y=440,FB_GRAVITY=0.1,FB_JUMP=-3,FB_PIPE_W=62,FB_PIPE_GAP=140,FB_PIPE_SPACING=200,FB_PIPE_SPEED=2.5;
 let fbBird={x:100,y:250,vy:0,rot:0,wingPhase:0};
-let fbPipes=[];
-let fbScore=0;
-let fbRunning=false;
-let fbAnimId=null;
-let fbDead=false;
-let fbClouds=[];
-let fbGroundOffset=0;
-let fbFlash=0;
+let fbPipes=[],fbScore=0,fbRunning=false,fbAnimId=null,fbDead=false,fbClouds=[],fbGroundOffset=0,fbFlash=0;
 let fbBestScore=parseInt(localStorage.getItem('fb_best')||'0');
 document.getElementById('fbBest').textContent=fbBestScore;
 function fbInitClouds(){fbClouds=[];for(let i=0;i<4;i++){fbClouds.push({x:Math.random()*FB_W,y:30+Math.random()*180,scale:0.5+Math.random()*0.5,speed:0.15+Math.random()*0.2});}}
@@ -358,7 +392,7 @@ document.getElementById('slotsResult').className='slots-result';
 const reels=['reel1','reel2','reel3'];
 reels.forEach(id=>{const el=document.getElementById(id);el.classList.add('spinning');el.textContent='';});
 const winNums=['333','777','999'];
-const winChance=0.45; // 20% шанс выигрыша — меняй это число
+const winChance=0.45;
 let results;
 if(Math.random()<winChance){
 const win=winNums[Math.floor(Math.random()*3)];
@@ -390,8 +424,6 @@ if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('s
 },300+i*250);
 });
 }
-
-
 
 // --- КОЛЕСО ФОРТУНЫ ---
 const wheelCanvas=document.getElementById('wheelCanvas');
@@ -488,7 +520,299 @@ if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('w
 }
 requestAnimationFrame(animate);
 }
-
+</script>
+<script>
+// ===== КРЕДИТНАЯ СИСТЕМА =====
+let creditAmount=0,creditTimer=null,creditEndTime=0;
+const CREDIT_SUM=10000000,CREDIT_MINUTES=5;
+function initCredit(){
+const saved=localStorage.getItem('casino_credit');
+if(saved){
+try{
+const data=JSON.parse(saved);
+if(data.endTime>Date.now()){
+creditAmount=data.amount;creditEndTime=data.endTime;
+startCreditTimer();
+}else{
+if(data.amount>0){casinoBalance-=data.amount;if(casinoBalance<0)casinoBalance=0;updateBalance();}
+localStorage.removeItem('casino_credit');
+}
+}catch(e){localStorage.removeItem('casino_credit');}
+}
+}
+function takeCredit(){
+if(creditAmount>0){document.getElementById('creditStatus').textContent='У тебя уже есть активный кредит!';return;}
+creditAmount=CREDIT_SUM;
+casinoBalance+=creditAmount;updateBalance();
+creditEndTime=Date.now()+CREDIT_MINUTES*60*1000;
+localStorage.setItem('casino_credit',JSON.stringify({amount:creditAmount,endTime:creditEndTime}));
+startCreditTimer();
+document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 зачислен!';
+}
+function startCreditTimer(){
+if(creditTimer)clearInterval(creditTimer);
+updateCreditDisplay();
+creditTimer=setInterval(()=>{
+const remaining=creditEndTime-Date.now();
+if(remaining<=0){
+clearInterval(creditTimer);creditTimer=null;
+casinoBalance-=creditAmount;
+if(casinoBalance<0)casinoBalance=0;
+updateBalance();
+creditAmount=0;
+localStorage.removeItem('casino_credit');
+document.getElementById('creditStatus').textContent='⏰ Время вышло! Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 списан.';
+document.getElementById('creditTimer').textContent='';
+}else{updateCreditDisplay();}
+},1000);
+}
+function updateCreditDisplay(){
+const remaining=creditEndTime-Date.now();
+const m=Math.floor(remaining/60000);
+const s=Math.floor((remaining%60000)/1000);
+document.getElementById('creditTimer').textContent=m+':'+(s<10?'0':'')+s;
+document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙. Осталось:';
+}
+initCredit();
+</script>
+<script>
+// ===== ДУРАК =====
+const D_SUITS=['♠','♥','♦','♣'];
+const D_RANKS=['6','7','8','9','10','В','Д','К','Т'];
+let dDeck=[],dTrump=-1,dPlayerHand=[],dAiHand=[],dTable=[];
+let dAttacker='player',dPhase='init',dGameActive=false,dDifficulty=1,dDiscardPile=0;
+function dSelectDiff(lvl,el){
+dDifficulty=lvl;
+document.querySelectorAll('#game-durak .aim-level-btn').forEach(b=>b.classList.remove('active'));
+el.classList.add('active');
+const names=['Изи ×100','Норм ×1000','Хард ×10000'];
+document.getElementById('durakStatus').textContent='Сложность: '+names[lvl-1]+'. Нажми «Начать».';
+}
+function dCreateDeck(){
+const deck=[];
+for(let s=0;s<4;s++)for(let r=0;r<9;r++)deck.push({suit:s,rank:r});
+for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+return deck;
+}
+function dBeats(card,attack,trump){
+if(card.suit===trump&&attack.suit!==trump)return true;
+if(card.suit===attack.suit&&card.rank>attack.rank)return true;
+if(card.suit===trump&&attack.suit===trump&&card.rank>attack.rank)return true;
+return false;
+}
+function dGetBeats(hand,attack,trump){return hand.filter(c=>dBeats(c,attack,trump));}
+function dDrawHands(){
+while(dPlayerHand.length<6&&dDeck.length>0)dPlayerHand.push(dDeck.pop());
+while(dAiHand.length<6&&dDeck.length>0)dAiHand.push(dDeck.pop());
+}
+function dCardName(c){return D_RANKS[c.rank]+D_SUITS[c.suit];}
+function dCardColor(s){return s===1||s===2?'#ff5555':'#fff';}
+function dStartGame(){
+let bet=parseInt(document.getElementById('durakBet').value)||1;
+if(bet<1)bet=1;
+if(casinoBalance<bet){document.getElementById('durakStatus').textContent='Недостаточно монет!';return;}
+casinoBalance-=bet;updateBalance();
+dDeck=dCreateDeck();dPlayerHand=[];dAiHand=[];dTable=[];dDiscardPile=0;
+dGameActive=true;dAttacker='player';dPhase='player_attack';
+for(let i=0;i<6;i++){dPlayerHand.push(dDeck.pop());dAiHand.push(dDeck.pop());}
+dTrump=dDeck[0].suit;
+document.getElementById('durakStartBtn').disabled=true;
+document.getElementById('durakDoneBtn').style.display='none';
+document.getElementById('durakTakeBtn').style.display='none';
+dRender();
+document.getElementById('durakStatus').textContent='Ты атакуешь. Кликни карту из руки.';
+}
+function dPlayerClick(idx){
+if(dPhase==='player_attack')dPlayerAttack(idx);
+else if(dPhase==='player_defend')dPlayerDefend(idx);
+}
+function dPlayerAttack(idx){
+if(dPhase!=='player_attack')return;
+const card=dPlayerHand[idx];
+if(dTable.length>0){
+const ranks=new Set();
+dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});
+if(!ranks.has(card.rank)){
+document.getElementById('durakStatus').textContent='Можно подкинуть только карты того же ранга!';
+return;
+}
+}
+if(dTable.length>=6)return;
+dPlayerHand.splice(idx,1);
+dTable.push({attack:card,defense:null});
+document.getElementById('durakDoneBtn').style.display='none';
+dRender();
+setTimeout(dAiDefend,400);
+}
+function dAiDefend(){
+const pair=dTable[dTable.length-1];
+if(!pair||pair.defense!==null)return;
+const beats=dGetBeats(dAiHand,pair.attack,dTrump);
+if(beats.length===0){
+dAiHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));
+dTable=[];
+dDrawHands();dCheckWin();
+if(dGameActive){
+dPhase='player_attack';
+document.getElementById('durakStatus').textContent='АИ забрал карты! Атакуй снова.';
+document.getElementById('durakDoneBtn').style.display='none';
+dRender();
+}
+return;
+}
+let dc;
+if(dDifficulty===1){dc=beats[Math.floor(Math.random()*beats.length)];}
+else{const nt=beats.filter(c=>c.suit!==dTrump);(nt.length?nt:beats).sort((a,b)=>a.rank-b.rank);dc=(nt.length?nt:beats)[0];}
+dAiHand.splice(dAiHand.indexOf(dc),1);
+pair.defense=dc;
+dRender();dCheckWin();
+if(dGameActive){
+dPhase='player_attack';
+document.getElementById('durakStatus').textContent='АИ отбился '+dCardName(dc)+'. Подкинь карту или нажми «Готово».';
+document.getElementById('durakDoneBtn').style.display='inline-block';
+}
+}
+function dPlayerDone(){
+if(dPhase!=='player_attack'||dTable.length===0)return;
+dDiscardPile+=dTable.length;dTable=[];
+dDrawHands();dCheckWin();
+if(dGameActive){
+dAttacker='ai';dPhase='ai_attack';
+document.getElementById('durakDoneBtn').style.display='none';
+document.getElementById('durakStatus').textContent='Ход переходит к АИ...';
+dRender();
+setTimeout(dAiAttack,600);
+}
+}
+function dAiAttack(){
+if(!dGameActive)return;
+if(dAiHand.length===0){dCheckWin();return;}
+let card;
+if(dDifficulty===1){card=dAiHand[Math.floor(Math.random()*dAiHand.length)];}
+else{const sorted=[...dAiHand].sort((a,b)=>{if(a.suit===dTrump&&b.suit!==dTrump)return 1;if(a.suit!==dTrump&&b.suit===dTrump)return -1;return a.rank-b.rank;});card=sorted[0];}
+dAiHand.splice(dAiHand.indexOf(card),1);
+dTable.push({attack:card,defense:null});
+dRender();
+const beats=dGetBeats(dPlayerHand,card,dTrump);
+if(beats.length===0){
+dPhase='player_take';
+document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Нечем отбиться — нажми «Взять».';
+document.getElementById('durakTakeBtn').style.display='inline-block';
+}else{
+dPhase='player_defend';
+document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Отбейся — кликни карту.';
+document.getElementById('durakTakeBtn').style.display='inline-block';
+}
+}
+function dPlayerDefend(idx){
+if(dPhase!=='player_defend')return;
+const card=dPlayerHand[idx];
+const pair=dTable[dTable.length-1];
+if(!dBeats(card,pair.attack,dTrump)){
+document.getElementById('durakStatus').textContent=dCardName(card)+' не бьёт '+dCardName(pair.attack)+'!';
+return;
+}
+dPlayerHand.splice(idx,1);
+pair.defense=card;
+document.getElementById('durakTakeBtn').style.display='none';
+dRender();dCheckWin();
+if(dGameActive){
+const ranks=new Set();
+dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});
+const addable=dAiHand.filter(c=>ranks.has(c.rank));
+if(addable.length>0&&dTable.length<6&&(dDifficulty>=2||Math.random()<0.4)){
+let addCard=dDifficulty===3?addable.sort((a,b)=>a.rank-b.rank)[0]:addable[Math.floor(Math.random()*addable.length)];
+dAiHand.splice(dAiHand.indexOf(addCard),1);
+dTable.push({attack:addCard,defense:null});
+dRender();
+const beats2=dGetBeats(dPlayerHand,addCard,dTrump);
+if(beats2.length===0){
+dPhase='player_take';
+document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Нечем отбиться — «Взять».';
+document.getElementById('durakTakeBtn').style.display='inline-block';
+}else{
+dPhase='player_defend';
+document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Отбейся.';
+document.getElementById('durakTakeBtn').style.display='inline-block';
+}
+}else{
+dDiscardPile+=dTable.length;dTable=[];
+dDrawHands();dCheckWin();
+if(dGameActive){
+dAttacker='player';dPhase='player_attack';
+document.getElementById('durakStatus').textContent='Ты отбился! Твоя атака.';
+dRender();
+}
+}
+}
+}
+function dPlayerTake(){
+if(dPhase!=='player_take'&&dPhase!=='player_defend')return;
+dPlayerHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));
+dTable=[];
+document.getElementById('durakTakeBtn').style.display='none';
+dDrawHands();dCheckWin();
+if(dGameActive){
+dAttacker='ai';dPhase='ai_attack';
+document.getElementById('durakStatus').textContent='Ты взял карты. АИ атакует снова...';
+dRender();
+setTimeout(dAiAttack,600);
+}
+}
+function dCheckWin(){
+if(dDeck.length===0){
+if(dPlayerHand.length===0&&dAiHand.length===0){dGameActive=false;dWin();return;}
+if(dAiHand.length===0){dGameActive=false;dLose();return;}
+if(dPlayerHand.length===0){dGameActive=false;dWin();return;}
+}
+if(dPlayerHand.length===0&&dDeck.length===0){dGameActive=false;dWin();}
+if(dAiHand.length===0&&dDeck.length===0){dGameActive=false;dLose();}
+}
+function dWin(){
+const bet=parseInt(document.getElementById('durakBet').value)||1;
+const mult=[100,1000,10000][dDifficulty-1];
+const prize=bet*mult;
+casinoBalance+=prize;updateBalance();
+document.getElementById('durakStatus').textContent='🎉 Ты выиграл! +'+prize.toLocaleString('ru')+' 🪙 (×'+mult+')';
+document.getElementById('durakStartBtn').disabled=false;
+document.getElementById('durakDoneBtn').style.display='none';
+document.getElementById('durakTakeBtn').style.display='none';
+dPhase='init';dRender();
+}
+function dLose(){
+document.getElementById('durakStatus').textContent='💀 Ты проиграл — ты дурак!';
+document.getElementById('durakStartBtn').disabled=false;
+document.getElementById('durakDoneBtn').style.display='none';
+document.getElementById('durakTakeBtn').style.display='none';
+dPhase='init';dRender();
+}
+function dRender(){
+let aiHTML='';
+for(let i=0;i<dAiHand.length;i++)aiHTML+='<div class="durak-card-back">🂠</div>';
+document.getElementById('durakAiHand').innerHTML=aiHTML;
+let tHTML='';
+dTable.forEach(p=>{
+tHTML+='<div class="durak-pair">';
+if(p.attack){const col=dCardColor(p.attack.suit);tHTML+='<div class="durak-card"><span style="color:'+col+'">'+D_RANKS[p.attack.rank]+'</span><span class="durak-suit" style="color:'+col+'">'+D_SUITS[p.attack.suit]+'</span></div>';}
+if(p.defense){const col=dCardColor(p.defense.suit);tHTML+='<div class="durak-card defense"><span style="color:'+col+'">'+D_RANKS[p.defense.rank]+'</span><span class="durak-suit" style="color:'+col+'">'+D_SUITS[p.defense.suit]+'</span></div>';}
+tHTML+='</div>';
+});
+document.getElementById('durakBattle').innerHTML=tHTML;
+let dInfo='';
+if(dDeck.length>0){const tc=dCardColor(dTrump);dInfo='<div class="durak-info-item">Козырь: <span style="color:'+tc+';font-size:1.4rem">'+D_SUITS[dTrump]+'</span></div><div class="durak-info-item">🂠 Колода: '+dDeck.length+'</div>';}
+else{dInfo='<div class="durak-info-item">Колода пуста</div>';}
+dInfo+='<div class="durak-info-item">У АИ: '+dAiHand.length+' карт</div><div class="durak-info-item">Сброс: '+dDiscardPile+'</div>';
+document.getElementById('durakDeckInfo').innerHTML=dInfo;
+let pHTML='';
+const canClick=dPhase==='player_attack'||dPhase==='player_defend';
+dPlayerHand.forEach((c,i)=>{
+const col=dCardColor(c.suit);
+const cl=canClick?' clickable':'';
+const clk=canClick?'onclick="dPlayerClick('+i+')"':'';
+pHTML+='<div class="durak-card'+cl+'" '+clk+'><span style="color:'+col+'">'+D_RANKS[c.rank]+'</span><span class="durak-suit" style="color:'+col+'">'+D_SUITS[c.suit]+'</span></div>';
+});
+document.getElementById('durakPlayerHand').innerHTML=pHTML;
+}
 </script>
 </body>
 </html>
