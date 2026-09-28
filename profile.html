@@ -98,13 +98,16 @@ document.getElementById('profileLogin').textContent=user.login;
 document.getElementById('profileRole').innerHTML=user.role==='admin'?'<span>Админ 👑</span>':'Ученик';
 async function loadProfile(){
 try{
-const dataResp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,{cache:'no-store'});
-const data=await dataResp.json();
-const accounts=Array.isArray(data.accounts)?data.accounts:[];
+const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/accounts.json?v=${Date.now()}`,{cache:'no-store'});
+if(resp.ok){
+const accounts=await resp.json();
 const acc=accounts.find(a=>a.login===user.login);
 if(acc&&acc.avatar){
 renderAvatar(acc.avatar+'?t='+Date.now());
 localStorage.setItem('class_avatar',acc.avatar);
+}else{
+renderAvatar(localStorage.getItem('class_avatar')||null);
+}
 }else{
 renderAvatar(localStorage.getItem('class_avatar')||null);
 }
@@ -128,7 +131,7 @@ const file=e.target.files[0];
 if(!file)return;
 const status=document.getElementById('statusMsg');
 if(file.size>50000000000){
-status.textContent='❌ Файл слишком большой (макс 50000 КБ)';
+status.textContent='❌ Файл слишком большой';
 status.className='status-msg err';
 return;
 }
@@ -148,23 +151,23 @@ method:'PUT',
 headers:{...headers,'Content-Type':'application/json'},
 body:JSON.stringify({message:`Upload avatar for ${user.login}`,content:base64Data})
 },30000);
-// Используем download_url из ответа GitHub
 const rawUrl=(fileResp.content&&fileResp.content.download_url)||`https://raw.githubusercontent.com/${REPO}/main/${fileName}`;
-// Ждём 2 секунды чтобы GitHub обработал файл
 await new Promise(r=>setTimeout(r,2000));
-// Обновляем data.json
-const dataResp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,{cache:'no-store'});
-const data=await dataResp.json();
-const accounts=Array.isArray(data.accounts)?data.accounts:[];
+const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/accounts.json?v=${Date.now()}`,{cache:'no-store'});
+let accounts=[];
+if(resp.ok){accounts=await resp.json();if(!Array.isArray(accounts))accounts=[];}
 const acc=accounts.find(a=>a.login===user.login);
-if(acc){acc.avatar=rawUrl;}
-const newData=JSON.stringify(data,null,2);
+if(acc){acc.avatar=rawUrl;}else{accounts.push({name:user.name,login:user.login,role:user.role,avatar:rawUrl});}
+const newData=JSON.stringify(accounts,null,2);
 const newDataB64=utf8ToB64(newData);
-const dataMeta=await fetchJSON(`${API}/contents/data.json`,{cache:'no-store',headers},10000);
-await fetchJSON(`${API}/contents/data.json`,{
+let sha=null;
+try{const dataMeta=await fetchJSON(`${API}/contents/accounts.json`,{cache:'no-store',headers},10000);sha=dataMeta.sha;}catch(e){}
+const putBody={message:`Update avatar for ${user.login}`,content:newDataB64};
+if(sha)putBody.sha=sha;
+await fetchJSON(`${API}/contents/accounts.json`,{
 method:'PUT',
 headers:{...headers,'Content-Type':'application/json'},
-body:JSON.stringify({message:`Update avatar for ${user.login}`,content:newDataB64,sha:dataMeta.sha})
+body:JSON.stringify(putBody)
 },15000);
 renderAvatar(rawUrl+'?t='+Date.now());
 localStorage.setItem('class_avatar',rawUrl);
