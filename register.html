@@ -80,25 +80,19 @@ if(login.length<3){status.textContent='❌ Логин минимум 3 симв�
 if(pass.length<4){status.textContent='❌ Пароль минимум 4 символа';status.className='status-msg err';return;}
 btn.disabled=true;btn.textContent='⏳ Создание...';status.textContent='';status.className='status-msg';
 try{
-// 1. Загружаем data.json
-const dataResp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?v=${Date.now()}`,{cache:'no-store'});
-const data=await dataResp.json();
-const accounts=Array.isArray(data.accounts)?data.accounts:[];
-// 2. Проверяем есть ли уже такой логин
+let accounts=[];
+try{
+const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/accounts.json?v=${Date.now()}`,{cache:'no-store'});
+if(resp.ok){accounts=await resp.json();if(!Array.isArray(accounts))accounts=[];}
+}catch(e){accounts=[];}
 if(accounts.find(a=>a.login===login)){status.textContent='❌ Этот логин уже занят';status.className='status-msg err';btn.disabled=false;btn.textContent='Создать аккаунт';return;}
-// 3. Добавляем новый аккаунт
 accounts.push({name,login,password:pass,role:'student',avatar:''});
-data.accounts=accounts;
-// 4. Сохраняем
-const newData=JSON.stringify(data,null,2);
-const newDataB64=utf8ToB64(newData);
-const dataMeta=await fetchJSON(`${API}/contents/data.json`,{cache:'no-store',headers},10000);
-await fetchJSON(`${API}/contents/data.json`,{
-method:'PUT',
-headers:{...headers,'Content-Type':'application/json'},
-body:JSON.stringify({message:`Register user ${login}`,content:newDataB64,sha:dataMeta.sha})
-},15000);
-// 5. Авто-вход
+const newDataB64=utf8ToB64(JSON.stringify(accounts,null,2));
+let sha=null;
+try{const meta=await fetchJSON(`${API}/contents/accounts.json`,{cache:'no-store',headers},10000);sha=meta.sha;}catch(e){}
+const putBody={message:`Register user ${login}`,content:newDataB64};
+if(sha)putBody.sha=sha;
+await fetchJSON(`${API}/contents/accounts.json`,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(putBody)},15000);
 localStorage.setItem('class_user',JSON.stringify({name,login,role:'student'}));
 status.textContent='✅ Аккаунт создан! Перенаправление...';
 status.className='status-msg ok';
@@ -110,7 +104,6 @@ btn.disabled=false;btn.textContent='Создать аккаунт';
 }
 }
 document.addEventListener('keydown',e=>{if(e.key==='Enter')register()});
-// Particles
 const isMobile=window.innerWidth<600;
 const pc=document.getElementById('particles');
 const count=isMobile?10:20;
