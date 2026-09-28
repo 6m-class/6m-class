@@ -447,12 +447,13 @@ return `<div class="msg-media"><img src="${url}?t=${Date.now()}" alt="" onclick=
 }else if(mtype==='video'){
 return `<div class="msg-media"><video src="${url}" controls preload="metadata"></video></div>`;
 }else if(mtype==='audio'){
-return `<div class="msg-media"><audio src="${url}" controls preload="metadata"></audio></div>`;
+return `<div class="msg-media"><audio data-src="${url}" controls preload="none"></audio></div>`;
 }else{
 const fname=esc(p.mediaName||'Файл');
 return `<a class="msg-media-file" href="${url}" target="_blank"><span class="msg-media-file-icon">📎</span>${fname}</a>`;
 }
 }
+
 
 // ===== CHAT =====
 async function findChatIssue(){
@@ -523,9 +524,21 @@ const textHTML=p.text?`<div class="msg-text">${pinBadge}${esc(p.text)}</div>`:(m
 row.innerHTML=`${avHTML}<div class="msg-content"><div class="msg ${cls}"><div class="msg-author">${esc(p.name)}${p.role==='admin'?' 👑':''}</div>${textHTML}${mediaHTML}<div class="msg-time">${fmt(c.created_at)} ${editedTag}</div></div>${actionsHTML}</div>`;
 box.appendChild(row);
 });
+box.querySelectorAll('audio[data-src]').forEach(async audio=>{
+try{
+const resp=await fetch(audio.dataset.src);
+const blob=await resp.blob();
+audio.src=URL.createObjectURL(blob);
+audio.load();
+}catch(e){
+audio.src=audio.dataset.src;
+audio.load();
+}
+});
 box.scrollTop=box.scrollHeight;
 }catch(e){}
 }
+
 async function sendMsg(){
 const input=document.getElementById('msgInput');
 const text=input.value.trim();
