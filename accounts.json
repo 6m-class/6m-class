@@ -40,5 +40,12 @@
     "password": "TEST2",
     "role": "student",
     "avatar": ""
+  },
+  {
+    "name": "TESTER",
+    "login": "123123",
+    "password": "TESTER",
+    "role": "student",
+    "avatar": ""
   }
 ]
