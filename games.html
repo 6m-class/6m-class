@@ -149,6 +149,61 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .case-result{margin:15px 0;font-size:1.2rem;font-weight:700;min-height:28px}
 .case-speed-slider{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0}
 .case-speed-slider input[type=range]{width:200px;accent-color:var(--primary)}
+  .case-track {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+  overflow: hidden;
+}
+.case-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  min-width: 84px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  padding: 6px;
+  box-sizing: border-box;
+}
+.case-item svg {
+  width: 64px;
+  height: 64px;
+  display: block;
+  margin-bottom: 4px;
+}
+.case-item-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.case-window {
+  position: relative;
+  width: 110px;
+  height: 100%;
+  border: 2px solid rgba(255,255,255,0.3);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.case-window::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: rgba(255,255,255,0.6);
+  box-shadow: 0 0 8px rgba(255,255,255,0.8);
+}
+
 </style>
 </head>
 <body>
@@ -907,95 +962,111 @@ document.getElementById('durakPlayerHand').innerHTML=pHTML;
 
 <script>
 // ===== КЕЙС СЛОЖНОСТЕЙ =====
-const CASE_DIFFS=[
-{name:'Easy',mult:0,face:'🙂',color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#00ff66" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 48 Q40 56 52 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-{name:'Normal',mult:0.2,face:'😐',color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aaff00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 50 L52 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-{name:'Hard',mult:0.4,face:'😨',color:'#ffcc00',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ffcc00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="32" cy="34" r="4" fill="#fff"/><circle cx="48" cy="34" r="4" fill="#fff"/><path d="M28 52 Q40 46 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-{name:'Harder',mult:0.6,face:'😰',color:'#ff8800',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff8800" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M26 32 L36 36 M26 36 L36 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 32 L54 36 M44 36 L54 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M28 52 Q40 44 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-{name:'Insane',mult:1,face:'😱',color:'#ff4400',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff4400" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M24 30 L36 34 M24 34 L36 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 30 L56 34 M44 34 L56 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="48" r="5" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M35 56 Q40 52 45 56" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'},
-{name:'Easy Demon',mult:2,face:'😈',color:'#aa00ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aa00ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M22 26 L30 34 L22 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M58 26 L50 34 L58 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="36" r="3" fill="#fff"/><circle cx="48" cy="36" r="3" fill="#fff"/><path d="M30 50 Q40 44 50 50 L46 54 L40 50 L34 54 Z" fill="#fff"/></svg>'},
-{name:'Medium Demon',mult:3,face:'👹',color:'#8800ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#8800ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M20 24 L30 34 L20 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M60 24 L50 34 L60 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="34" r="3" fill="#fff"/><circle cx="50" cy="34" r="3" fill="#fff"/><path d="M28 48 L52 48 L48 54 L32 54 Z" fill="#fff"/><path d="M36 48 L36 54 M44 48 L44 54" stroke="#000" stroke-width="1.5"/></svg>'},
-{name:'Hard Demon',mult:5,face:'👺',color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff00aa" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M18 22 L30 34 L18 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M62 22 L50 34 L62 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M26 30 L34 34 L26 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M54 30 L46 34 L54 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M28 48 L52 48 L48 56 L32 56 Z" fill="#fff"/><path d="M35 50 L35 54 M45 50 L45 54" stroke="#000" stroke-width="1.5"/></svg>'},
-{name:'Insane Demon',mult:7,face:'👿',color:'#ff0066',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0066" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M16 20 L30 34 L16 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M64 20 L50 34 L64 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M22 26 L32 32 L22 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M58 26 L48 32 L58 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M26 46 L54 46 L50 58 L30 58 Z" fill="#fff"/><path d="M33 48 L33 56 M40 48 L40 56 M47 48 L47 56" stroke="#000" stroke-width="1.5"/></svg>'},
-{name:'Extreme Demon',mult:10,face:'💀',color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0000" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M14 18 L30 34 L14 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 18 L50 34 L66 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M20 22 L32 30 L20 38 L32 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 22 L48 30 L60 38 L48 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 44 L56 44 L52 60 L28 60 Z" fill="#fff"/><path d="M31 46 L31 58 M40 46 L40 58 M49 46 L49 58" stroke="#000" stroke-width="2"/><path d="M28 62 L32 66 M40 62 L40 68 M52 62 L48 66" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'}
+const CASE_DIFFS = [
+  {name:'Easy',mult:0,color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#00ff66" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 48 Q40 56 52 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+  {name:'Normal',mult:0.2,color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aaff00" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 50 L52 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+  {name:'Hard',mult:0.4,color:'#ffcc00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ffcc00" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><circle cx="32" cy="34" r="4" fill="#fff"/><circle cx="48" cy="34" r="4" fill="#fff"/><path d="M28 52 Q40 46 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+  {name:'Harder',mult:0.6,color:'#ff8800',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff8800" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M26 32 L36 36 M26 36 L36 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 32 L54 36 M44 36 L54 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M28 52 Q40 44 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+  {name:'Insane',mult:1,color:'#ff4400',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff4400" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M24 30 L36 34 M24 34 L36 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 30 L56 34 M44 34 L56 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="48" r="5" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M35 56 Q40 52 45 56" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'},
+  {name:'Easy Demon',mult:2,color:'#aa00ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aa00ff" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M22 26 L30 34 L22 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M58 26 L50 34 L58 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="36" r="3" fill="#fff"/><circle cx="48" cy="36" r="3" fill="#fff"/><path d="M30 50 Q40 44 50 50 L46 54 L40 50 L34 54 Z" fill="#fff"/></svg>'},
+  {name:'Medium Demon',mult:3,color:'#8800ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#8800ff" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M20 24 L30 34 L20 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M60 24 L50 34 L60 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="34" r="3" fill="#fff"/><circle cx="50" cy="34" r="3" fill="#fff"/><path d="M28 48 L52 48 L48 54 L32 54 Z" fill="#fff"/><path d="M36 48 L36 54 M44 48 L44 54" stroke="#000" stroke-width="1.5"/></svg>'},
+  {name:'Hard Demon',mult:5,color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff00aa" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M18 22 L30 34 L18 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M62 22 L50 34 L62 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M26 30 L34 34 L26 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M54 30 L46 34 L54 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M28 48 L52 48 L48 56 L32 56 Z" fill="#fff"/><path d="M35 50 L35 54 M45 50 L45 54" stroke="#000" stroke-width="1.5"/></svg>'},
+  {name:'Insane Demon',mult:7,color:'#ff0066',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0066" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M16 20 L30 34 L16 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M64 20 L50 34 L64 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M22 26 L32 32 L22 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M58 26 L48 32 L58 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M26 46 L54 46 L50 58 L30 58 Z" fill="#fff"/><path d="M33 48 L33 56 M40 48 L40 56 M47 48 L47 56" stroke="#000" stroke-width="1.5"/></svg>'},
+  {name:'Extreme Demon',mult:10,color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0000" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M14 18 L30 34 L14 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 18 L50 34 L66 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M20 22 L32 30 L20 38 L32 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 22 L48 30 L60 38 L48 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 44 L56 44 L52 60 L28 60 Z" fill="#fff"/><path d="M31 46 L31 58 M40 46 L40 58 M49 46 L49 58" stroke="#000" stroke-width="2"/><path d="M28 62 L32 66 M40 62 L40 68 M52 62 L48 66" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'}
 ];
-let caseSpinning=false;
-let caseSelectedDiff=null;
 
-function renderCaseList(){
-let html='';
-CASE_DIFFS.forEach(d=>{
-html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid '+d.color+'40;border-radius:8px;min-width:75px">'+
-d.svg+
-'<span style="font-size:.7rem;font-weight:700;color:'+d.color+'">'+d.name+'</span>'+
-'<span style="font-size:.65rem;color:#666">x'+d.mult+'</span></div>';
-});
-document.getElementById('caseItemsList').innerHTML=html;
+let caseSpinning = false;
+
+function renderCaseList() {
+  const container = document.getElementById('caseItemsList');
+  if (!container) return;
+  let html = '';
+  CASE_DIFFS.forEach(d => {
+    html += `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid \${d.color}40;border-radius:8px;min-width:75px">
+      \${d.svg}
+      <span style="font-size:.7rem;font-weight:700;color:${d.color}">${d.name}</span>
+      <span style="font-size:.65rem;color:#666">x\${d.mult}</span>
+    </div>`;
+  });
+  container.innerHTML = html;
 }
 renderCaseList();
 
-function buildCaseTrack(winningIdx){
-const total=50;
-const track=[];
-for(let i=0;i<total;i++){
-track.push(CASE_DIFFS[Math.floor(Math.random()*CASE_DIFFS.length)]);
+function buildCaseTrack(winningIdx) {
+  const total = 50;
+  const track = [];
+  for (let i = 0; i < total; i++) {
+    track.push(CASE_DIFFS[Math.floor(Math.random() * CASE_DIFFS.length)]);
+  }
+  track[winningIdx] = CASE_DIFFS[winningIdx];
+  return track;
 }
-track[winningIdx]=CASE_DIFFS[winningIdx];
-return track;
-}
 
-function openCase(){
-if(caseSpinning)return;
-let bet=parseInt(document.getElementById('caseBet').value)||50;
-if(bet<1)bet=1;
-if(casinoBalance<bet){document.getElementById('caseResult').textContent='Недостаточно монет!';return;}
-casinoBalance-=bet;updateBalance();
-caseSpinning=true;
-document.getElementById('caseOpenBtn').disabled=true;
-document.getElementById('caseResult').textContent='Крутится...';
+function openCase() {
+  if (caseSpinning) return;
+  const betEl = document.getElementById('caseBet');
+  let bet = parseInt(betEl ? betEl.value : '50') || 50;
+  if (bet < 1) bet = 1;
+  if (typeof casinoBalance === 'undefined' || casinoBalance < bet) {
+    document.getElementById('caseResult').textContent = 'Недостаточно монет!';
+    return;
+  }
+  casinoBalance -= bet;
+  if (typeof updateBalance === 'function') updateBalance();
+  caseSpinning = true;
+  document.getElementById('caseOpenBtn').disabled = true;
+  document.getElementById('caseResult').textContent = 'Крутится...';
 
-const winIdx=Math.floor(Math.random()*CASE_DIFFS.length);
-const winningDiff=CASE_DIFFS[winIdx];
-const track=buildCaseTrack(45);
+  const winIdx = Math.floor(Math.random() * CASE_DIFFS.length);
+  const winningDiff = CASE_DIFFS[winIdx];
+  const track = buildCaseTrack(45);
 
-let trackHTML='';
-track.forEach(d=>{
-trackHTML+='<div class="case-item" style="border-color:'+d.color+'40">'+d.svg+'<span class="case-item-name" style="color:'+d.color+'">'+d.name+'</span></div>';
-});
-document.getElementById('caseTrack').innerHTML=trackHTML;
+  const trackEl = document.getElementById('caseTrack');
+  if (!trackEl) return;
 
-const speed=parseInt(document.getElementById('caseSpeed').value);
-const duration=6000-speed*400;
-const itemWidth=110;
-const winEl=document.querySelector('.case-window');
-const winW=winEl?winEl.offsetWidth:300;
-const targetOffset=-(45*itemWidth)+(winW/2-itemWidth/2);
+  let trackHTML = '';
+  track.forEach(d => {
+    trackHTML += `<div class="case-item" style="border-color:\${d.color}40">
+      \${d.svg}
+      <span class="case-item-name" style="color:${d.color}">${d.name}</span>
+    </div>`;
+  });
+  trackEl.innerHTML = trackHTML;
 
-const trackEl=document.getElementById('caseTrack');
-trackEl.style.transition='none';
-trackEl.style.transform='translateX(0)';
+  const speedEl = document.getElementById('caseSpeed');
+  const speed = parseInt(speedEl ? speedEl.value : '1') || 1;
+  const duration = Math.max(2000, 6000 - speed * 400);
+  const itemWidth = 84 + 12; // width + gap
+  const winEl = document.querySelector('.case-window');
+  const winW = winEl ? winEl.offsetWidth : 110;
+  const targetOffset = -(45 * itemWidth) + (winW / 2 - itemWidth / 2);
 
-void trackEl.offsetWidth;
+  trackEl.style.transition = 'none';
+  trackEl.style.transform = 'translateX(0)';
+  void trackEl.offsetWidth; // force reflow
 
-trackEl.style.transition='transform '+duration+'ms cubic-bezier(0.15,0.9,0.2,1)';
-trackEl.style.transform='translateX('+targetOffset+'px)';
+  trackEl.style.transition = `transform \${duration}ms cubic-bezier(0.15,0.9,0.2,1)`;
+  trackEl.style.transform = `translateX(\${targetOffset}px)`;
 
-clearTimeout(window._caseTimer);
-window._caseTimer=setTimeout(()=>{
-caseSpinning=false;
-document.getElementById('caseOpenBtn').disabled=false;
-caseSelectedDiff=winningDiff;
-let prize=0;
-let iconHTML=winningDiff.svg.replace('width="80"','width="32"').replace('height="80"','height="32"');
-if(winningDiff.mult>0){
-prize=Math.round(bet*(1+winningDiff.mult));
-casinoBalance+=prize;updateBalance();
-document.getElementById('caseResult').innerHTML=iconHTML+' <span style="color:'+winningDiff.color+'">'+winningDiff.name+' x'+winningDiff.mult+'</span> — +'+prize.toLocaleString('ru')+' 🪙! Множитель для Дурака активен!';
-}else{
-document.getElementById('caseResult').innerHTML=iconHTML+' <span style="color:'+winningDiff.color+'">'+winningDiff.name+'</span> — повезёт в другой раз!';
-}
-},duration+300);
+  clearTimeout(window._caseTimer);
+  window._caseTimer = setTimeout(() => {
+    caseSpinning = false;
+    document.getElementById('caseOpenBtn').disabled = false;
+    let prize = 0;
+    const iconHTML = winningDiff.svg.replace('viewBox="0 0 80 80"','viewBox="0 0 80 80"').replace(/width="[^"]*"/,'').replace(/height="[^"]*"/,'');
+    const smallSvg = iconHTML.replace(/rect x="4"/,'rect x="2"').replace(/width="72"/,'width="76"').replace(/height="72"/,'height="76"');
+    if (winningDiff.mult > 0) {
+      prize = Math.round(bet * (1 + winningDiff.mult));
+      casinoBalance += prize;
+      if (typeof updateBalance === 'function') updateBalance();
+      document.getElementById('caseResult').innerHTML = `${smallSvg} <span style="color:${winningDiff.color}">${winningDiff.name} x${winningDiff.mult}</span> — +\${prize.toLocaleString('ru')} 🪙! Множитель для Дурака активен!`;
+    } else {
+      document.getElementById('caseResult').innerHTML = `${smallSvg} <span style="color:${winningDiff.color}">\${winningDiff.name}</span> — повезёт в другой раз!`;
+    }
+  }, duration + 300);
 }
 </script>
+
+
 </body>
 </html>
