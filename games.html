@@ -137,7 +137,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .credit-timer{font-size:2rem;font-family:'Orbitron',sans-serif;color:var(--primary);font-weight:900;margin:10px 0}
 .case-machine{background:rgba(20,20,20,0.8);border:2px solid var(--border);border-radius:16px;padding:30px;position:relative;overflow:hidden}
 .case-window{height:160px;overflow:hidden;position:relative;border:2px solid var(--border);border-radius:10px;background:linear-gradient(180deg,#0a0a0a,#1a1a1a)}
-.case-track{display:flex;gap:10px;padding:15px 0;position:absolute;will-change:transform}
+.case-track{display:flex;gap:10px;padding:15px 0;position:absolute;left:0;top:0;will-change:transform}
 .case-item{min-width:100px;height:130px;border:2px solid;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;background:rgba(20,20,20,0.6);padding:6px}
 .case-item img{width:64px;height:64px;object-fit:contain;border-radius:6px}
 .case-item-face{font-size:2.5rem;display:none}
@@ -908,35 +908,25 @@ document.getElementById('durakPlayerHand').innerHTML=pHTML;
 <script>
 // ===== КЕЙС СЛОЖНОСТЕЙ =====
 const CASE_DIFFS=[
-{name:'Easy',mult:0,face:'🙂',color:'#00ff66',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/Easy.png'},
-{name:'Normal',mult:0.2,face:'😐',color:'#aaff00',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/Normal.png'},
-{name:'Hard',mult:0.4,face:'😨',color:'#ffcc00',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/Hard.png'},
-{name:'Harder',mult:0.6,face:'😰',color:'#ff8800',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/Harder.png'},
-{name:'Insane',mult:1,face:'😱',color:'#ff4400',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/Insane.png'},
-{name:'Easy Demon',mult:2,face:'😈',color:'#aa00ff',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/EasyDemon.png'},
-{name:'Medium Demon',mult:3,face:'👹',color:'#8800ff',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/MediumDemon.png'},
-{name:'Hard Demon',mult:5,face:'👺',color:'#ff00aa',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/Demon.png'},
-{name:'Insane Demon',mult:7,face:'👿',color:'#ff0066',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/InsaneDemon.png'},
-{name:'Extreme Demon',mult:10,face:'💀',color:'#ff0000',img:'https://geometrydash.wiki.gg/wiki/Special:FilePath/ExtremeDemon.png'}
+{name:'Easy',mult:0,face:'🙂',color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#00ff66" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 48 Q40 56 52 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+{name:'Normal',mult:0.2,face:'😐',color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aaff00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 50 L52 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+{name:'Hard',mult:0.4,face:'😨',color:'#ffcc00',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ffcc00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="32" cy="34" r="4" fill="#fff"/><circle cx="48" cy="34" r="4" fill="#fff"/><path d="M28 52 Q40 46 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+{name:'Harder',mult:0.6,face:'😰',color:'#ff8800',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff8800" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M26 32 L36 36 M26 36 L36 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 32 L54 36 M44 36 L54 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M28 52 Q40 44 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+{name:'Insane',mult:1,face:'😱',color:'#ff4400',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff4400" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M24 30 L36 34 M24 34 L36 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 30 L56 34 M44 34 L56 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="48" r="5" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M35 56 Q40 52 45 56" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'},
+{name:'Easy Demon',mult:2,face:'😈',color:'#aa00ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aa00ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M22 26 L30 34 L22 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M58 26 L50 34 L58 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="36" r="3" fill="#fff"/><circle cx="48" cy="36" r="3" fill="#fff"/><path d="M30 50 Q40 44 50 50 L46 54 L40 50 L34 54 Z" fill="#fff"/></svg>'},
+{name:'Medium Demon',mult:3,face:'👹',color:'#8800ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#8800ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M20 24 L30 34 L20 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M60 24 L50 34 L60 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="34" r="3" fill="#fff"/><circle cx="50" cy="34" r="3" fill="#fff"/><path d="M28 48 L52 48 L48 54 L32 54 Z" fill="#fff"/><path d="M36 48 L36 54 M44 48 L44 54" stroke="#000" stroke-width="1.5"/></svg>'},
+{name:'Hard Demon',mult:5,face:'👺',color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff00aa" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M18 22 L30 34 L18 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M62 22 L50 34 L62 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M26 30 L34 34 L26 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M54 30 L46 34 L54 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M28 48 L52 48 L48 56 L32 56 Z" fill="#fff"/><path d="M35 50 L35 54 M45 50 L45 54" stroke="#000" stroke-width="1.5"/></svg>'},
+{name:'Insane Demon',mult:7,face:'👿',color:'#ff0066',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0066" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M16 20 L30 34 L16 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M64 20 L50 34 L64 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M22 26 L32 32 L22 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M58 26 L48 32 L58 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M26 46 L54 46 L50 58 L30 58 Z" fill="#fff"/><path d="M33 48 L33 56 M40 48 L40 56 M47 48 L47 56" stroke="#000" stroke-width="1.5"/></svg>'},
+{name:'Extreme Demon',mult:10,face:'💀',color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0000" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M14 18 L30 34 L14 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 18 L50 34 L66 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M20 22 L32 30 L20 38 L32 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 22 L48 30 L60 38 L48 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 44 L56 44 L52 60 L28 60 Z" fill="#fff"/><path d="M31 46 L31 58 M40 46 L40 58 M49 46 L49 58" stroke="#000" stroke-width="2"/><path d="M28 62 L32 66 M40 62 L40 68 M52 62 L48 66" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'}
 ];
 let caseSpinning=false;
 let caseSelectedDiff=null;
-
-function caseFallback(el,face){
-el.style.display='none';
-if(el.nextElementSibling&&el.nextElementSibling.classList.contains('case-fallback')){
-el.nextElementSibling.textContent=face;
-el.nextElementSibling.style.display='block';
-}
-}
 
 function renderCaseList(){
 let html='';
 CASE_DIFFS.forEach(d=>{
 html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid '+d.color+'40;border-radius:8px;min-width:75px">'+
-'<div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center">'+
-'<img src="'+d.img+'" alt="'+d.name+'" style="width:48px;height:48px;object-fit:contain" onerror="caseFallback(this,\''+d.face+'\')">'+
-'<span class="case-fallback" style="font-size:2rem;display:none">'+d.face+'</span></div>'+
+d.svg+
 '<span style="font-size:.7rem;font-weight:700;color:'+d.color+'">'+d.name+'</span>'+
 '<span style="font-size:.65rem;color:#666">x'+d.mult+'</span></div>';
 });
@@ -970,11 +960,7 @@ const track=buildCaseTrack(45);
 
 let trackHTML='';
 track.forEach(d=>{
-trackHTML+='<div class="case-item" style="border-color:'+d.color+'40">'+
-'<div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center">'+
-'<img src="'+d.img+'" alt="" style="width:64px;height:64px;object-fit:contain" onerror="caseFallback(this,\''+d.face+'\')">'+
-'<span class="case-fallback" style="font-size:2.5rem;display:none">'+d.face+'</span></div>'+
-'<span class="case-item-name" style="color:'+d.color+'">'+d.name+'</span></div>';
+trackHTML+='<div class="case-item" style="border-color:'+d.color+'40">'+d.svg+'<span class="case-item-name" style="color:'+d.color+'">'+d.name+'</span></div>';
 });
 document.getElementById('caseTrack').innerHTML=trackHTML;
 
@@ -1000,13 +986,13 @@ caseSpinning=false;
 document.getElementById('caseOpenBtn').disabled=false;
 caseSelectedDiff=winningDiff;
 let prize=0;
-let imgHTML='<img src="'+winningDiff.img+'" alt="" style="width:32px;height:32px;object-fit:contain;vertical-align:middle" onerror="caseFallback(this,\''+winningDiff.face+'\')"><span class="case-fallback" style="font-size:1.5rem;display:none;vertical-align:middle">'+winningDiff.face+'</span>';
+let iconHTML=winningDiff.svg.replace('width="80"','width="32"').replace('height="80"','height="32"');
 if(winningDiff.mult>0){
 prize=Math.round(bet*(1+winningDiff.mult));
 casinoBalance+=prize;updateBalance();
-document.getElementById('caseResult').innerHTML=imgHTML+' <span style="color:'+winningDiff.color+'">'+winningDiff.name+' x'+winningDiff.mult+'</span> — +'+prize.toLocaleString('ru')+' 🪙! Множитель для Дурака активен!';
+document.getElementById('caseResult').innerHTML=iconHTML+' <span style="color:'+winningDiff.color+'">'+winningDiff.name+' x'+winningDiff.mult+'</span> — +'+prize.toLocaleString('ru')+' 🪙! Множитель для Дурака активен!';
 }else{
-document.getElementById('caseResult').innerHTML=imgHTML+' <span style="color:'+winningDiff.color+'">'+winningDiff.name+'</span> — повезёт в другой раз!';
+document.getElementById('caseResult').innerHTML=iconHTML+' <span style="color:'+winningDiff.color+'">'+winningDiff.name+'</span> — повезёт в другой раз!';
 }
 },duration+300);
 }
