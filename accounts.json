@@ -47,5 +47,355 @@
     "password": "TESTER",
     "role": "student",
     "avatar": ""
+  },
+  {
+    "login": "rewwevlsvd",
+    "password": "d2s031bma5",
+    "name": "Екатерина Соколов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "wawzw",
+    "password": "8krlvz",
+    "name": "Анна Морозов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "jioyznxzogaz",
+    "password": "ndb3rb2izh",
+    "name": "Никита Орлов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "jwvasmgggyh",
+    "password": "7guzx6lfa5iqb",
+    "name": "Павел Козлов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "myvfgesg",
+    "password": "5bsh6v4k",
+    "name": "Иван Козлов",
+    "role": "admin",
+    "avatar": ""
+  },
+  {
+    "login": "ndmkajette",
+    "password": "t31skd",
+    "name": "Роман Семёнов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "bkuez",
+    "password": "frisrln",
+    "name": "Алиса Новиков",
+    "role": "admin",
+    "avatar": ""
+  },
+  {
+    "login": "zlhkjco",
+    "password": "b2mwh0tn",
+    "name": "Денис Волков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "ecgcbplpsphh",
+    "password": "hczde4mi",
+    "name": "Полина Сидоров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "gyiudtos",
+    "password": "kgy248hin",
+    "name": "Юлия Сидоров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "slokeu",
+    "password": "w5tt333q9tu",
+    "name": "Юлия Голубев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "dachnwjdqlml",
+    "password": "o8bkpdu6t",
+    "name": "Алиса Фёдоров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "nckhovwszosz",
+    "password": "up1yzyvj",
+    "name": "Ульяна Зайцев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "edodxrb",
+    "password": "ayyq882r0",
+    "name": "Екатерина Лебедев",
+    "role": "admin",
+    "avatar": ""
+  },
+  {
+    "login": "mmpbfklqo",
+    "password": "a0crub7i",
+    "name": "Юлия Орлов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "mdoafrimqro",
+    "password": "2qipyw1z9",
+    "name": "Ольга Соколов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "yvaauzbpbbaz",
+    "password": "uagdgo5c",
+    "name": "Денис Попов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "rbuxtfew",
+    "password": "721jl7z1ti",
+    "name": "Григорий Богданов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "cdbqfvqqgi",
+    "password": "fnehwqhj5",
+    "name": "Кирилл Голубев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "kooyrnvvry",
+    "password": "vvwbks2",
+    "name": "Никита Иванов",
+    "role": "admin",
+    "avatar": ""
+  },
+  {
+    "login": "fjbjqfbltkec",
+    "password": "y660xyo",
+    "name": "Варвара Лебедев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "qviemmvmcpn",
+    "password": "h32mlerz",
+    "name": "Варвара Орлов",
+    "role": "admin",
+    "avatar": ""
+  },
+  {
+    "login": "ewxljeyoypz",
+    "password": "58ealdrpfoed7",
+    "name": "Алиса Волков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "wetjjps",
+    "password": "0r99oc8u",
+    "name": "Варвара Лебедев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "woaneruco",
+    "password": "5qtyqa1",
+    "name": "Алексей Волков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "zldzvqruqdh",
+    "password": "ds0gbjt2",
+    "name": "Артём Лебедев",
+    "role": "admin",
+    "avatar": ""
+  },
+  {
+    "login": "vziei",
+    "password": "foeld8",
+    "name": "Дарья Сидоров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "rbdavhulteq",
+    "password": "b4nt11zq5o8",
+    "name": "Наталья Морозов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "shxjzsjqv",
+    "password": "fr4vpi0",
+    "name": "Алексей Петров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "elfdvwg",
+    "password": "3rcuwbbr",
+    "name": "Роман Голубев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "aufnh",
+    "password": "ypmnd5",
+    "name": "Анна Кузнецов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "zdnqhcuedf",
+    "password": "74mvbmw",
+    "name": "Ольга Виноградов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "pnergththwi",
+    "password": "cbp8axkvx",
+    "name": "Виктория Новиков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "gpaexg",
+    "password": "jmzox6",
+    "name": "Алексей Козлов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "lphozgcmfb",
+    "password": "xt56lru00",
+    "name": "Артём Козлов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "qavycvm",
+    "password": "igvwhhivf",
+    "name": "Денис Иванов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "klmgmam",
+    "password": "2t2qdxsy1j",
+    "name": "Кирилл Голубев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "feubhhccdy",
+    "password": "3fm1nps5l",
+    "name": "Юлия Голубев",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "fykuaak",
+    "password": "6iopyq",
+    "name": "Андрей Богданов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "ythpefa",
+    "password": "oczmwt1",
+    "name": "София Волков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "bpcepugykere",
+    "password": "py95092ak",
+    "name": "Никита Виноградов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "lfloowhz",
+    "password": "he2a9vp3t4",
+    "name": "Варвара Попов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "dppengar",
+    "password": "ysfjx9ht",
+    "name": "Тимур Павлов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "djoiqrsd",
+    "password": "dryr8542w",
+    "name": "Алиса Морозов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "lwpvslnmf",
+    "password": "6qla1tn",
+    "name": "Алексей Попов",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "mvpxoibpat",
+    "password": "jw3v3l2",
+    "name": "Полина Волков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "mluycyoa",
+    "password": "65irg2",
+    "name": "Сергей Волков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "iuijx",
+    "password": "4i3bxl5hueu",
+    "name": "Ольга Сидоров",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "comvhi",
+    "password": "35tmxb",
+    "name": "Алексей Новиков",
+    "role": "student",
+    "avatar": ""
+  },
+  {
+    "login": "bvoynam",
+    "password": "ez26nhq",
+    "name": "Никита Семёнов",
+    "role": "student",
+    "avatar": ""
   }
 ]
