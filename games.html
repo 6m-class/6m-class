@@ -137,11 +137,10 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .credit-timer{font-size:2rem;font-family:'Orbitron',sans-serif;color:var(--primary);font-weight:900;margin:10px 0}
 .case-machine{background:rgba(20,20,20,0.8);border:2px solid var(--border);border-radius:16px;padding:30px;position:relative;overflow:hidden}
 .case-window{height:160px;overflow:hidden;position:relative;border:2px solid var(--border);border-radius:10px;background:linear-gradient(180deg,#0a0a0a,#1a1a1a)}
-.case-track{display:flex;gap:10px;padding:15px 0;position:absolute;left:0;top:0;will-change:transform}
-.case-item{min-width:100px;height:130px;border:2px solid;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;background:rgba(20,20,20,0.6);padding:6px}
-.case-item img{width:64px;height:64px;object-fit:contain;border-radius:6px}
-.case-item-face{font-size:2.5rem;display:none}
-.case-item-name{font-size:.7rem;font-weight:700;text-transform:uppercase}
+.case-track{display:flex;gap:12px;padding:10px 0;position:absolute;left:0;top:0;will-change:transform}
+.case-item{min-width:84px;width:84px;border-radius:10px;border:2px solid transparent;padding:6px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.case-item svg{width:64px;height:64px;display:block;margin-bottom:4px}
+.case-item-name{font-size:11px;font-weight:700;text-align:center;line-height:1.2;text-transform:uppercase}
 .case-pointer-line{position:absolute;top:0;left:50%;transform:translateX(-50%);width:3px;height:100%;background:var(--primary);z-index:10;box-shadow:0 0 10px var(--primary)}
 .case-pointer-line::before,.case-pointer-line::after{content:'';position:absolute;left:50%;transform:translateX(-50%);width:0;height:0}
 .case-pointer-line::before{top:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid var(--primary)}
@@ -149,61 +148,6 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .case-result{margin:15px 0;font-size:1.2rem;font-weight:700;min-height:28px}
 .case-speed-slider{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0}
 .case-speed-slider input[type=range]{width:200px;accent-color:var(--primary)}
-  .case-track {
-  display: flex;
-  gap: 12px;
-  padding: 10px 0;
-  position: absolute;
-  left: 0;
-  top: 0;
-  will-change: transform;
-  overflow: hidden;
-}
-.case-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 84px;
-  min-width: 84px;
-  border-radius: 10px;
-  border: 2px solid transparent;
-  padding: 6px;
-  box-sizing: border-box;
-}
-.case-item svg {
-  width: 64px;
-  height: 64px;
-  display: block;
-  margin-bottom: 4px;
-}
-.case-item-name {
-  font-size: 11px;
-  font-weight: 700;
-  text-align: center;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-.case-window {
-  position: relative;
-  width: 110px;
-  height: 100%;
-  border: 2px solid rgba(255,255,255,0.3);
-  box-sizing: border-box;
-  pointer-events: none;
-}
-.case-window::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 100%;
-  background: rgba(255,255,255,0.6);
-  box-shadow: 0 0 8px rgba(255,255,255,0.8);
-}
-
 </style>
 </head>
 <body>
@@ -224,7 +168,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-tab" onclick="switchGame('flappy',this)">&#128038; Flappy Bird</div>
 <div class="game-tab" onclick="switchGame('casino',this)">&#127920; Казино</div>
 <div class="game-tab" onclick="switchGame('durak',this)">&#129528; Дурак</div>
-<div class="game-tab" onclick="switchGame('case',this)">&#128230; Кейс сложностей</div>
+<div class="game-tab" onclick="switchGame('case',this)">&#128230; Кейс на монеты</div>
 </div>
 <!-- ШАШКИ -->
 <div class="game-section active" id="game-checkers">
@@ -361,9 +305,10 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <button class="game-btn outline" id="durakTakeBtn" onclick="dPlayerTake()" style="display:none">📥 Взять</button>
 </div>
 </div>
-<!-- КЕЙС СЛОЖНОСТЕЙ -->
+<!-- КЕЙС НА МОНЕТЫ -->
 <div class="game-section" id="game-case">
-<div class="game-info">Открой кейс и получи случайную сложность! Множитель влияет на выигрыш в Дураке.</div>
+<div class="game-info">Открой кейс и получи случайный множитель монет! Чем выше уровень — тем больше выигрыш.</div>
+<div class="casino-balance" style="position:static;display:inline-flex;margin-bottom:15px"><span class="coin-icon">🪙</span> <span id="caseBalanceNum">100</span></div>
 <div class="case-machine">
 <div class="case-window">
 <div class="case-pointer-line"></div>
@@ -382,7 +327,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <button class="game-btn" id="caseOpenBtn" onclick="openCase()">📦 Открыть кейс</button>
 </div>
 <div style="margin-top:15px">
-<div style="font-size:.85rem;color:#888;margin-bottom:8px">Возможные сложности:</div>
+<div style="font-size:.85rem;color:#888;margin-bottom:8px">Возможные множители:</div>
 <div id="caseItemsList" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"></div>
 </div>
 </div>
@@ -400,6 +345,7 @@ document.querySelectorAll('.game-section').forEach(s=>s.classList.remove('active
 el.classList.add('active');
 document.getElementById('game-'+name).classList.add('active');
 if(name==='casino')drawWheel(wheelAngle||0);
+if(name==='case')updateCaseBalance();
 }
 </script>
 
@@ -507,7 +453,7 @@ fbDraw();
 <script>
 // ===== КАЗИНО =====
 let casinoBalance=getUserBalance();
-function updateBalance(){setUserBalance(casinoBalance);document.getElementById('balanceNum').textContent=casinoBalance;}
+function updateBalance(){setUserBalance(casinoBalance);document.getElementById('balanceNum').textContent=casinoBalance;if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;}
 function resetBalance(){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent='Баланс сброшен до 100 🪙';document.getElementById('wheelResult').className='wheel-result';document.getElementById('slotsResult').textContent='';}
 updateBalance();
 function switchCasino(name,el){
@@ -909,8 +855,7 @@ if(dAiHand.length===0&&dDeck.length===0){dGameActive=false;dLose();}
 }
 function dWin(){
 const bet=parseInt(document.getElementById('durakBet').value)||1;
-let mult=[100,1000,10000][dDifficulty-1];
-if(typeof caseSelectedDiff!=='undefined'&&caseSelectedDiff&&caseSelectedDiff.mult>0){mult=Math.round(mult*(1+caseSelectedDiff.mult));}
+const mult=[100,1000,10000][dDifficulty-1];
 const prize=bet*mult;
 casinoBalance+=prize;updateBalance();
 document.getElementById('durakStatus').textContent='🎉 Ты выиграл! +'+prize.toLocaleString('ru')+' 🪙 (x'+mult+')';
@@ -961,44 +906,61 @@ document.getElementById('durakPlayerHand').innerHTML=pHTML;
 </script>
 
 <script>
-// ===== КЕЙС СЛОЖНОСТЕЙ =====
-const CASE_DIFFS = [
-  {name:'Easy',mult:0,color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#00ff66" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 48 Q40 56 52 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-  {name:'Normal',mult:0.2,color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aaff00" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><circle cx="32" cy="35" r="4" fill="#fff"/><circle cx="48" cy="35" r="4" fill="#fff"/><path d="M28 50 L52 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-  {name:'Hard',mult:0.4,color:'#ffcc00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ffcc00" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><circle cx="32" cy="34" r="4" fill="#fff"/><circle cx="48" cy="34" r="4" fill="#fff"/><path d="M28 52 Q40 46 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-  {name:'Harder',mult:0.6,color:'#ff8800',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff8800" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M26 32 L36 36 M26 36 L36 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 32 L54 36 M44 36 L54 32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M28 52 Q40 44 52 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
-  {name:'Insane',mult:1,color:'#ff4400',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff4400" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M24 30 L36 34 M24 34 L36 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 30 L56 34 M44 34 L56 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="48" r="5" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M35 56 Q40 52 45 56" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'},
-  {name:'Easy Demon',mult:2,color:'#aa00ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aa00ff" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M22 26 L30 34 L22 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M58 26 L50 34 L58 42" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="36" r="3" fill="#fff"/><circle cx="48" cy="36" r="3" fill="#fff"/><path d="M30 50 Q40 44 50 50 L46 54 L40 50 L34 54 Z" fill="#fff"/></svg>'},
-  {name:'Medium Demon',mult:3,color:'#8800ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#8800ff" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M20 24 L30 34 L20 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M60 24 L50 34 L60 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="34" r="3" fill="#fff"/><circle cx="50" cy="34" r="3" fill="#fff"/><path d="M28 48 L52 48 L48 54 L32 54 Z" fill="#fff"/><path d="M36 48 L36 54 M44 48 L44 54" stroke="#000" stroke-width="1.5"/></svg>'},
-  {name:'Hard Demon',mult:5,color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff00aa" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M18 22 L30 34 L18 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M62 22 L50 34 L62 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M26 30 L34 34 L26 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M54 30 L46 34 L54 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M28 48 L52 48 L48 56 L32 56 Z" fill="#fff"/><path d="M35 50 L35 54 M45 50 L45 54" stroke="#000" stroke-width="1.5"/></svg>'},
-  {name:'Insane Demon',mult:7,color:'#ff0066',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0066" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M16 20 L30 34 L16 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M64 20 L50 34 L64 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M22 26 L32 32 L22 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M58 26 L48 32 L58 38" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M26 46 L54 46 L50 58 L30 58 Z" fill="#fff"/><path d="M33 48 L33 56 M40 48 L40 56 M47 48 L47 56" stroke="#000" stroke-width="1.5"/></svg>'},
-  {name:'Extreme Demon',mult:10,color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0000" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><path d="M14 18 L30 34 L14 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 18 L50 34 L66 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M20 22 L32 30 L20 38 L32 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 22 L48 30 L60 38 L48 34" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 44 L56 44 L52 60 L28 60 Z" fill="#fff"/><path d="M31 46 L31 58 M40 46 L40 58 M49 46 L49 58" stroke="#000" stroke-width="2"/><path d="M28 62 L32 66 M40 62 L40 68 M52 62 L48 66" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'}
+// ===== КЕЙС НА МОНЕТЫ =====
+const CASE_ITEMS = [
+  {name:'x0',mult:0,color:'#555',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#555" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="28" fill="#888" font-family="sans-serif" font-weight="bold">x0</text></svg>'},
+  {name:'x1',mult:1,color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#00ff66" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="28" fill="#fff" font-family="sans-serif" font-weight="bold">x1</text></svg>'},
+  {name:'x2',mult:2,color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aaff00" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="28" fill="#fff" font-family="sans-serif" font-weight="bold">x2</text></svg>'},
+  {name:'x3',mult:3,color:'#ffcc00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ffcc00" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="28" fill="#fff" font-family="sans-serif" font-weight="bold">x3</text></svg>'},
+  {name:'x5',mult:5,color:'#ff8800',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff8800" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="28" fill="#fff" font-family="sans-serif" font-weight="bold">x5</text></svg>'},
+  {name:'x10',mult:10,color:'#ff4400',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff4400" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="24" fill="#fff" font-family="sans-serif" font-weight="bold">x10</text></svg>'},
+  {name:'x25',mult:25,color:'#aa00ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#aa00ff" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="24" fill="#fff" font-family="sans-serif" font-weight="bold">x25</text></svg>'},
+  {name:'x50',mult:50,color:'#8800ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#8800ff" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="24" fill="#fff" font-family="sans-serif" font-weight="bold">x50</text></svg>'},
+  {name:'x100',mult:100,color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff00aa" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="22" fill="#fff" font-family="sans-serif" font-weight="bold">x100</text></svg>'},
+  {name:'x500',mult:500,color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="12" fill="#ff0000" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><text x="40" y="48" text-anchor="middle" font-size="20" fill="#fff" font-family="sans-serif" font-weight="bold">x500</text></svg>'}
 ];
 
+const CASE_WEIGHTS = [25, 25, 18, 12, 8, 5, 3, 2, 1.5, 0.5];
+
 let caseSpinning = false;
+
+function updateCaseBalance() {
+  const el = document.getElementById('caseBalanceNum');
+  if (el) el.textContent = casinoBalance;
+}
 
 function renderCaseList() {
   const container = document.getElementById('caseItemsList');
   if (!container) return;
   let html = '';
-  CASE_DIFFS.forEach(d => {
-    html += `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid \${d.color}40;border-radius:8px;min-width:75px">
-      \${d.svg}
-      <span style="font-size:.7rem;font-weight:700;color:${d.color}">${d.name}</span>
-      <span style="font-size:.65rem;color:#666">x\${d.mult}</span>
-    </div>`;
+  CASE_ITEMS.forEach((d, i) => {
+    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid ' + d.color + '40;border-radius:8px;min-width:75px">' +
+      d.svg +
+      '<span style="font-size:.7rem;font-weight:700;color:' + d.color + '">' + d.name + '</span>' +
+      '<span style="font-size:.65rem;color:#666">шанс ' + CASE_WEIGHTS[i] + '%</span>' +
+      '</div>';
   });
   container.innerHTML = html;
 }
 renderCaseList();
 
+function weightedRandomCase() {
+  const total = CASE_WEIGHTS.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < CASE_WEIGHTS.length; i++) {
+    r -= CASE_WEIGHTS[i];
+    if (r <= 0) return i;
+  }
+  return 0;
+}
+
 function buildCaseTrack(winningIdx) {
   const total = 50;
   const track = [];
   for (let i = 0; i < total; i++) {
-    track.push(CASE_DIFFS[Math.floor(Math.random() * CASE_DIFFS.length)]);
+    track.push(CASE_ITEMS[Math.floor(Math.random() * CASE_ITEMS.length)]);
   }
-  track[winningIdx] = CASE_DIFFS[winningIdx];
+  track[45] = CASE_ITEMS[winningIdx];
   return track;
 }
 
@@ -1017,56 +979,54 @@ function openCase() {
   document.getElementById('caseOpenBtn').disabled = true;
   document.getElementById('caseResult').textContent = 'Крутится...';
 
-  const winIdx = Math.floor(Math.random() * CASE_DIFFS.length);
-  const winningDiff = CASE_DIFFS[winIdx];
-  const track = buildCaseTrack(45);
+  const winIdx = weightedRandomCase();
+  const winningItem = CASE_ITEMS[winIdx];
+  const track = buildCaseTrack(winIdx);
 
   const trackEl = document.getElementById('caseTrack');
   if (!trackEl) return;
 
   let trackHTML = '';
   track.forEach(d => {
-    trackHTML += `<div class="case-item" style="border-color:\${d.color}40">
-      \${d.svg}
-      <span class="case-item-name" style="color:${d.color}">${d.name}</span>
-    </div>`;
+    trackHTML += '<div class="case-item" style="border-color:' + d.color + '40">' +
+      d.svg +
+      '<span class="case-item-name" style="color:' + d.color + '">' + d.name + '</span>' +
+      '</div>';
   });
   trackEl.innerHTML = trackHTML;
 
   const speedEl = document.getElementById('caseSpeed');
-  const speed = parseInt(speedEl ? speedEl.value : '1') || 1;
+  const speed = parseInt(speedEl ? speedEl.value : '5') || 5;
   const duration = Math.max(2000, 6000 - speed * 400);
-  const itemWidth = 84 + 12; // width + gap
+  const itemWidth = 84 + 12;
   const winEl = document.querySelector('.case-window');
   const winW = winEl ? winEl.offsetWidth : 110;
   const targetOffset = -(45 * itemWidth) + (winW / 2 - itemWidth / 2);
 
   trackEl.style.transition = 'none';
   trackEl.style.transform = 'translateX(0)';
-  void trackEl.offsetWidth; // force reflow
+  void trackEl.offsetWidth;
 
-  trackEl.style.transition = `transform \${duration}ms cubic-bezier(0.15,0.9,0.2,1)`;
-  trackEl.style.transform = `translateX(\${targetOffset}px)`;
+  trackEl.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.15,0.9,0.2,1)';
+  trackEl.style.transform = 'translateX(' + targetOffset + 'px)';
 
   clearTimeout(window._caseTimer);
   window._caseTimer = setTimeout(() => {
     caseSpinning = false;
     document.getElementById('caseOpenBtn').disabled = false;
-    let prize = 0;
-    const iconHTML = winningDiff.svg.replace('viewBox="0 0 80 80"','viewBox="0 0 80 80"').replace(/width="[^"]*"/,'').replace(/height="[^"]*"/,'');
-    const smallSvg = iconHTML.replace(/rect x="4"/,'rect x="2"').replace(/width="72"/,'width="76"').replace(/height="72"/,'height="76"');
-    if (winningDiff.mult > 0) {
-      prize = Math.round(bet * (1 + winningDiff.mult));
+    let prize = bet * winningItem.mult;
+    if (winningItem.mult > 0) {
       casinoBalance += prize;
       if (typeof updateBalance === 'function') updateBalance();
-      document.getElementById('caseResult').innerHTML = `${smallSvg} <span style="color:${winningDiff.color}">${winningDiff.name} x${winningDiff.mult}</span> — +\${prize.toLocaleString('ru')} 🪙! Множитель для Дурака активен!`;
+      document.getElementById('caseResult').innerHTML = winningItem.svg +
+        ' <span style="color:' + winningItem.color + '">' + winningItem.name + '</span> — +' + prize.toLocaleString('ru') + ' 🪙!';
     } else {
-      document.getElementById('caseResult').innerHTML = `${smallSvg} <span style="color:${winningDiff.color}">\${winningDiff.name}</span> — повезёт в другой раз!`;
+      document.getElementById('caseResult').innerHTML = winningItem.svg +
+        ' <span style="color:' + winningItem.color + '">' + winningItem.name + '</span> — повезёт в другой раз!';
     }
   }, duration + 300);
 }
 </script>
-
 
 </body>
 </html>
