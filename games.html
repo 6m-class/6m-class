@@ -752,18 +752,20 @@ if(dDifficulty===1){card=dAiHand[Math.floor(Math.random()*dAiHand.length)];}
 else{const sorted=[...dAiHand].sort((a,b)=>{if(a.suit===dTrump&&b.suit!==dTrump)return 1;if(a.suit!==dTrump&&b.suit===dTrump)return -1;return a.rank-b.rank;});card=sorted[0];}
 dAiHand.splice(dAiHand.indexOf(card),1);
 dTable.push({attack:card,defense:null});
-dRender();
 const beats=dGetBeats(dPlayerHand,card,dTrump);
 if(beats.length===0){
 dPhase='player_take';
 document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Нечем отбиться — нажми «Взять».';
 document.getElementById('durakTakeBtn').style.display='inline-block';
+dRender();
 }else{
 dPhase='player_defend';
 document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Отбейся — кликни карту.';
 document.getElementById('durakTakeBtn').style.display='inline-block';
+dRender();
 }
 }
+
 function dPlayerDefend(idx){
 if(dPhase!=='player_defend')return;
 const card=dPlayerHand[idx];
@@ -775,7 +777,7 @@ return;
 dPlayerHand.splice(idx,1);
 pair.defense=card;
 document.getElementById('durakTakeBtn').style.display='none';
-dRender();dCheckWin();
+dCheckWin();
 if(dGameActive){
 const ranks=new Set();
 dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});
@@ -784,16 +786,17 @@ if(addable.length>0&&dTable.length<6&&(dDifficulty>=2||Math.random()<0.4)){
 let addCard=dDifficulty===3?addable.sort((a,b)=>a.rank-b.rank)[0]:addable[Math.floor(Math.random()*addable.length)];
 dAiHand.splice(dAiHand.indexOf(addCard),1);
 dTable.push({attack:addCard,defense:null});
-dRender();
 const beats2=dGetBeats(dPlayerHand,addCard,dTrump);
 if(beats2.length===0){
 dPhase='player_take';
 document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Нечем отбиться — «Взять».';
 document.getElementById('durakTakeBtn').style.display='inline-block';
+dRender();
 }else{
 dPhase='player_defend';
 document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Отбейся.';
 document.getElementById('durakTakeBtn').style.display='inline-block';
+dRender();
 }
 }else{
 dDiscardPile+=dTable.length;dTable=[];
