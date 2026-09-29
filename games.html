@@ -673,7 +673,7 @@ while(dPlayerHand.length<6&&dDeck.length>0)dPlayerHand.push(dDeck.pop());
 while(dAiHand.length<6&&dDeck.length>0)dAiHand.push(dDeck.pop());
 }
 function dCardName(c){return D_RANKS[c.rank]+D_SUITS[c.suit];}
-function dCardColor(s){return s===1||s===2?'#ff5555':'#fff';}
+function dCardColor(s){return s===1||s===2?'#ff5555':'#000';}
 function dStartGame(){
 let bet=parseInt(document.getElementById('durakBet').value)||1;
 if(bet<1)bet=1;
