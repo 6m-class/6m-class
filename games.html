@@ -6,6 +6,7 @@
 <title>Игры | Класс</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <script src="settings.js"></script>
+<script src="balance.js"></script>
 <style>
 :root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2)}
 [data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
@@ -94,23 +95,59 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:5;box-shadow:0 0 15px var(--shadow)}
 .wheel-result{font-size:1.1rem;font-weight:700;margin:15px 0;min-height:28px}
 .wheel-result.win{color:#00ff66}
-.durak-difficulty{display:flex;gap:10px;justify-content:center;margin-bottom:15px;flex-wrap:wrap}
-.durak-table{max-width:600px;margin:0 auto;text-align:center}
-.durak-ai-hand{display:flex;gap:4px;justify-content:center;margin-bottom:15px;min-height:60px}
-.durak-card-back{width:40px;height:56px;background:rgba(255,0,51,0.15);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
-.durak-battle{min-height:80px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:15px;padding:10px;background:rgba(20,20,20,0.4);border-radius:10px;border:1px solid var(--border)}
-.durak-pair{display:flex;flex-direction:column;gap:2px;align-items:center}
-.durak-card{width:50px;height:70px;background:#1a1a1a;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:1rem;user-select:none}
-.durak-card.defense{margin-left:25px;opacity:.85}
-.durak-card.clickable{cursor:pointer;transition:.2s}
-.durak-card.clickable:hover{border-color:var(--primary);box-shadow:0 0 15px var(--shadow);transform:translateY(-3px)}
+.durak-difficulty{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.durak-table{max-width:640px;margin:0 auto;text-align:center;position:relative}
+.durak-ai-hand{display:flex;gap:6px;justify-content:center;margin-bottom:20px;min-height:80px;flex-wrap:wrap}
+.durak-card-back{width:48px;height:68px;background:linear-gradient(135deg,#2a0a0a 0%,#1a1a1a 50%,#2a0a0a 100%);border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;overflow:hidden;transition:transform .2s}
+.durak-card-back::before{content:'';position:absolute;inset:4px;border:1px solid rgba(var(--primary-rgb),0.2);border-radius:5px;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(var(--primary-rgb),0.03) 4px,rgba(var(--primary-rgb),0.03) 8px)}
+.durak-card-back::after{content:'\1F0A0';position:relative;z-index:1;filter:drop-shadow(0 0 4px rgba(var(--primary-rgb),0.3))}
+.durak-battle{min-height:100px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;padding:16px;background:radial-gradient(ellipse at center,rgba(20,30,20,0.5),rgba(10,10,10,0.3));border-radius:14px;border:1px solid var(--border);box-shadow:inset 0 0 30px rgba(0,0,0,0.3)}
+.durak-pair{display:flex;flex-direction:column;gap:4px;align-items:center;animation:durakAppear .3s ease}
+@keyframes durakAppear{from{opacity:0;transform:translateY(-10px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+.durak-card{width:56px;height:80px;background:linear-gradient(145deg,#fafafa,#e8e8e8);border:1px solid #ccc;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-family:'Montserrat',sans-serif;font-weight:700;font-size:1.1rem;user-select:none;box-shadow:0 4px 10px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.8);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.durak-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent 50%);pointer-events:none}
+.durak-card .durak-rank-top{align-self:flex-start;padding:3px 0 0 4px;font-size:.95rem;line-height:1}
+.durak-card .durak-rank-bot{align-self:flex-end;padding:0 4px 2px 0;font-size:.95rem;line-height:1;transform:rotate(180deg)}
+.durak-card .durak-suit-mid{font-size:1.8rem;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.15))}
+.durak-card.defense{margin-left:28px;transform:rotate(-6deg);opacity:.95}
+.durak-card.clickable{cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
+.durak-card.clickable:hover{transform:translateY(-8px) scale(1.05);box-shadow:0 8px 25px var(--shadow),inset 0 1px 0 rgba(255,255,255,0.8);border-color:var(--primary);z-index:5}
 .durak-suit{font-size:1.2rem}
-.durak-deck-info{display:flex;gap:20px;justify-content:center;align-items:center;margin-bottom:15px;flex-wrap:wrap}
-.durak-info-item{font-size:.85rem;color:#888}
-.durak-player-hand{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:80px;margin-bottom:15px}
-.durak-status{text-align:center;margin:15px 0;font-size:1rem;font-weight:700;min-height:24px}
+.durak-trump-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(20,20,20,0.8);border:1px solid var(--border);border-radius:10px;padding:6px 14px;font-size:.85rem;color:#888;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.durak-trump-badge .durak-suit{font-size:1.5rem}
+.durak-deck-info{display:flex;gap:12px;justify-content:center;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.durak-info-item{font-size:.8rem;color:#666;display:flex;align-items:center;gap:4px}
+.durak-player-hand{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:90px;margin-bottom:20px;padding:10px;background:radial-gradient(ellipse at center,rgba(30,20,20,0.3),transparent 70%);border-radius:14px}
+.durak-player-hand .durak-card{animation:durakAppear .3s ease}
+.durak-status{text-align:center;margin:15px 0;font-size:1rem;font-weight:700;min-height:28px;padding:8px;border-radius:8px;transition:background .3s}
+.durak-status.win{color:#00ff66;background:rgba(0,255,102,0.05)}
+.durak-status.lose{color:#ff5555;background:rgba(255,85,85,0.05)}
+.durak-bet-wrap{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.durak-bet-chip{width:40px;height:40px;border-radius:50%;border:2px solid;cursor:pointer;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;background:rgba(20,20,20,0.6);color:#aaa}
+.durak-bet-chip:hover{transform:scale(1.1)}
+.durak-bet-chip.c5{border-color:#ffcc00;color:#ffcc00}
+.durak-bet-chip.c5:hover{box-shadow:0 0 15px rgba(255,204,0,0.3)}
+.durak-bet-chip.c25{border-color:#00ff66;color:#00ff66}
+.durak-bet-chip.c25:hover{box-shadow:0 0 15px rgba(0,255,102,0.3)}
+.durak-bet-chip.c100{border-color:#00aaff;color:#00aaff}
+.durak-bet-chip.c100:hover{box-shadow:0 0 15px rgba(0,170,255,0.3)}
+.durak-bet-chip.c500{border-color:#aa00ff;color:#aa00ff}
+.durak-bet-chip.c500:hover{box-shadow:0 0 15px rgba(170,0,255,0.3)}
 .credit-box{background:rgba(20,20,20,0.8);border:2px solid var(--border);border-radius:16px;padding:25px;text-align:center;max-width:400px;margin:0 auto}
 .credit-timer{font-size:2rem;font-family:'Orbitron',sans-serif;color:var(--primary);font-weight:900;margin:10px 0}
+.case-machine{background:rgba(20,20,20,0.8);border:2px solid var(--border);border-radius:16px;padding:30px;position:relative;overflow:hidden}
+.case-window{height:140px;overflow:hidden;position:relative;border:2px solid var(--border);border-radius:10px;background:linear-gradient(180deg,#0a0a0a,#1a1a1a)}
+.case-track{display:flex;gap:10px;padding:15px 0;position:absolute;will-change:transform}
+.case-item{min-width:100px;height:110px;border:2px solid;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;background:rgba(20,20,20,0.6)}
+.case-item-face{font-size:2.5rem}
+.case-item-name{font-size:.7rem;font-weight:700;text-transform:uppercase}
+.case-pointer-line{position:absolute;top:0;left:50%;transform:translateX(-50%);width:3px;height:100%;background:var(--primary);z-index:10;box-shadow:0 0 10px var(--primary)}
+.case-pointer-line::before,.case-pointer-line::after{content:'';position:absolute;left:50%;transform:translateX(-50%);width:0;height:0}
+.case-pointer-line::before{top:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid var(--primary)}
+.case-pointer-line::after{bottom:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:10px solid var(--primary)}
+.case-result{margin:15px 0;font-size:1.2rem;font-weight:700;min-height:28px}
+.case-speed-slider{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0}
+.case-speed-slider input[type=range]{width:200px;accent-color:var(--primary)}
 </style>
 </head>
 <body>
@@ -131,6 +168,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-tab" onclick="switchGame('flappy',this)">&#128038; Flappy Bird</div>
 <div class="game-tab" onclick="switchGame('casino',this)">&#127920; Казино</div>
 <div class="game-tab" onclick="switchGame('durak',this)">&#129528; Дурак</div>
+<div class="game-tab" onclick="switchGame('case',this)">&#128230; Кейс сложностей</div>
 </div>
 <!-- ШАШКИ -->
 <div class="game-section active" id="game-checkers">
@@ -158,9 +196,9 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-section" id="game-aim">
 <div class="game-info">Кликай по целям как можно быстрее и точнее. Пройди 3 уровня — каждый сложнее предыдущего.</div>
 <div class="aim-levels">
-<div class="aim-level-btn active" onclick="aimSelectLevel(1,this)">1️⃣ Лёгкий</div>
-<div class="aim-level-btn locked" id="aimLvl2" onclick="aimSelectLevel(2,this)">2️⃣ Средний</div>
-<div class="aim-level-btn locked" id="aimLvl3" onclick="aimSelectLevel(3,this)">3️⃣ Сложный</div>
+<div class="aim-level-btn active" onclick="aimSelectLevel(1,this)">1&#65039;&#8419; Лёгкий</div>
+<div class="aim-level-btn locked" id="aimLvl2" onclick="aimSelectLevel(2,this)">2&#65039;&#8419; Средний</div>
+<div class="aim-level-btn locked" id="aimLvl3" onclick="aimSelectLevel(3,this)">3&#65039;&#8419; Сложный</div>
 </div>
 <div class="score-board">
 <div class="score-item"><div class="score-label">Очки</div><div class="score-value" id="aimScore">0</div></div>
@@ -253,8 +291,11 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="durak-player-hand" id="durakPlayerHand"></div>
 </div>
 <div class="durak-status" id="durakStatus">Выбери сложность и нажми «Начать»</div>
-<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px">
-<span style="font-size:.85rem;color:#888">Ставка:</span>
+<div class="durak-bet-wrap">
+<div class="durak-bet-chip c5" onclick="dSetBet(5)">5</div>
+<div class="durak-bet-chip c25" onclick="dSetBet(25)">25</div>
+<div class="durak-bet-chip c100" onclick="dSetBet(100)">100</div>
+<div class="durak-bet-chip c500" onclick="dSetBet(500)">500</div>
 <input type="number" id="durakBet" value="5" min="1" max="9999" style="width:70px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none">
 <span style="font-size:1.1rem">🪙</span>
 </div>
@@ -262,6 +303,32 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <button class="game-btn" id="durakStartBtn" onclick="dStartGame()">🃏 Начать</button>
 <button class="game-btn outline" id="durakDoneBtn" onclick="dPlayerDone()" style="display:none">✅ Готово</button>
 <button class="game-btn outline" id="durakTakeBtn" onclick="dPlayerTake()" style="display:none">📥 Взять</button>
+</div>
+</div>
+<!-- КЕЙС СЛОЖНОСТЕЙ -->
+<div class="game-section" id="game-case">
+<div class="game-info">Открой кейс и получи случайную сложность! Множитель влияет на выигрыш в Дураке.</div>
+<div class="case-machine">
+<div class="case-window">
+<div class="case-pointer-line"></div>
+<div class="case-track" id="caseTrack"></div>
+</div>
+<div class="case-result" id="caseResult">Нажми «Открыть кейс»</div>
+<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px">
+<span style="font-size:.85rem;color:#888">Ставка:</span>
+<input type="number" id="caseBet" value="50" min="1" max="1000000" style="width:90px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none">
+<span style="font-size:1.1rem">🪙</span>
+</div>
+<div class="case-speed-slider">
+<span style="font-size:.8rem;color:#888">Скорость анимации:</span>
+<input type="range" id="caseSpeed" min="1" max="10" value="5">
+</div>
+<button class="game-btn" id="caseOpenBtn" onclick="openCase()">📦 Открыть кейс</button>
+</div>
+<div style="margin-top:15px">
+<div style="font-size:.85rem;color:#888;margin-bottom:8px">Возможные сложности:</div>
+<div id="caseItemsList" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"></div>
+</div>
 </div>
 <script>
 function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
@@ -280,8 +347,8 @@ const CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
 let chBoard=[],chSelected=null,chTurn='white',chMustCapture=false,chGameOver=false;
 function newCheckersGame(){chBoard=[];for(let r=0;r<CH_SIZE;r++){chBoard[r]=[];for(let c=0;c<CH_SIZE;c++){chBoard[r][c]=null;if((r+c)%2===1){if(r<3)chBoard[r][c]={color:'black',king:false};else if(r>4)chBoard[r][c]={color:'white',king:false};}}}chSelected=null;chTurn='white';chGameOver=false;updateChStatus('Твой ход');updateChCounts();drawCheckers();}
 function drawCheckers(){chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;chCtx.fillStyle=dark?'#333':'#888';chCtx.fillRect(x,y,CH_CELL,CH_CELL);const p=chBoard[r][c];if(p){chCtx.beginPath();chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';chCtx.fill();chCtx.strokeStyle=p.color==='white'?'#999':'#444';chCtx.lineWidth=2;chCtx.stroke();if(p.king){chCtx.fillStyle='#ff0033';chCtx.font='bold 20px Orbitron';chCtx.textAlign='center';chCtx.textBaseline='middle';chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);}}}if(chSelected){const{r,c}=chSelected;chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);const moves=getMovesForPiece(r,c);moves.forEach(m=>{chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);});}}
-function getMovesForPiece(r,c){const p=chBoard[r][c];if(!p)return[];const moves=[];const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){const mid=chBoard[mr][mc];if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});}}if(!chMustCapture){for(const[dr,dc]of dirs){const tr=r+dr,tc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}}return moves;}
-function hasAnyCaptures(color){for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color){const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc]of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;}}}return false;}
+function getMovesForPiece(r,c){const p=chBoard[r][c];if(!p)return[];const moves=[];const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc] of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){const mid=chBoard[mr][mc];if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});}}if(!chMustCapture){for(const[dr,dc] of dirs){const tr=r+dr,tc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}}return moves;}
+function hasAnyCaptures(color){for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color){const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc] of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;}}}return false;}
 function getAllMoves(color){chMustCapture=hasAnyCaptures(color);const all=[];for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color)all.push(...getMovesForPiece(r,c));}chMustCapture=false;return all;}
 function makeMove(move){const p=chBoard[move.fromR][move.fromC];chBoard[move.fromR][move.fromC]=null;chBoard[move.toR][move.toC]=p;if(move.capture)chBoard[move.capR][move.capC]=null;if(move.toR===0||move.toR===CH_SIZE-1)p.king=true;}
 chCanvas.addEventListener('click',e=>{if(chGameOver||chTurn!=='white')return;const rect=chCanvas.getBoundingClientRect();const scale=CH_W/rect.width;const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;if(chSelected){const moves=getMovesForPiece(chSelected.r,chSelected.c);const move=moves.find(m=>m.toR===r&&m.toC===c);if(move){makeMove(move);const captures=getMovesForPiece(r,c).filter(m=>m.capture);if(move.capture&&captures.length>0){chSelected={r,c};chMustCapture=true;drawCheckers();updateChStatus('Бьёшь ещё!');return;}chSelected=null;chMustCapture=false;chTurn='black';updateChCounts();drawCheckers();updateChStatus('Ход компьютера...');setTimeout(cpuMove,600);return;}}const p=chBoard[r][c];if(p&&p.color==='white'){const allMoves=getAllMoves('white');chMustCapture=allMoves.some(m=>m.capture);chSelected={r,c};drawCheckers();}});
@@ -290,7 +357,9 @@ function countPieces(color){let n=0;for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_S
 function updateChCounts(){document.getElementById('chMyPieces').textContent=countPieces('white');document.getElementById('chCpuPieces').textContent=countPieces('black');}
 function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
 newCheckersGame();
+</script>
 
+<script>
 // ===== МИНИ-ГОНКИ =====
 const rcCanvas=document.getElementById('racingCanvas');
 const rcCtx=rcCanvas.getContext('2d');
@@ -315,7 +384,9 @@ rcCanvas.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;e.pr
 rcCanvas.addEventListener('touchmove',e=>{if(touchStartX===null)return;const dx=e.touches[0].clientX-touchStartX;if(dx<-15){rcKeys.left=true;rcKeys.right=false;}else if(dx>15){rcKeys.right=true;rcKeys.left=false;}else{rcKeys.left=false;rcKeys.right=false;}e.preventDefault();},{passive:false});
 rcCanvas.addEventListener('touchend',()=>{rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
 drawRace();
+</script>
 
+<script>
 // ===== АИМ-ТРЕНАЖЁР =====
 const aimCanvas=document.getElementById('aimCanvas');
 const aimCtx=aimCanvas.getContext('2d');
@@ -340,6 +411,7 @@ aimWrap.addEventListener('mousemove',e=>{if(!aimRunning)return;const rect=aimCan
 function aimReset(){aimRunning=false;if(aimAnimId)cancelAnimationFrame(aimAnimId);if(aimTimerId)clearInterval(aimTimerId);aimWrap.classList.remove('aim-playing');aimCrosshair.classList.remove('active');aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];aimTimeLeft=AIM_LEVELS[aimLevel].duration;document.getElementById('aimStartBtn').disabled=false;document.getElementById('aimResults').classList.remove('show');updateAimHUD();aimDrawIdle();document.getElementById('aimStatus').textContent='Уровень '+aimLevel+'. Нажми «Старт»';document.getElementById('aimStatus').className='game-status';}
 aimDrawIdle();
 </script>
+
 <script>
 // ===== FLAPPY BIRD =====
 const fbCanvas=document.getElementById('flappyCanvas');
@@ -367,15 +439,14 @@ document.addEventListener('keydown',e=>{if(e.code==='Space'){if(fbRunning&&!fbDe
 fbCanvas.addEventListener('touchstart',e=>{if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();},{passive:false});
 fbDraw();
 </script>
+
 <script>
 // ===== КАЗИНО =====
-let casinoBalance=parseInt(localStorage.getItem('casino_balance')||'100');
-if(isNaN(casinoBalance)||casinoBalance<0)casinoBalance=100;
-function updateBalance(){document.getElementById('balanceNum').textContent=casinoBalance;localStorage.setItem('casino_balance',casinoBalance);}
+let casinoBalance=getUserBalance();
+function updateBalance(){setUserBalance(casinoBalance);document.getElementById('balanceNum').textContent=casinoBalance;}
 function resetBalance(){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent='Баланс сброшен до 100 🪙';document.getElementById('wheelResult').className='wheel-result';document.getElementById('slotsResult').textContent='';}
 updateBalance();
 function switchCasino(name,el){document.querySelectorAll('.casino-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.casino-section').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('casino-'+name).classList.add('active');}
-
 // --- СЛОТЫ ---
 let slotsSpinning=false;
 function spinSlots(){
@@ -423,7 +494,6 @@ if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('s
 },300+i*250);
 });
 }
-
 // --- КОЛЕСО ФОРТУНЫ ---
 const wheelCanvas=document.getElementById('wheelCanvas');
 const wheelCtx=wheelCanvas.getContext('2d');
@@ -519,8 +589,6 @@ if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('w
 }
 requestAnimationFrame(animate);
 }
-</script>
-<script>
 // ===== КРЕДИТНАЯ СИСТЕМА =====
 let creditAmount=0,creditTimer=null,creditEndTime=0;
 const CREDIT_SUM=10000000,CREDIT_MINUTES=5;
@@ -574,18 +642,18 @@ document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.t
 }
 initCredit();
 </script>
+
 <script>
 // ===== ДУРАК =====
-const D_SUITS=['♠','♥','♦','♣'];
-const D_RANKS=['6','7','8','9','10','В','Д','К','Т'];
+const D_SUITS=['\u2660','\u2665','\u2666','\u2663'];
+const D_RANKS=['6','7','8','9','10','\u0412','\u0414','\u041A','\u0422'];
 let dDeck=[],dTrump=-1,dPlayerHand=[],dAiHand=[],dTable=[];
 let dAttacker='player',dPhase='init',dGameActive=false,dDifficulty=1,dDiscardPile=0;
+function dSetBet(val){document.getElementById('durakBet').value=val;}
 function dSelectDiff(lvl,el){
 dDifficulty=lvl;
 document.querySelectorAll('#game-durak .aim-level-btn').forEach(b=>b.classList.remove('active'));
 el.classList.add('active');
-const names=['Изи ×100','Норм ×1000','Хард ×10000'];
-document.getElementById('durakStatus').textContent='Сложность: '+names[lvl-1]+'. Нажми «Начать».';
 }
 function dCreateDeck(){
 const deck=[];
@@ -661,7 +729,7 @@ return;
 }
 let dc;
 if(dDifficulty===1){dc=beats[Math.floor(Math.random()*beats.length)];}
-else{const nt=beats.filter(c=>c.suit!==dTrump);(nt.length?nt:beats).sort((a,b)=>a.rank-b.rank);dc=(nt.length?nt:beats)[0];}
+else{const nt=beats.filter(c=>c.suit!==dTrump);const pool=nt.length?nt:beats;pool.sort((a,b)=>a.rank-b.rank);dc=pool[0];}
 dAiHand.splice(dAiHand.indexOf(dc),1);
 pair.defense=dc;
 dRender();dCheckWin();
@@ -769,10 +837,11 @@ if(dAiHand.length===0&&dDeck.length===0){dGameActive=false;dLose();}
 }
 function dWin(){
 const bet=parseInt(document.getElementById('durakBet').value)||1;
-const mult=[100,1000,10000][dDifficulty-1];
+let mult=[100,1000,10000][dDifficulty-1];
+if(typeof caseSelectedDiff!=='undefined'&&caseSelectedDiff&&caseSelectedDiff.mult>0){mult=Math.round(mult*(1+caseSelectedDiff.mult));}
 const prize=bet*mult;
 casinoBalance+=prize;updateBalance();
-document.getElementById('durakStatus').textContent='🎉 Ты выиграл! +'+prize.toLocaleString('ru')+' 🪙 (×'+mult+')';
+document.getElementById('durakStatus').textContent='🎉 Ты выиграл! +'+prize.toLocaleString('ru')+' 🪙 (x'+mult+')';
 document.getElementById('durakStartBtn').disabled=false;
 document.getElementById('durakDoneBtn').style.display='none';
 document.getElementById('durakTakeBtn').style.display='none';
@@ -787,18 +856,21 @@ dPhase='init';dRender();
 }
 function dRender(){
 let aiHTML='';
-for(let i=0;i<dAiHand.length;i++)aiHTML+='<div class="durak-card-back">🂠</div>';
+for(let i=0;i<dAiHand.length;i++)aiHTML+='<div class="durak-card-back"></div>';
 document.getElementById('durakAiHand').innerHTML=aiHTML;
 let tHTML='';
 dTable.forEach(p=>{
 tHTML+='<div class="durak-pair">';
-if(p.attack){const col=dCardColor(p.attack.suit);tHTML+='<div class="durak-card"><span style="color:'+col+'">'+D_RANKS[p.attack.rank]+'</span><span class="durak-suit" style="color:'+col+'">'+D_SUITS[p.attack.suit]+'</span></div>';}
-if(p.defense){const col=dCardColor(p.defense.suit);tHTML+='<div class="durak-card defense"><span style="color:'+col+'">'+D_RANKS[p.defense.rank]+'</span><span class="durak-suit" style="color:'+col+'">'+D_SUITS[p.defense.suit]+'</span></div>';}
+if(p.attack){const col=dCardColor(p.attack.suit);
+tHTML+='<div class="durak-card"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.attack.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span></div>';}
+if(p.defense){const col=dCardColor(p.defense.suit);
+tHTML+='<div class="durak-card defense"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.defense.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span></div>';}
 tHTML+='</div>';
 });
 document.getElementById('durakBattle').innerHTML=tHTML;
 let dInfo='';
-if(dDeck.length>0){const tc=dCardColor(dTrump);dInfo='<div class="durak-info-item">Козырь: <span style="color:'+tc+';font-size:1.4rem">'+D_SUITS[dTrump]+'</span></div><div class="durak-info-item">🂠 Колода: '+dDeck.length+'</div>';}
+if(dDeck.length>0){const tc=dCardColor(dTrump);
+dInfo='<div class="durak-trump-badge">Козырь: <span class="durak-suit" style="color:'+tc+'">'+D_SUITS[dTrump]+'</span></div><div class="durak-info-item">🂠 Колода: '+dDeck.length+'</div>';}
 else{dInfo='<div class="durak-info-item">Колода пуста</div>';}
 dInfo+='<div class="durak-info-item">У АИ: '+dAiHand.length+' карт</div><div class="durak-info-item">Сброс: '+dDiscardPile+'</div>';
 document.getElementById('durakDeckInfo').innerHTML=dInfo;
@@ -808,11 +880,94 @@ dPlayerHand.forEach((c,i)=>{
 const col=dCardColor(c.suit);
 const cl=canClick?' clickable':'';
 const clk=canClick?'onclick="dPlayerClick('+i+')"':'';
-pHTML+='<div class="durak-card'+cl+'" '+clk+'><span style="color:'+col+'">'+D_RANKS[c.rank]+'</span><span class="durak-suit" style="color:'+col+'">'+D_SUITS[c.suit]+'</span></div>';
+pHTML+='<div class="durak-card'+cl+'" '+clk+'><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[c.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span></div>';
 });
 document.getElementById('durakPlayerHand').innerHTML=pHTML;
 }
 </script>
+
+<script>
+// ===== КЕЙС СЛОЖНОСТЕЙ =====
+const CASE_DIFFS=[
+{name:'Easy',mult:0,face:'🙂',color:'#00ff66'},
+{name:'Normal',mult:0.2,face:'😐',color:'#aaff00'},
+{name:'Hard',mult:0.4,face:'😨',color:'#ffcc00'},
+{name:'Harder',mult:0.6,face:'😰',color:'#ff8800'},
+{name:'Insane',mult:1,face:'😱',color:'#ff4400'},
+{name:'Easy Demon',mult:2,face:'😈',color:'#aa00ff'},
+{name:'Medium Demon',mult:3,face:'👹',color:'#8800ff'},
+{name:'Hard Demon',mult:5,face:'👺',color:'#ff00aa'},
+{name:'Insane Demon',mult:7,face:'👿',color:'#ff0066'},
+{name:'Extreme Demon',mult:10,face:'💀',color:'#ff0000'}
+];
+let caseSpinning=false;
+let caseSelectedDiff=null;
+function renderCaseList(){
+let html='';
+CASE_DIFFS.forEach(d=>{
+html+='<div style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px;border:1px solid '+d.color+'40;border-radius:8px;min-width:70px">'+
+'<span style="font-size:1.5rem">'+d.face+'</span>'+
+'<span style="font-size:.7rem;font-weight:700;color:'+d.color+'">'+d.name+'</span>'+
+'<span style="font-size:.65rem;color:#666">x'+d.mult+'</span></div>';
+});
+document.getElementById('caseItemsList').innerHTML=html;
+}
+renderCaseList();
+function buildCaseTrack(winningIdx){
+const total=50;
+const track=[];
+for(let i=0;i<total;i++){
+track.push(CASE_DIFFS[Math.floor(Math.random()*CASE_DIFFS.length)]);
+}
+track[winningIdx]=CASE_DIFFS[winningIdx];
+return track;
+}
+function openCase(){
+if(caseSpinning)return;
+let bet=parseInt(document.getElementById('caseBet').value)||50;
+if(bet<1)bet=1;
+if(casinoBalance<bet){document.getElementById('caseResult').textContent='Недостаточно монет!';return;}
+casinoBalance-=bet;updateBalance();
+caseSpinning=true;
+document.getElementById('caseOpenBtn').disabled=true;
+document.getElementById('caseResult').textContent='Крутится...';
+const winIdx=Math.floor(Math.random()*CASE_DIFFS.length);
+const winningDiff=CASE_DIFFS[winIdx];
+const track=buildCaseTrack(45);
+let trackHTML='';
+track.forEach(d=>{
+trackHTML+='<div class="case-item" style="border-color:'+d.color+'40">'+
+'<span class="case-item-face">'+d.face+'</span>'+
+'<span class="case-item-name" style="color:'+d.color+'">'+d.name+'</span></div>';
+});
+document.getElementById('caseTrack').innerHTML=trackHTML;
+const speed=parseInt(document.getElementById('caseSpeed').value);
+const duration=6000-speed*400;
+const itemWidth=110;
+const targetOffset=-(45*itemWidth)+(document.querySelector('.case-window').offsetWidth/2-itemWidth/2);
+const trackEl=document.getElementById('caseTrack');
+trackEl.style.transition='none';
+trackEl.style.transform='translateX(0)';
+setTimeout(()=>{
+trackEl.style.transition='transform '+duration+'ms cubic-bezier(0.15,0.9,0.2,1)';
+trackEl.style.transform='translateX('+targetOffset+'px)';
+},100);
+setTimeout(()=>{
+caseSpinning=false;
+document.getElementById('caseOpenBtn').disabled=false;
+caseSelectedDiff=winningDiff;
+let prize=0;
+if(winningDiff.mult>0){
+prize=Math.round(bet*(1+winningDiff.mult));
+casinoBalance+=prize;updateBalance();
+document.getElementById('caseResult').innerHTML=
+'<span style="color:'+winningDiff.color+'">'+winningDiff.face+' '+winningDiff.name+' x'+winningDiff.mult+'</span> — +'+prize.toLocaleString('ru')+' 🪙! Множитель для Дурака активен!';
+}else{
+document.getElementById('caseResult').innerHTML=
+'<span style="color:'+winningDiff.color+'">'+winningDiff.face+' '+winningDiff.name+'</span> — повезёт в другой раз!';
+}
+},duration+200);
+}
+</script>
 </body>
 </html>
-                                                       </div>
