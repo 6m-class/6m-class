@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Биржа | Класс</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="settings.js"></script>
+<script src="balance.js"></script>
+<style>
+:root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2);--green:#00ff66;--red:#ff4444}
+[data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
+[data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--border:rgba(0,255,102,0.3);--shadow:rgba(0,255,102,0.2)}
+[data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--border:rgba(0,170,255,0.3);--shadow:rgba(0,170,255,0.2)}
+[data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--border:rgba(170,0,255,0.3);--shadow:rgba(170,0,255,0.2)}
+[data-theme="aero"]{--primary:#00ffff;--primary-rgb:0,255,255;--glow:rgba(0,255,255,0.15);--border:rgba(0,255,255,0.3);--shadow:rgba(0,255,255,0.2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-glow{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:40vh;background:radial-gradient(ellipse at top,var(--glow),transparent 70%);z-index:-2;pointer-events:none}
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 5px var(--primary);animation:floatUp linear infinite;opacity:0}
+@keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}50%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(5,5,5,0.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-left{display:flex;gap:10px;align-items:center}
+.nav-btn{color:#fff;text-decoration:none;font-weight:700;text-transform:uppercase;font-size:.85rem;padding:8px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;transition:.3s;cursor:pointer}
+.nav-btn:hover{border-color:var(--primary);color:var(--primary)}
+.logout-btn{padding:8px 16px;border:1px solid rgba(255,80,80,0.3);border-radius:4px;background:transparent;color:#ff5555;font-size:.85rem;cursor:pointer;transition:.3s;font-family:'Montserrat',sans-serif;font-weight:700}
+.logout-btn:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
+.title{text-align:center;padding:20px;font-family:'Orbitron',sans-serif;font-size:1.6rem;text-transform:uppercase}
+.title span{color:var(--primary)}
+.balance-bar{position:fixed;top:15px;right:15px;background:rgba(20,20,20,0.95);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:900;color:var(--primary);z-index:999;box-shadow:0 0 20px var(--shadow);display:flex;align-items:center;gap:6px}
+.mkt-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;padding:0 20px}
+.mkt-tab{padding:12px 24px;border:1px solid var(--border);border-radius:10px;background:rgba(20,20,20,0.6);color:#aaa;cursor:pointer;font-weight:700;font-size:.9rem;transition:.3s;text-transform:uppercase}
+.mkt-tab:hover{border-color:var(--primary);color:var(--primary)}
+.mkt-tab.active{background:var(--primary);color:#000;border-color:var(--primary)}
+.mkt-section{display:none;max-width:900px;margin:0 auto;padding:0 20px 40px}
+.mkt-section.active{display:block}
+.stock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.stock-card{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:10px;padding:15px;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.stock-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 5px 20px var(--shadow)}
+.stock-ticker{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.1rem;color:var(--primary)}
+.stock-name{font-size:.75rem;color:#666;margin-bottom:8px}
+.stock-price{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900}
+.stock-change{font-size:.85rem;font-weight:700}
+.stock-change.up{color:var(--green)}
+.stock-change.down{color:var(--red)}
+.stock-spark{width:100%;height:30px;margin-top:8px}
+.stock-detail{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:25px;margin-bottom:20px}
+.stock-detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.stock-detail-name{font-family:'Orbitron',sans-serif;font-size:1.4rem}
+.stock-detail-price{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900}
+.detail-chart{width:100%;height:200px;background:rgba(0,0,0,0.3);border-radius:8px;margin:15px 0}
+.trade-box{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px}
+.trade-box input{width:100px;padding:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none}
+.trade-btn{padding:10px 24px;border:none;border-radius:8px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s}
+.trade-btn.buy{background:var(--green);color:#000}
+.trade-btn.buy:hover{box-shadow:0 0 20px rgba(0,255,102,0.4);transform:translateY(-2px)}
+.trade-btn.sell{background:var(--red);color:#fff}
+.trade-btn.sell:hover{box-shadow:0 0 20px rgba(255,68,68,0.4);transform:translateY(-2px)}
+.trade-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.portfolio-empty{text-align:center;padding:40px;color:#555}
+.portfolio-item{display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+.bank-box{max-width:500px;margin:0 auto;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:30px;text-align:center}
+.bank-rate{font-size:.85rem;color:#666;margin:10px 0}
+.bank-deposit{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin:15px 0}
+.bank-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+.bank-input{width:120px;padding:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(20,20,20,0.95);border:1px solid var(--border);border-radius:10px;padding:12px 24px;font-weight:700;z-index:9999;transition:.3s;opacity:0;pointer-events:none}
+.toast.show{opacity:1}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
+.sector-badge{font-size:.65rem;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.05);color:#888;font-weight:700;text-transform:uppercase}
+@media(max-width:600px){.stock-grid{grid-template-columns:1fr 1fr}.title{font-size:1.2rem;padding:15px}.stock-detail-name{font-size:1.1rem}.stock-detail-price{font-size:1.5rem}}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="particles" id="particles"></div>
+<nav>
+<div class="nav-left">
+<a href="index.html" class="nav-btn">← Главная</a>
+<a href="games.html" class="nav-btn">🎮 Игры</a>
+<a href="rating.html" class="nav-btn">🏆 Рейтинг</a>
+</div>
+<button class="logout-btn" onclick="logout()">Выйти</button>
+</nav>
+<div class="balance-bar"><span>🪙</span> <span id="mktBalance">100</span></div>
+<div class="title">📈 <span>Биржа</span> класса</div>
+<div class="mkt-tabs">
+<div class="mkt-tab active" onclick="switchMktTab('market',this)">📈 Акции</div>
+<div class="mkt-tab" onclick="switchMktTab('portfolio',this)">💼 Портфель</div>
+<div class="mkt-tab" onclick="switchMktTab('bank',this)">🏦 Банк</div>
+</div>
+<!-- РЫНОК -->
+<div class="mkt-section active" id="mkt-market">
+<div id="stockGrid" class="stock-grid"></div>
+<div id="stockDetail"></div>
+</div>
+<!-- ПОРТФЕЛЬ -->
+<div class="mkt-section" id="mkt-portfolio">
+<div id="portfolioList"></div>
+</div>
+<!-- БАНК -->
+<div class="mkt-section" id="mkt-bank">
+<div class="bank-box">
+<div style="font-size:1.2rem;font-weight:700;margin-bottom:10px">🏦 Банк класса</div>
+<div class="bank-rate">Ставка: <span id="bankRate">5%</span> в день · Начисление каждые 10 секунд</div>
+<div class="bank-deposit" id="bankDeposit">0 🪙</div>
+<div class="bank-actions">
+<input type="number" class="bank-input" id="bankAmount" value="100" min="1">
+<button class="trade-btn buy" onclick="bankDeposit()">📥 Внести</button>
+<button class="trade-btn sell" onclick="bankWithdraw()">📤 Снять</button>
+</div>
+<div style="margin-top:15px;font-size:.8rem;color:#555">Проценты начисляются автоматически, пока вы на этой странице.</div>
+</div>
+</div>
+<div class="toast" id="mktToast"></div>
+<script>
+function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
+applyStoredTheme();
+const isMobile=window.innerWidth<600;const pc=document.getElementById('particles');const cnt=isMobile?10:20;
+for(let i=0;i<cnt;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
+function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
+const user=JSON.parse(localStorage.getItem('class_user')||'null');
+if(!user){window.location.href='login.html';}
+
+let mktBalance=getUserBalance();
+let mktPortfolio=JSON.parse(localStorage.getItem('mkt_portfolio')||'{}');
+let mktBankDeposit=parseInt(localStorage.getItem('mkt_bank_deposit')||'0');
+
+const STOCKS=[
+ {ticker:'TECH',name:'Технологии',sector:'IT',price:850,vol:0.04,drift:0.001,color:'#00aaff'},
+ {ticker:'GOLD',name:'Золотодобыча',sector:'Сырьё',price:1200,vol:0.02,drift:0.0005,color:'#ffcc00'},
+ {ticker:'OIL',name:'Нефтегаз',sector:'Энергетика',price:420,vol:0.035,drift:-0.0003,color:'#555'},
+ {ticker:'FOOD',name:'Пищепром',sector:'Потреб',price:180,vol:0.015,drift:0.0008,color:'#00ff66'},
+ {ticker:'CARS',name:'Автопром',sector:'Промышл',price:670,vol:0.03,drift:0.0002,color:'#ff6600'},
+ {ticker:'PHARM',name:'Фармацевтика',sector:'Медицина',price:540,vol:0.025,drift:0.0015,color:'#ff00aa'},
+ {ticker:'BANK',name:'Финансы',sector:'Банки',price:910,vol:0.028,drift:0.0006,color:'#aaff00'},
+ {ticker:'RETAIL',name:'Ритейл',sector:'Потреб',price:320,vol:0.022,drift:0.001,color:'#ff44aa'},
+ {ticker:'ENERGY',name:'Энергетика',sector:'Энергетика',price:280,vol:0.038,drift:-0.0002,color:'#ff8800'},
+ {ticker:'METAL',name:'Металлургия',sector:'Промышл',price:760,vol:0.026,drift:0.0007,color:'#888'},
+ {ticker:'CHEME',name:'Химпром',sector:'Промышл',price:490,vol:0.029,drift:0.0004,color:'#aa00ff'},
+ {ticker:'TELECOM',name:'Телеком',sector:'Связь',price:210,vol:0.02,drift:0.0009,color:'#00ddff'},
+ {ticker:'TRANS',name:'Транспорт',sector:'Логистика',price:380,vol:0.024,drift:0.0003,color:'#ffcc44'},
+ {ticker:'CRYPT',name:'Крипто',sector:'IT',price:1450,vol:0.06,drift:0.002,color:'#ff00ff'},
+ {ticker:'AGRO',name:'Агропром',sector:'Потреб',price:260,vol:0.018,drift:0.0011,color:'#88ff00'},
+ {ticker:'BUILD',name:'Строительство',sector:'Промышл',price:440,vol:0.027,drift:0.0005,color:'#ff6644'},
+ {ticker:'MEDIA',name:'Медиа',sector:'IT',price:620,vol:0.032,drift:0.0008,color:'#ff44ff'},
+ {ticker:'TOURISM',name:'Туризм',sector:'Услуги',price:150,vol:0.045,drift:-0.0005,color:'#44ddff'},
+ {ticker:'SPACE',name:'Космос',sector:'IT',price:2200,vol:0.05,drift:0.0017,color:'#aa88ff'},
+ {ticker:'EDU',name:'Образование',sector:'Услуги',price:120,vol:0.016,drift:0.0006,color:'#44ff88'}
+];
+
+STOCKS.forEach(s=>{
+ s.history=[s.price];
+ for(let i=0;i<30;i++){
+  const change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
+  s.price=Math.max(1,s.price+change);
+  s.history.push(s.price);
+ }
+ s.prevPrice=s.history[s.history.length-2]||s.price;
+});
+
+let selectedStock=null;
+let mktTickInterval=null;
+
+function updateMktBalance(){
+ mktBalance=getUserBalance();
+ document.getElementById('mktBalance').textContent=mktBalance.toLocaleString('ru');
+}
+
+function showToast(msg,cls){
+ const t=document.getElementById('mktToast');
+ t.textContent=msg;
+ t.className='toast show '+(cls||'');
+ setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function switchMktTab(name,el){
+ document.querySelectorAll('.mkt-tab').forEach(t=>t.classList.remove('active'));
+ document.querySelectorAll('.mkt-section').forEach(s=>s.classList.remove('active'));
+ el.classList.add('active');
+ document.getElementById('mkt-'+name).classList.add('active');
+ if(name==='portfolio')renderPortfolio();
+ if(name==='bank')updateBankDisplay();
+}
+
+function drawSparkline(canvas,data,color){
+ const ctx=canvas.getContext('2d');
+ const w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);
+ if(data.length<2)return;
+ const min=Math.min(...data),max=Math.max(...data);
+ const range=max-min||1;
+ ctx.strokeStyle=color;
+ ctx.lineWidth=1.5;
+ ctx.beginPath();
+ data.forEach((v,i)=>{
+  const x=(i/(data.length-1))*w;
+  const y=h-((v-min)/range)*(h-4)-2;
+  i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+ });
+ ctx.stroke();
+}
+
+function renderStockGrid(){
+ const grid=document.getElementById('stockGrid');
+ grid.innerHTML=STOCKS.map(s=>{
+  const change=s.price-s.prevPrice;
+  const pct=(change/s.prevPrice*100).toFixed(2);
+  const up=change>=0;
+  return `<div class="stock-card" onclick="selectStock('${s.ticker}')">
+   <div style="display:flex;justify-content:space-between;align-items:center">
+    <span class="stock-ticker">${s.ticker}</span>
+    <span class="sector-badge">${s.sector}</span>
+   </div>
+   <div class="stock-name">${s.name}</div>
+   <div class="stock-price">${s.price.toFixed(0)} 🪙</div>
+   <div class="stock-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</div>
+   <canvas class="stock-spark" width="180" height="30" id="spark-${s.ticker}"></canvas>
+  </div>`;
+ }).join('');
+ STOCKS.forEach(s=>{
+  const c=document.getElementById('spark-'+s.ticker);
+  if(c)drawSparkline(c,s.history,s.color);
+ });
+}
+
+function drawDetailChart(canvas,data,color){
+ const ctx=canvas.getContext('2d');
+ const w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);
+ if(data.length<2)return;
+ const min=Math.min(...data),max=Math.max(...data);
+ const range=max-min||1;
+ const pad=10;
+ ctx.fillStyle='rgba(0,0,0,0)';
+ ctx.fillRect(0,0,w,h);
+ // Grid
+ ctx.strokeStyle='rgba(255,255,255,0.05)';
+ ctx.lineWidth=1;
+ for(let i=0;i<4;i++){
+  const y=pad+(h-pad*2)*i/3;
+  ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
+ }
+ // Line
+ ctx.strokeStyle=color;
+ ctx.lineWidth=2;
+ ctx.beginPath();
+ data.forEach((v,i)=>{
+  const x=pad+(i/(data.length-1))*(w-pad*2);
+  const y=h-pad-((v-min)/range)*(h-pad*2);
+  i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+ });
+ ctx.stroke();
+ // Fill
+ ctx.lineTo(w-pad,h-pad);
+ ctx.lineTo(pad,h-pad);
+ ctx.closePath();
+ ctx.fillStyle=color+'15';
+ ctx.fill();
+ // Min/max labels
+ ctx.fillStyle='#666';
+ ctx.font='10px Montserrat';
+ ctx.textAlign='left';
+ ctx.fillText(max.toFixed(0),pad+2,12);
+ ctx.fillText(min.toFixed(0),pad+2,h-4);
+}
+
+function selectStock(ticker){
+ selectedStock=STOCKS.find(s=>s.ticker===ticker);
+ if(!selectedStock)return;
+ const s=selectedStock;
+ const change=s.price-s.prevPrice;
+ const pct=(change/s.prevPrice*100).toFixed(2);
+ const up=change>=0;
+ const owned=mktPortfolio[ticker]||0;
+ const ownedVal=owned*s.price;
+ document.getElementById('stockDetail').innerHTML=`
+  <div class="stock-detail">
+   <div class="stock-detail-header">
+    <div>
+     <div class="stock-detail-name" style="color:${s.color}">${s.ticker}</div>
+     <div style="color:#666;font-size:.85rem">${s.name} · ${s.sector}</div>
+     ${owned>0?`<div style="margin-top:5px;font-size:.85rem;color:var(--green)">В портфеле: ${owned} шт. = ${ownedVal.toFixed(0)} 🪙</div>`:''}
+    </div>
+    <div style="text-align:right">
+     <div class="stock-detail-price">${s.price.toFixed(0)} 🪙</div>
+     <div class="stock-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</div>
+    </div>
+   </div>
+   <canvas class="detail-chart" width="800" height="200" id="detailChart"></canvas>
+   <div class="trade-box">
+    <input type="number" id="tradeQty" value="1" min="1" max="9999">
+    <button class="trade-btn buy" onclick="buyStock()">📥 Купить</button>
+    <button class="trade-btn sell" onclick="sellStock()" ${owned>0?'':'disabled'}>📤 Продать</button>
+   </div>
+   <div style="margin-top:10px;font-size:.8rem;color:#666">Стоимость покупки: <span id="tradeCost">${s.price.toFixed(0)} 🪙</span></div>
+  </div>`;
+ const c=document.getElementById('detailChart');
+ if(c)drawDetailChart(c,s.history,s.color);
+ document.getElementById('tradeQty').addEventListener('input',updateTradeCost);
+ document.getElementById('stockDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function updateTradeCost(){
+ if(!selectedStock)return;
+ const qty=parseInt(document.getElementById('tradeQty').value)||1;
+ document.getElementById('tradeCost').textContent=(qty*selectedStock.price).toFixed(0)+' 🪙';
+}
+
+function buyStock(){
+ if(!selectedStock)return;
+ const qty=parseInt(document.getElementById('tradeQty').value)||1;
+ if(qty<1){showToast('Введите количество','err');return;}
+ const cost=qty*selectedStock.price;
+ if(mktBalance<cost){showToast('Недостаточно монет!','err');return;}
+ mktBalance-=cost;
+ setUserBalance(mktBalance);
+ mktPortfolio[selectedStock.ticker]=(mktPortfolio[selectedStock.ticker]||0)+qty;
+ localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
+ updateMktBalance();
+ showToast(`Куплено ${qty} ${selectedStock.ticker} за ${cost.toFixed(0)} 🪙`,'ok');
+ selectStock(selectedStock.ticker);
+}
+
+function sellStock(){
+ if(!selectedStock)return;
+ const qty=parseInt(document.getElementById('tradeQty').value)||1;
+ if(qty<1){showToast('Введите количество','err');return;}
+ const owned=mktPortfolio[selectedStock.ticker]||0;
+ if(owned<qty){showToast('Недостаточно акций!','err');return;}
+ const revenue=qty*selectedStock.price;
+ mktBalance+=revenue;
+ setUserBalance(mktBalance);
+ mktPortfolio[selectedStock.ticker]=owned-qty;
+ if(mktPortfolio[selectedStock.ticker]<=0)delete mktPortfolio[selectedStock.ticker];
+ localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
+ updateMktBalance();
+ showToast(`Продано ${qty} ${selectedStock.ticker} за ${revenue.toFixed(0)} 🪙`,'ok');
+ selectStock(selectedStock.ticker);
+}
+
+function renderPortfolio(){
+ const list=document.getElementById('portfolioList');
+ const tickers=Object.keys(mktPortfolio).filter(t=>mktPortfolio[t]>0);
+ if(tickers.length===0){
+  list.innerHTML='<div class="portfolio-empty">Портфель пуст. Купите акции на вкладке «Акции».</div>';
+  return;
+ }
+ let totalCost=0,totalVal=0;
+ list.innerHTML=tickers.map(t=>{
+  const s=STOCKS.find(st=>st.ticker===t);
+  if(!s)return '';
+  const qty=mktPortfolio[t];
+  const costBasis=s.history[0]*qty;
+  const curVal=s.price*qty;
+  totalCost+=costBasis;
+  totalVal+=curVal;
+  const pnl=curVal-costBasis;
+  const pnlPct=(pnl/costBasis*100).toFixed(1);
+  const up=pnl>=0;
+  return `<div class="portfolio-item">
+   <div>
+    <div style="font-family:'Orbitron',sans-serif;font-weight:900;color:${s.color}">${s.ticker}</div>
+    <div style="font-size:.8rem;color:#666">${qty} шт. · ${s.name}</div>
+   </div>
+   <div style="text-align:right">
+    <div style="font-weight:700">${curVal.toFixed(0)} 🪙</div>
+    <div class="stock-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pnlPct)}% (${pnl>0?'+':''}${pnl.toFixed(0)})</div>
+   </div>
+  </div>`;
+ }).join('');
+ list.innerHTML+=`<div class="stock-detail" style="margin-top:15px">
+  <div style="display:flex;justify-content:space-between">
+   <div style="font-weight:700">Общая стоимость</div>
+   <div style="font-family:'Orbitron',sans-serif;font-weight:900;color:var(--primary)">${totalVal.toFixed(0)} 🪙</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:8px">
+   <div style="font-size:.85rem;color:#666">Прибыль/убыток</div>
+   <div class="stock-change ${totalVal-totalCost>=0?'up':'down'}">${totalVal-totalCost>=0?'+':''}${(totalVal-totalCost).toFixed(0)} 🪙 (${((totalVal-totalCost)/totalCost*100).toFixed(1)}%)</div>
+  </div>
+ </div>`;
+}
+
+function updateBankDisplay(){
+ document.getElementById('bankDeposit').textContent=mktBankDeposit.toLocaleString('ru')+' 🪙';
+}
+
+function bankDeposit(){
+ const amt=parseInt(document.getElementById('bankAmount').value)||0;
+ if(amt<1){showToast('Введите сумму','err');return;}
+ if(mktBalance<amt){showToast('Недостаточно монет!','err');return;}
+ mktBalance-=amt;
+ setUserBalance(mktBalance);
+ mktBankDeposit+=amt;
+ localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
+ updateMktBalance();
+ updateBankDisplay();
+ showToast(`Внесено ${amt} 🪙 в банк`,'ok');
+}
+
+function bankWithdraw(){
+ const amt=parseInt(document.getElementById('bankAmount').value)||0;
+ if(amt<1){showToast('Введите сумму','err');return;}
+ if(mktBankDeposit<amt){showToast('В банке недостаточно средств!','err');return;}
+ mktBankDeposit-=amt;
+ mktBalance+=amt;
+ setUserBalance(mktBalance);
+ localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
+ updateMktBalance();
+ updateBankDisplay();
+ showToast(`Снято ${amt} 🪙 из банка`,'ok');
+}
+
+// Bank interest — every 10 seconds, 5% daily rate (proportional)
+function bankInterest(){
+ if(mktBankDeposit>0){
+  const rate=0.05/ (24*60*6); // 5% per day, tick every 10 sec
+  const interest=Math.max(1,Math.round(mktBankDeposit*rate));
+  mktBankDeposit+=interest;
+  localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
+  updateBankDisplay();
+ }
+}
+
+// Market tick — update prices
+function marketTick(){
+ STOCKS.forEach(s=>{
+  s.prevPrice=s.price;
+  const change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
+  s.price=Math.max(1,s.price+change);
+  s.history.push(s.price);
+  if(s.history.length>60)s.history.shift();
+ });
+ renderStockGrid();
+ if(selectedStock){
+  const c=document.getElementById('detailChart');
+  if(c)drawDetailChart(c,selectedStock.history,selectedStock.color);
+  // Update price without full re-render
+  const header=document.querySelector('.stock-detail-price');
+  if(header){
+   const s=selectedStock;
+   const change=s.price-s.prevPrice;
+   const pct=(change/s.prevPrice*100).toFixed(2);
+   header.textContent=s.price.toFixed(0)+' 🪙';
+   const chgEl=document.querySelector('.stock-change');
+   if(chgEl){
+    chgEl.className='stock-change '+(change>=0?'up':'down');
+    chgEl.textContent=(change>=0?'▲':'▼')+' '+Math.abs(pct)+'%';
+   }
+  }
+  updateTradeCost();
+ }
+}
+
+updateMktBalance();
+renderStockGrid();
+updateBankDisplay();
+mktTickInterval=setInterval(()=>{
+ marketTick();
+ bankInterest();
+},3000);
+
+// Sync balance every 30 sec
+setInterval(()=>{
+ setUserBalance(mktBalance);
+ if(typeof syncBalanceToServer==='function')syncBalanceToServer();
+},30000);
+
+window.addEventListener('beforeunload',()=>{
+ setUserBalance(mktBalance);
+ localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
+ localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
+});
+</script>
+</body>
+</html>
