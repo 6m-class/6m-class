@@ -432,17 +432,34 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="mkt-sub-section" id="mktbank">
 <div class="bank-box">
 <div style="font-size:1.2rem;font-weight:700;margin-bottom:10px">🏦 Банк класса</div>
-<div class="bank-rate">Ставка: 5% в день · Начисление каждые 10 секунд</div>
+<div class="bank-rate">Ставка: <span id="bankRateDisplay">5</span>% в день · Интервал: <span id="bankSpeedDisplay">10</span> сек</div>
 <div class="bank-deposit" id="bankDeposit">0 🪙</div>
 <div class="bank-actions">
 <input type="number" class="bank-input" id="bankAmount" value="100" min="1">
 <button class="trade-btn buy" onclick="bankDepositAction()">📥 Внести</button>
 <button class="trade-btn sell" onclick="bankWithdrawAction()">📤 Снять</button>
 </div>
-<div style="margin-top:15px;font-size:.8rem;color:#555">Проценты начисляются автоматически, пока вы на этой странице.</div>
+<div style="margin-top:20px;border-top:1px solid var(--border);padding-top:20px">
+<div style="font-size:1rem;font-weight:700;margin-bottom:15px">⚙️ Прокачка банка</div>
+<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+<div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:15px;min-width:160px">
+<div style="font-size:.85rem;color:#888;margin-bottom:5px">📈 Процент</div>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:900;color:var(--primary)" id="bankRateLvlDisplay">Ур. 1</div>
+<div style="font-size:.8rem;color:#666;margin:5px 0">Текущая: <span id="bankCurRate">5</span>%</div>
+<div style="font-size:.8rem;color:#666;margin-bottom:8px">Следующая: <span id="bankNextRate">7</span>%</div>
+<button class="trade-btn buy" id="bankUpRateBtn" onclick="bankUpgradeRate()" style="width:100%;font-size:.75rem">Прокачать<br><span id="bankUpRateCost">500</span> 🪙</button>
+</div>
+<div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:15px;min-width:160px">
+<div style="font-size:.85rem;color:#888;margin-bottom:5px">⚡ Скорость</div>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:900;color:var(--primary)" id="bankSpdLvlDisplay">Ур. 1</div>
+<div style="font-size:.8rem;color:#666;margin:5px 0">Текущий: <span id="bankCurSpd">10</span>сек</div>
+<div style="font-size:.8rem;color:#666;margin-bottom:8px">Следующий: <span id="bankNextSpd">7</span>сек</div>
+<button class="trade-btn buy" id="bankUpSpdBtn" onclick="bankUpgradeSpeed()" style="width:100%;font-size:.75rem">Прокачать<br><span id="bankUpSpdCost">1000</span> 🪙</button>
 </div>
 </div>
-<div class="mkt-toast" id="mktToast"></div>
+<div style="margin-top:12px;font-size:.75rem;color:#555">Максимум: процент — 50%, скорость — 1 сек</div>
+</div>
+</div>
 </div>
 <script>
 // ===== ОСНОВНЫЕ ФУНКЦИИ =====
@@ -2227,9 +2244,83 @@ function renderPortfolio(){
   list.innerHTML+='<div class="stock-detail" style="margin-top:15px"><div style="display:flex;justify-content:space-between"><div style="font-weight:700">Общая стоимость</div><div style="font-family:Orbitron,sans-serif;font-weight:900;color:var(--primary)">'+totalVal.toFixed(0)+' 🪙</div></div><div style="display:flex;justify-content:space-between;margin-top:8px"><div style="font-size:.85rem;color:#666">Прибыль/убыток</div><div class="stock-change '+(totalVal-totalCost>=0?'up':'down')+'">'+(totalVal-totalCost>=0?'+':'')+(totalVal-totalCost).toFixed(0)+' 🪙 ('+((totalVal-totalCost)/totalCost*100).toFixed(1)+'%)</div></div></div>';
 }
 
+// КОНФИГ ПРОКАЧКИ
+var bankRateLvl=parseInt(localStorage.getItem('bank_rate_lvl')||'1');
+var bankSpdLvl=parseInt(localStorage.getItem('bank_spd_lvl')||'1');
+var BANK_MAX_RATE=10;
+var BANK_MAX_SPD=10;
+var bankIntervalId=null;
+
+function bankGetRate(){return 5+(bankRateLvl-1)*2;}
+function bankGetSpeed(){return Math.max(1,10-(bankSpdLvl-1));}
+function bankRateCost(){return 500*bankRateLvl;}
+function bankSpdCost(){return 1000*bankSpdLvl;}
+
 function updateBankDisplay(){
   var el=document.getElementById('bankDeposit');
   if(el) el.textContent=mktBankDeposit.toLocaleString('ru')+' 🪙';
+  var rd=document.getElementById('bankRateDisplay');
+  if(rd) rd.textContent=bankGetRate();
+  var sd=document.getElementById('bankSpeedDisplay');
+  if(sd) sd.textContent=bankGetSpeed();
+  // Прокачка
+  var rl=document.getElementById('bankRateLvlDisplay');
+  if(rl) rl.textContent='Ур. '+bankRateLvl;
+  var sl=document.getElementById('bankSpdLvlDisplay');
+  if(sl) sl.textContent='Ур. '+bankSpdLvl;
+  var cr=document.getElementById('bankCurRate');
+  if(cr) cr.textContent=bankGetRate();
+  var cs=document.getElementById('bankCurSpd');
+  if(cs) cs.textContent=bankGetSpeed();
+  if(bankRateLvl<BANK_MAX_RATE){
+    var nr=document.getElementById('bankNextRate');if(nr)nr.textContent=bankGetRate()+2;
+    var rc=document.getElementById('bankUpRateCost');if(rc)rc.textContent=bankRateCost();
+    var rb=document.getElementById('bankUpRateBtn');if(rb)rb.disabled=false;
+  }else{
+    var nr=document.getElementById('bankNextRate');if(nr)nr.textContent='МАКС';
+    var rb=document.getElementById('bankUpRateBtn');if(rb){rb.disabled=true;rb.innerHTML='МАКС';}
+  }
+  if(bankSpdLvl<BANK_MAX_SPD){
+    var ns=document.getElementById('bankNextSpd');if(ns)ns.textContent=Math.max(1,bankGetSpeed()-1);
+    var sc=document.getElementById('bankUpSpdCost');if(sc)sc.textContent=bankSpdCost();
+    var sb=document.getElementById('bankUpSpdBtn');if(sb)sb.disabled=false;
+  }else{
+    var ns=document.getElementById('bankNextSpd');if(ns)ns.textContent='МАКС';
+    var sb=document.getElementById('bankUpSpdBtn');if(sb){sb.disabled=true;sb.innerHTML='МАКС';}
+  }
+}
+
+function bankUpgradeRate(){
+  if(bankRateLvl>=BANK_MAX_RATE) return;
+  var cost=bankRateCost();
+  if(mktBalance<cost){mktToast('Недостаточно монет!','err');return;}
+  mktBalance-=cost;
+  setUserBalance(mktBalance);
+  bankRateLvl++;
+  localStorage.setItem('bank_rate_lvl',String(bankRateLvl));
+  updateMktBalance();
+  updateBankDisplay();
+  restartBankInterval();
+  mktToast('Процент повышен до '+bankGetRate()+'%!','ok');
+}
+
+function bankUpgradeSpeed(){
+  if(bankSpdLvl>=BANK_MAX_SPD) return;
+  var cost=bankSpdCost();
+  if(mktBalance<cost){mktToast('Недостаточно монет!','err');return;}
+  mktBalance-=cost;
+  setUserBalance(mktBalance);
+  bankSpdLvl++;
+  localStorage.setItem('bank_spd_lvl',String(bankSpdLvl));
+  updateMktBalance();
+  updateBankDisplay();
+  restartBankInterval();
+  mktToast('Скорость повышена! Интервал: '+bankGetSpeed()+' сек','ok');
+}
+
+function restartBankInterval(){
+  if(bankIntervalId) clearInterval(bankIntervalId);
+  bankIntervalId=setInterval(function(){bankInterest();},bankGetSpeed()*1000);
 }
 
 function bankDepositAction(){
@@ -2258,13 +2349,14 @@ function bankWithdrawAction(){
 
 function bankInterest(){
   if(mktBankDeposit>0){
-    var rate=0.005/(24*600*6);
+    var rate=bankGetRate()/100/(24*60*6);
     var interest=Math.max(1,Math.round(mktBankDeposit*rate));
     mktBankDeposit+=interest;
     localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
     updateBankDisplay();
   }
 }
+
 
 function marketTick(){
   STOCKS.forEach(function(s){
@@ -2297,10 +2389,13 @@ function marketTick(){
 updateMktBalance();
 renderStockGrid();
 updateBankDisplay();
-setInterval(function(){marketTick();bankInterest();},3000);
+setInterval(marketTick,3000);
+restartBankInterval();
 setInterval(function(){setUserBalance(mktBalance);if(typeof syncBalanceToServer==='function') syncBalanceToServer();},30000);
 window.addEventListener('beforeunload',function(){
   setUserBalance(mktBalance);
+  localStorage.setItem('bank_rate_lvl',String(bankRateLvl));
+  localStorage.setItem('bank_spd_lvl',String(bankSpdLvl));
   localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
   localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
 });
