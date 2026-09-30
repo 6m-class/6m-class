@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рейтинг | Класс</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="settings.js"></script>
+<style>
+:root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2)}
+[data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
+[data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--border:rgba(0,255,102,0.3);--shadow:rgba(0,255,102,0.2)}
+[data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--border:rgba(0,170,255,0.3);--shadow:rgba(0,170,255,0.2)}
+[data-theme="purple"]{--primary:#aa00ff;--primary-rgb:170,0,255;--glow:rgba(170,0,255,0.15);--border:rgba(170,0,255,0.3);--shadow:rgba(170,0,255,0.2)}
+[data-theme="aero"]{--primary:#00ffff;--primary-rgb:0,255,255;--glow:rgba(0,255,255,0.15);--border:rgba(0,255,255,0.3);--shadow:rgba(0,255,255,0.2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050505;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:20px}
+.bg-glow{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:40vh;background:radial-gradient(ellipse at top,var(--glow),transparent 70%);z-index:-2;pointer-events:none}
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.particle{position:absolute;background:var(--primary);border-radius:50%;box-shadow:0 0 5px var(--primary);animation:floatUp linear infinite;opacity:0}
+@keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}50%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+nav{width:100%;max-width:600px;padding:12px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.nav-left{display:flex;gap:10px;align-items:center}
+.nav-btn{color:#fff;text-decoration:none;font-weight:700;text-transform:uppercase;font-size:.85rem;padding:8px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;transition:.3s;cursor:pointer}
+.nav-btn:hover{border-color:var(--primary);color:var(--primary)}
+.logout-btn{padding:8px 16px;border:1px solid rgba(255,80,80,0.3);border-radius:4px;background:transparent;color:#ff5555;font-size:.85rem;cursor:pointer;transition:.3s;font-family:'Montserrat',sans-serif;font-weight:700}
+.logout-btn:hover{background:rgba(255,80,80,0.1);border-color:#ff5555}
+.title{text-align:center;padding:10px 0 20px;font-family:'Orbitron',sans-serif;font-size:1.6rem;text-transform:uppercase}
+.title span{color:var(--primary)}
+.rating-table{width:100%;max-width:600px;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 0 60px rgba(var(--primary-rgb),0.1)}
+.rating-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);transition:background .3s}
+.rating-row:last-child{border-bottom:none}
+.rating-row.me{background:rgba(var(--primary-rgb),0.08);border-left:3px solid var(--primary)}
+.rating-row:hover{background:rgba(255,255,255,0.03)}
+.rating-rank{width:50px;text-align:center;font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.1rem}
+.rating-rank.gold{color:#ffcc00}
+.rating-rank.silver{color:#aaa}
+.rating-rank.bronze{color:#cd7f32}
+.rating-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--border);object-fit:cover;margin:0 12px;background:rgba(255,255,255,0.05)}
+.rating-avatar-placeholder{width:40px;height:40px;border-radius:50%;border:2px solid var(--border);background:rgba(var(--primary-rgb),0.1);display:flex;align-items:center;justify-content:center;font-weight:900;font-family:'Orbitron',sans-serif;color:var(--primary);margin:0 12px;font-size:1.1rem}
+.rating-name{flex:1;font-weight:700}
+.rating-name .admin-badge{font-size:.7rem;color:var(--primary);margin-left:6px}
+.rating-coins{font-family:'Orbitron',sans-serif;font-weight:900;color:var(--primary);font-size:1.1rem;white-space:nowrap}
+.rating-coins::before{content:'🪙 ';font-size:1rem}
+.loading{text-align:center;padding:40px;color:#666;font-size:1rem}
+@media(max-width:600px){.rating-row{padding:10px 8px}.rating-name{font-size:.85rem}.rating-coins{font-size:.95rem}}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="particles" id="particles"></div>
+<nav>
+<div class="nav-left">
+<a href="index.html" class="nav-btn">← Главная</a>
+<a href="profile.html" class="nav-btn">👤 Профиль</a>
+<a href="games.html" class="nav-btn">🎮 Игры</a>
+</div>
+<button class="logout-btn" onclick="logout()">Выйти</button>
+</nav>
+<div class="title">🏆 <span>Рейтинг</span> класса</div>
+<div class="rating-table" id="ratingTable">
+<div class="loading">Загрузка...</div>
+</div>
+<script>
+function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
+applyStoredTheme();
+const REPO='6m-class/6m-class';
+const user=JSON.parse(localStorage.getItem('class_user')||'null');
+if(!user){window.location.href='login.html';}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
+const isMobile=window.innerWidth<600;const pc=document.getElementById('particles');const cnt=isMobile?10:20;
+for(let i=0;i<cnt;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
+
+async function loadRating(){
+try{
+const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/accounts.json?v=${Date.now()}`,{cache:'no-store'});
+if(!resp.ok)throw new Error('Не удалось загрузить');
+let accounts=await resp.json();
+if(!Array.isArray(accounts))accounts=[];
+accounts.sort((a,b)=>(b.coins||0)-(a.coins||0));
+const table=document.getElementById('ratingTable');
+let html='';
+accounts.forEach((acc,i)=>{
+const isMe=acc.login===user.login;
+const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+let avatarHTML;
+if(acc.avatar){
+avatarHTML=`<img class="rating-avatar" src="${esc(acc.avatar)}?t=${Date.now()}" alt="">`;
+}else{
+const letter=(acc.name||'?')[0].toUpperCase();
+avatarHTML=`<div class="rating-avatar-placeholder">${esc(letter)}</div>`;
+}
+html+=`<div class="rating-row${isMe?' me':''}">
+<div class="rating-rank ${rankClass}">${medal}</div>
+${avatarHTML}
+<div class="rating-name">${esc(acc.name)}${acc.role==='admin'?'<span class="admin-badge">👑</span>':''}</div>
+<div class="rating-coins">${(acc.coins||0).toLocaleString('ru')}</div>
+</div>`;
+});
+table.innerHTML=html;
+}catch(e){
+document.getElementById('ratingTable').innerHTML='<div class="loading">Ошибка загрузки 😵</div>';
+}
+}
+loadRating();
+setInterval(loadRating,15000);
+</script>
+</body>
+</html>
