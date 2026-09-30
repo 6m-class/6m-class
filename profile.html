@@ -62,6 +62,7 @@ nav{width:100%;max-width:600px;padding:12px 0;display:flex;justify-content:space
 <div class="info-item"><div class="info-label">Логин</div><div class="info-value" id="profileLogin"></div></div>
 <div class="info-item"><div class="info-label">Роль</div><div class="info-value" id="profileRole"></div></div>
 <div class="info-item"><div class="info-label">Сообщений</div><div class="info-value" id="profileMsgCount"><span>0</span></div></div>
+<div class="info-item"><div class="info-label">Монеты</div><div class="info-value" id="profileCoins"><span>100</span> 🪙</div></div>
 </div>
 <div class="status-msg" id="statusMsg"></div>
 </div>
@@ -192,6 +193,11 @@ p.style.animationDuration=`${Math.random()*10+6}s`;
 p.style.animationDelay=`${Math.random()*5}s`;
 pc.appendChild(p);
 }
+  if(acc&&acc.coins!==undefined){
+  document.getElementById('profileCoins').innerHTML=`<span>${acc.coins.toLocaleString('ru')}</span> 🪙`;
+  localStorage.setItem('class_balance',String(acc.coins));
+}
+
 </script>
 </body>
 </html>
