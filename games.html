@@ -1155,17 +1155,24 @@ document.getElementById('rouletteResult').className='roulette-result';
 
 const winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);
 const sa=(Math.PI*2)/ROULETTE_NUMS.length;
-const targetAngle=-winIdx*sa-sa/2+Math.PI*2*5;
-const startAngle=rouletteAngle;
-const totalRotation=targetAngle-startAngle;
-const duration=3500;
+
+// Текущий угол (откуда крутим)
+const from=rouletteAngle;
+// Угол, на котором должен остановиться выигрышный сектор (стрелка сверху = -Math.PI/2)
+const stopAt=winIdx*sa+sa/2;
+// Целевой абсолютный угол: минимум 6 полных оборотов + нужная позиция
+let to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;
+// Если вдруг получилось меньше 5 оборотов — добавляем ещё круг
+while(to-from<Math.PI*2*5)to+=Math.PI*2;
+
+const duration=4000;
 const startTime=performance.now();
 
 function animate(now){
 const elapsed=now-startTime;
 const t=Math.min(elapsed/duration,1);
 const eased=1-Math.pow(1-t,3);
-rouletteAngle=startAngle+totalRotation*eased;
+rouletteAngle=from+(to-from)*eased;
 drawRouletteWheel(rouletteAngle);
 if(t<1){requestAnimationFrame(animate);}
 else{
@@ -1190,6 +1197,7 @@ document.getElementById('rouletteResult').className='roulette-result';
 }
 requestAnimationFrame(animate);
 }
+
 drawRouletteWheel(0);
 </script>
 
