@@ -2258,7 +2258,7 @@ function bankWithdrawAction(){
 
 function bankInterest(){
   if(mktBankDeposit>0){
-    var rate=0.05/(24*60*6);
+    var rate=0.005/(24*600*6);
     var interest=Math.max(1,Math.round(mktBankDeposit*rate));
     mktBankDeposit+=interest;
     localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
