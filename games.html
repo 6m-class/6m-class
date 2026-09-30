@@ -171,6 +171,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="nav-left">
 <a href="index.html" class="nav-btn">&#8592; Главная</a>
 <a href="chat.html" class="nav-btn">&#128172; Чат</a>
+<a href="rating.html" class="nav-btn">🏆 Рейтинг</a>
 </div>
 <button class="logout-btn" onclick="logout()">Выйти</button>
 </nav>
@@ -184,7 +185,6 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-tab" onclick="switchGame('durak',this)">&#129528; Дурак</div>
 <div class="game-tab" onclick="switchGame('case',this)">&#128230; Кейс на монеты</div>
 <div class="game-tab" onclick="switchGame('roulette',this)">&#127920; Рулетка</div>
-<a href="rating.html" class="nav-btn">🏆 Рейтинг</a>
 </div>
 <!-- ШАШКИ -->
 <div class="game-section active" id="game-checkers">
@@ -394,7 +394,6 @@ if(name==='case')updateCaseBalance();
 if(name==='roulette'){updateRouletteBalance();drawRouletteWheel(rouletteAngle||0);}
 }
 </script>
-
 <script>
 // ===== ШАШКИ =====
 const chCanvas=document.getElementById('checkersCanvas');
@@ -414,7 +413,6 @@ function updateChCounts(){document.getElementById('chMyPieces').textContent=coun
 function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
 newCheckersGame();
 </script>
-
 <script>
 // ===== МИНИ-ГОНКИ =====
 const rcCanvas=document.getElementById('racingCanvas');
@@ -441,7 +439,6 @@ rcCanvas.addEventListener('touchmove',e=>{if(touchStartX===null)return;const dx=
 rcCanvas.addEventListener('touchend',()=>{rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
 drawRace();
 </script>
-
 <script>
 // ===== АИМ-ТРЕНАЖЁР =====
 const aimCanvas=document.getElementById('aimCanvas');
@@ -467,7 +464,6 @@ aimWrap.addEventListener('mousemove',e=>{if(!aimRunning)return;const rect=aimCan
 function aimReset(){aimRunning=false;if(aimAnimId)cancelAnimationFrame(aimAnimId);if(aimTimerId)clearInterval(aimTimerId);aimWrap.classList.remove('aim-playing');aimCrosshair.classList.remove('active');aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];aimTimeLeft=AIM_LEVELS[aimLevel].duration;document.getElementById('aimStartBtn').disabled=false;document.getElementById('aimResults').classList.remove('show');updateAimHUD();aimDrawIdle();document.getElementById('aimStatus').textContent='Уровень '+aimLevel+'. Нажми «Старт»';document.getElementById('aimStatus').className='game-status';}
 aimDrawIdle();
 </script>
-
 <script>
 // ===== FLAPPY BIRD =====
 const fbCanvas=document.getElementById('flappyCanvas');
@@ -495,11 +491,18 @@ document.addEventListener('keydown',e=>{if(e.code==='Space'){if(fbRunning&&!fbDe
 fbCanvas.addEventListener('touchstart',e=>{if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();},{passive:false});
 fbDraw();
 </script>
-
 <script>
 // ===== КАЗИНО =====
 let casinoBalance=getUserBalance();
-function updateBalance(){setUserBalance(casinoBalance);document.getElementById('balanceNum').textContent=casinoBalance;if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;if(document.getElementById('rouletteBalanceNum'))document.getElementById('rouletteBalanceNum').textContent=casinoBalance;}
+let _syncTimer=null;
+function updateBalance(){
+setUserBalance(casinoBalance);
+document.getElementById('balanceNum').textContent=casinoBalance;
+if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;
+if(document.getElementById('rouletteBalanceNum'))document.getElementById('rouletteBalanceNum').textContent=casinoBalance;
+if(_syncTimer)clearTimeout(_syncTimer);
+_syncTimer=setTimeout(syncBalanceToServer,3000);
+}
 function resetBalance(){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent='Баланс сброшен до 100 🪙';document.getElementById('wheelResult').className='wheel-result';document.getElementById('slotsResult').textContent='';}
 updateBalance();
 function switchCasino(name,el){
@@ -615,7 +618,6 @@ wheelAngle=0;
 const targetIndex=Math.floor(Math.random()*WHEEL_SIZE);
 const sectorAngle=(Math.PI*2)/WHEEL_SIZE;
 const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;
-rouletteAngle=0;
 const startAngle=0;
 const totalRotation=targetAngle-startAngle;
 const duration=1200;
@@ -966,16 +968,12 @@ const CASE_ITEMS = [
   {name:'x100',mult:100,color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff00aa" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M14 20 L28 34 L14 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 20 L52 34 L66 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M20 24 L30 30 L20 36 L30 32" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 24 L50 30 L60 36 L50 32" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 42 L58 42 L54 56 L26 56 Z" fill="#fff"/><path d="M30 44 L30 56 M40 44 L40 56 M50 44 L50 56" stroke="#000" stroke-width="2"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x100</text></svg>'},
   {name:'x500',mult:500,color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff0000" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M10 18 L28 34 L10 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M70 18 L52 34 L70 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M16 22 L28 28 L16 34 L28 30" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 22 L52 28 L64 34 L52 30" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 40 L60 40 L56 58 L24 58 Z" fill="#fff"/><path d="M29 42 L29 58 M40 42 L40 58 M51 42 L51 58" stroke="#000" stroke-width="2.5"/><path d="M26 60 L30 66 M40 60 L40 68 M54 60 L50 66" stroke="#fff" stroke-width="2" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x500</text></svg>'}
 ];
-
 const CASE_WEIGHTS = [25, 25, 18, 12, 8, 5, 3, 2, 1.5, 0.5];
-
 let caseSpinning = false;
-
 function updateCaseBalance() {
   const el = document.getElementById('caseBalanceNum');
   if (el) el.textContent = casinoBalance;
 }
-
 function renderCaseList() {
   const container = document.getElementById('caseItemsList');
   if (!container) return;
@@ -990,7 +988,6 @@ function renderCaseList() {
   container.innerHTML = html;
 }
 renderCaseList();
-
 function weightedRandomCase() {
   const total = CASE_WEIGHTS.reduce((a, b) => a + b, 0);
   let r = Math.random() * total;
@@ -1000,7 +997,6 @@ function weightedRandomCase() {
   }
   return 0;
 }
-
 function buildCaseTrack(winningIdx) {
   const total = 50;
   const track = [];
@@ -1010,7 +1006,6 @@ function buildCaseTrack(winningIdx) {
   track[45] = CASE_ITEMS[winningIdx];
   return track;
 }
-
 function openCase() {
   if (caseSpinning) return;
   const betEl = document.getElementById('caseBet');
@@ -1025,14 +1020,11 @@ function openCase() {
   caseSpinning = true;
   document.getElementById('caseOpenBtn').disabled = true;
   document.getElementById('caseResult').textContent = 'Крутится...';
-
   const winIdx = weightedRandomCase();
   const winningItem = CASE_ITEMS[winIdx];
   const track = buildCaseTrack(winIdx);
-
   const trackEl = document.getElementById('caseTrack');
   if (!trackEl) return;
-
   let trackHTML = '';
   track.forEach(d => {
     trackHTML += '<div class="case-item" style="border-color:' + d.color + '40">' +
@@ -1041,7 +1033,6 @@ function openCase() {
       '</div>';
   });
   trackEl.innerHTML = trackHTML;
-
   const speedEl = document.getElementById('caseSpeed');
   const speed = parseInt(speedEl ? speedEl.value : '5') || 5;
   const duration = Math.max(2000, 6000 - speed * 400);
@@ -1049,14 +1040,11 @@ function openCase() {
   const winEl = document.querySelector('.case-window');
   const winW = winEl ? winEl.offsetWidth : 300;
   const targetOffset = -(45 * itemWidth) + (winW / 2 - itemWidth / 2);
-
   trackEl.style.transition = 'none';
   trackEl.style.transform = 'translateX(0)';
   void trackEl.offsetWidth;
-
   trackEl.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.15,0.9,0.2,1)';
   trackEl.style.transform = 'translateX(' + targetOffset + 'px)';
-
   clearTimeout(window._caseTimer);
   window._caseTimer = setTimeout(() => {
     caseSpinning = false;
@@ -1081,9 +1069,7 @@ const ROULETTE_NUMS=[];
 for(let i=0;i<=30;i++){ROULETTE_NUMS.push({num:i,color:i===0?'green':(i%2===1?'red':'black')});}
 const ROULETTE_COLORS={green:'#00cc44',red:'#cc2200',black:'#1a1a1a'};
 let rouletteAngle=0,rouletteSpinning=false,rouletteBetType=null,rouletteBetNumber=0;
-
 function updateRouletteBalance(){const el=document.getElementById('rouletteBalanceNum');if(el)el.textContent=casinoBalance;}
-
 function drawRouletteWheel(angle){
 const canvas=document.getElementById('rouletteCanvas');
 if(!canvas)return;
@@ -1125,7 +1111,6 @@ ctx.strokeStyle='#ff0033';
 ctx.lineWidth=3;
 ctx.stroke();
 }
-
 function rouletteSelectBet(type){
 if(rouletteSpinning)return;
 rouletteBetType=type;
@@ -1141,7 +1126,6 @@ else if(type==='black')desc='На чёрное (×5)';
 else if(type==='green')desc='На зелёное (×100)';
 document.getElementById('rouletteCurrentBet').textContent='Ставка: '+desc;
 }
-
 function spinRoulette(){
 if(rouletteSpinning)return;
 if(!rouletteBetType){document.getElementById('rouletteResult').textContent='Выбери ставку!';return;}
@@ -1153,22 +1137,14 @@ rouletteSpinning=true;
 document.getElementById('rouletteSpinBtn').disabled=true;
 document.getElementById('rouletteResult').textContent='Крутится...';
 document.getElementById('rouletteResult').className='roulette-result';
-
 const winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);
 const sa=(Math.PI*2)/ROULETTE_NUMS.length;
-
-// Текущий угол (откуда крутим)
 const from=rouletteAngle;
-// Угол, на котором должен остановиться выигрышный сектор (стрелка сверху = -Math.PI/2)
 const stopAt=winIdx*sa+sa/2;
-// Целевой абсолютный угол: минимум 6 полных оборотов + нужная позиция
 let to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;
-// Если вдруг получилось меньше 5 оборотов — добавляем ещё круг
 while(to-from<Math.PI*2*5)to+=Math.PI*2;
-
 const duration=4000;
 const startTime=performance.now();
-
 function animate(now){
 const elapsed=now-startTime;
 const t=Math.min(elapsed/duration,1);
@@ -1198,7 +1174,6 @@ document.getElementById('rouletteResult').className='roulette-result';
 }
 requestAnimationFrame(animate);
 }
-
 drawRouletteWheel(0);
 // ===== СИНХРОНИЗАЦИЯ БАЛАНСА С accounts.json =====
 const SYNC_REPO='6m-class/6m-class';
@@ -1208,9 +1183,7 @@ const SYNC_TOKEN=_se.map((c,i)=>String.fromCharCode(c^_sk.charCodeAt(i%_sk.lengt
 const SYNC_HEADERS={'Authorization':`Bearer ${SYNC_TOKEN}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
 let _syncUser=null;
 try{_syncUser=JSON.parse(localStorage.getItem('class_user')||'null');}catch(e){}
-
 function utf8ToB64(str){return btoa([...new TextEncoder().encode(str)].map(b=>String.fromCharCode(b)).join(''))}
-
 let _syncLock=false;
 async function syncBalanceToServer(){
 if(!_syncUser||_syncLock)return;
@@ -1239,11 +1212,8 @@ body:JSON.stringify(body)
 }catch(e){console.log('Sync error:',e.message);}
 finally{_syncLock=false;}
 }
-
 setInterval(syncBalanceToServer,30000);
 window.addEventListener('beforeunload',syncBalanceToServer);
-
 </script>
-
 </body>
 </html>
