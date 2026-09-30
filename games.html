@@ -445,108 +445,308 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="mkt-toast" id="mktToast"></div>
 </div>
 <script>
-function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
+// ===== ОСНОВНЫЕ ФУНКЦИИ =====
+function applyStoredTheme(){
+  var t=localStorage.getItem('site_theme')||'red';
+  document.documentElement.setAttribute('data-theme',t);
+}
 applyStoredTheme();
-const isMobile=window.innerWidth<600;
-const pc=document.getElementById('particles');
-const count=isMobile?10:20;
-for(let i=0;i<count;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
-function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
+
+(function(){
+  var isMobile=window.innerWidth<600;
+  var pc=document.getElementById('particles');
+  var count=isMobile?10:20;
+  for(var i=0;i<count;i++){
+    var p=document.createElement('div');
+    p.classList.add('particle');
+    var s=Math.random()*3+1;
+    p.style.width=s+'px';
+    p.style.height=s+'px';
+    p.style.left=Math.random()*100+'vw';
+    p.style.animationDuration=(Math.random()*10+6)+'s';
+    p.style.animationDelay=Math.random()*5+'s';
+    pc.appendChild(p);
+  }
+})();
+
+function logout(){
+  localStorage.removeItem('class_user');
+  localStorage.removeItem('class_avatar');
+  window.location.href='login.html';
+}
+
 function switchGame(name,el){
-  document.querySelectorAll('.game-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.game-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.game-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.game-section').forEach(function(s){s.classList.remove('active');});
   el.classList.add('active');
   document.getElementById('game-'+name).classList.add('active');
-  if(name==='casino'){casinoBalance=getUserBalance();updateBalance();drawWheel(wheelAngle||0);}
-  if(name==='case'){casinoBalance=getUserBalance();updateCaseBalance();}
-  if(name==='roulette'){casinoBalance=getUserBalance();updateBalance();updateRouletteBalance();drawRouletteWheel(rouletteAngle||0);}
-  if(name==='market'){mktBalance=getUserBalance();updateMktBalance();renderStockGrid();}
+  if(name==='casino'){
+    casinoBalance=getUserBalance()||100;
+    updateBalance();
+    if(typeof drawWheel==='function') drawWheel(wheelAngle||0);
+  }
+  if(name==='case'){
+    casinoBalance=getUserBalance()||100;
+    updateCaseBalance();
+  }
+  if(name==='roulette'){
+    casinoBalance=getUserBalance()||100;
+    updateBalance();
+    updateRouletteBalance();
+    if(typeof drawRouletteWheel==='function') drawRouletteWheel(rouletteAngle||0);
+  }
+  if(name==='market'){
+    mktBalance=getUserBalance()||100;
+    updateMktBalance();
+    renderStockGrid();
+  }
 }
 </script>
 
 <script>
 // ===== ШАШКИ =====
-const chCanvas=document.getElementById('checkersCanvas');
-const chCtx=chCanvas.getContext('2d');
-const CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
-let chBoard=[],chSelected=null,chTurn='white',chMustCapture=false,chGameOver=false;
-function newCheckersGame(){chBoard=[];for(let r=0;r<CH_SIZE;r++){chBoard[r]=[];for(let c=0;c<CH_SIZE;c++){chBoard[r][c]=null;if((r+c)%2===1){if(r<3)chBoard[r][c]={color:'black',king:false};else if(r>4)chBoard[r][c]={color:'white',king:false};}}}chSelected=null;chTurn='white';chGameOver=false;updateChStatus('Твой ход');updateChCounts();drawCheckers();}
-function drawCheckers(){chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;chCtx.fillStyle=dark?'#333':'#888';chCtx.fillRect(x,y,CH_CELL,CH_CELL);const p=chBoard[r][c];if(p){chCtx.beginPath();chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';chCtx.fill();chCtx.strokeStyle=p.color==='white'?'#999':'#444';chCtx.lineWidth=2;chCtx.stroke();if(p.king){chCtx.fillStyle='#ff0033';chCtx.font='bold 20px Orbitron';chCtx.textAlign='center';chCtx.textBaseline='middle';chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);}}}if(chSelected){const{r,c}=chSelected;chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;chCtx.strokeRect(c*CH_CELL+2,r*CH_CELL+2,CH_CELL-4,CH_CELL-4);const moves=getMovesForPiece(r,c);moves.forEach(m=>{chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);});}}
-function getMovesForPiece(r,c){const p=chBoard[r][c];if(!p)return[];const moves=[];const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc] of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){const mid=chBoard[mr][mc];if(mid&&mid.color!==p.color)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});}}if(!chMustCapture){for(const[dr,dc] of dirs){const tr=r+dr,tc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null)moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}}return moves;}
-function hasAnyCaptures(color){for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color){const dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];for(const[dr,dc] of dirs){const tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color)return true;}}}return false;}
-function getAllMoves(color){chMustCapture=hasAnyCaptures(color);const all=[];for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++){const p=chBoard[r][c];if(p&&p.color===color)all.push(...getMovesForPiece(r,c));}chMustCapture=false;return all;}
-function makeMove(move){const p=chBoard[move.fromR][move.fromC];chBoard[move.fromR][move.fromC]=null;chBoard[move.toR][move.toC]=p;if(move.capture)chBoard[move.capR][move.capC]=null;if(move.toR===0||move.toR===CH_SIZE-1)p.king=true;}
-chCanvas.addEventListener('click',e=>{if(chGameOver||chTurn!=='white')return;const rect=chCanvas.getBoundingClientRect();const scale=CH_W/rect.width;const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;const c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE)return;if(chSelected){const moves=getMovesForPiece(chSelected.r,chSelected.c);const move=moves.find(m=>m.toR===r&&m.toC===c);if(move){makeMove(move);const captures=getMovesForPiece(r,c).filter(m=>m.capture);if(move.capture&&captures.length>0){chSelected={r,c};chMustCapture=true;drawCheckers();updateChStatus('Бьёшь ещё!');return;}chSelected=null;chMustCapture=false;chTurn='black';updateChCounts();drawCheckers();updateChStatus('Ход компьютера...');setTimeout(cpuMove,600);return;}}const p=chBoard[r][c];if(p&&p.color==='white'){const allMoves=getAllMoves('white');chMustCapture=allMoves.some(m=>m.capture);chSelected={r,c};drawCheckers();}});
-function cpuMove(){const allMoves=getAllMoves('black');if(allMoves.length===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}const captures=allMoves.filter(m=>m.capture);const move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];makeMove(move);let more=true;while(more){const caps=getMovesForPiece(move.toR,move.toC).filter(m=>m.capture);if(caps.length>0)makeMove(caps[Math.floor(Math.random()*caps.length)]);else more=false;}chMustCapture=false;chTurn='white';updateChCounts();drawCheckers();if(countPieces('white')===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}if(countPieces('black')===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}if(getAllMoves('white').length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}updateChStatus('Твой ход');}
-function countPieces(color){let n=0;for(let r=0;r<CH_SIZE;r++)for(let c=0;c<CH_SIZE;c++)if(chBoard[r][c]&&chBoard[r][c].color===color)n++;return n;}
-function updateChCounts(){  document.getElementById('chMyPieces').textContent=countPieces('white');
+var chCanvas=document.getElementById('checkersCanvas');
+var chCtx=chCanvas.getContext('2d');
+var CH_SIZE=8,CH_CELL=60,CH_W=CH_CELL*CH_SIZE;
+var chBoard=[],chSelected=null,chTurn='white',chMustCapture=false,chGameOver=false;
+
+function newCheckersGame(){
+  chBoard=[];
+  for(var r=0;r<CH_SIZE;r++){
+    chBoard[r]=[];
+    for(var c=0;c<CH_SIZE;c++){
+      chBoard[r][c]=null;
+      if((r+c)%2===1){
+        if(r<3) chBoard[r][c]={color:'black',king:false};
+        else if(r>4) chBoard[r][c]={color:'white',king:false};
+      }
+    }
+  }
+  chSelected=null;chTurn='white';chGameOver=false;
+  updateChStatus('Твой ход');updateChCounts();drawCheckers();
+}
+
+function drawCheckers(){
+  chCtx.fillStyle='#1a1a1a';chCtx.fillRect(0,0,CH_W,CH_W);
+  for(var r=0;r<CH_SIZE;r++)for(var c=0;c<CH_SIZE;c++){
+    var x=c*CH_CELL,y=r*CH_CELL,dark=(r+c)%2===1;
+    chCtx.fillStyle=dark?'#333':'#888';
+    chCtx.fillRect(x,y,CH_CELL,CH_CELL);
+    var p=chBoard[r][c];
+    if(p){
+      chCtx.beginPath();
+      chCtx.arc(x+CH_CELL/2,y+CH_CELL/2,CH_CELL/2-6,0,Math.PI*2);
+      chCtx.fillStyle=p.color==='white'?'#f0f0f0':'#1a1a1a';
+      chCtx.fill();
+      chCtx.strokeStyle=p.color==='white'?'#999':'#444';
+      chCtx.lineWidth=2;chCtx.stroke();
+      if(p.king){
+        chCtx.fillStyle='#ff0033';
+        chCtx.font='bold 20px Orbitron';
+        chCtx.textAlign='center';chCtx.textBaseline='middle';
+        chCtx.fillText('K',x+CH_CELL/2,y+CH_CELL/2);
+      }
+    }
+  }
+  if(chSelected){
+    var sr=chSelected.r,sc=chSelected.c;
+    chCtx.strokeStyle='#ff0033';chCtx.lineWidth=3;
+    chCtx.strokeRect(sc*CH_CELL+2,sr*CH_CELL+2,CH_CELL-4,CH_CELL-4);
+    var moves=getMovesForPiece(sr,sc);
+    moves.forEach(function(m){
+      chCtx.fillStyle=m.capture?'rgba(0,255,102,0.3)':'rgba(255,0,51,0.2)';
+      chCtx.fillRect(m.toC*CH_CELL,m.toR*CH_CELL,CH_CELL,CH_CELL);
+    });
+  }
+}
+
+function getMovesForPiece(r,c){
+  var p=chBoard[r][c];if(!p) return[];
+  var moves=[];
+  var dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];
+  for(var d=0;d<dirs.length;d++){
+    var dr=dirs[d][0],dc=dirs[d][1];
+    var tr=r+dr*2,tc=c+dc*2,mr=r+dr,mc=c+dc;
+    if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null){
+      var mid=chBoard[mr][mc];
+      if(mid&&mid.color!==p.color) moves.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:true,capR:mr,capC:mc});
+    }
+  }
+  if(!chMustCapture){
+    for(var d2=0;d2<dirs.length;d2++){
+      var dr2=dirs[d2][0],dc2=dirs[d2][1];
+      var tr2=r+dr2,tc2=c+dc2;
+      if(tr2>=0&&tr2<CH_SIZE&&tc2>=0&&tc2<CH_SIZE&&chBoard[tr2][tc2]===null)
+        moves.push({fromR:r,fromC:c,toR:tr2,toC:tc2,capture:false});
+    }
+  }
+  return moves;
+}
+
+function hasAnyCaptures(color){
+  for(var r=0;r<CH_SIZE;r++)for(var c=0;c<CH_SIZE;c++){
+    var p=chBoard[r][c];
+    if(p&&p.color===color){
+      var dirs=[[-1,-1],[-1,1],[1,-1],[1,1]];
+      for(var d=0;d<dirs.length;d++){
+        var tr=r+dirs[d][0]*2,tc=c+dirs[d][1]*2,mr=r+dirs[d][0],mc=c+dirs[d][1];
+        if(tr>=0&&tr<CH_SIZE&&tc>=0&&tc<CH_SIZE&&chBoard[tr][tc]===null&&chBoard[mr]&&chBoard[mr][mc]&&chBoard[mr][mc].color!==color) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function getAllMoves(color){
+  chMustCapture=hasAnyCaptures(color);
+  var all=[];
+  for(var r=0;r<CH_SIZE;r++)for(var c=0;c<CH_SIZE;c++){
+    var p=chBoard[r][c];
+    if(p&&p.color===color) all=all.concat(getMovesForPiece(r,c));
+  }
+  chMustCapture=false;
+  return all;
+}
+
+function makeMove(move){
+  var p=chBoard[move.fromR][move.fromC];
+  chBoard[move.fromR][move.fromC]=null;
+  chBoard[move.toR][move.toC]=p;
+  if(move.capture) chBoard[move.capR][move.capC]=null;
+  if(move.toR===0||move.toR===CH_SIZE-1) p.king=true;
+}
+
+chCanvas.addEventListener('click',function(e){
+  if(chGameOver||chTurn!=='white') return;
+  var rect=chCanvas.getBoundingClientRect();
+  var scale=CH_W/rect.width;
+  var x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;
+  var c=Math.floor(x/CH_CELL),r=Math.floor(y/CH_CELL);
+  if(r<0||r>=CH_SIZE||c<0||c>=CH_SIZE) return;
+  if(chSelected){
+    var moves=getMovesForPiece(chSelected.r,chSelected.c);
+    var move=moves.find(function(m){return m.toR===r&&m.toC===c;});
+    if(move){
+      makeMove(move);
+      var captures=getMovesForPiece(r,c).filter(function(m){return m.capture;});
+      if(move.capture&&captures.length>0){
+        chSelected={r:r,c:c};chMustCapture=true;drawCheckers();
+        updateChStatus('Бьёшь ещё!');return;
+      }
+      chSelected=null;chMustCapture=false;chTurn='black';
+      updateChCounts();drawCheckers();
+      updateChStatus('Ход компьютера...');
+      setTimeout(cpuMove,600);return;
+    }
+  }
+  var p=chBoard[r][c];
+  if(p&&p.color==='white'){
+    var allMoves=getAllMoves('white');
+    chMustCapture=allMoves.some(function(m){return m.capture;});
+    chSelected={r:r,c:c};drawCheckers();
+  }
+});
+
+function cpuMove(){
+  var allMoves=getAllMoves('black');
+  if(allMoves.length===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
+  var captures=allMoves.filter(function(m){return m.capture;});
+  var move=captures.length>0?captures[Math.floor(Math.random()*captures.length)]:allMoves[Math.floor(Math.random()*allMoves.length)];
+  makeMove(move);
+  var more=true;
+  while(more){
+    var caps=getMovesForPiece(move.toR,move.toC).filter(function(m){return m.capture;});
+    if(caps.length>0) makeMove(caps[Math.floor(Math.random()*caps.length)]);
+    else more=false;
+  }
+  chMustCapture=false;chTurn='white';
+  updateChCounts();drawCheckers();
+  if(countPieces('white')===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+  if(countPieces('black')===0){updateChStatus('Ты выиграл! 🎉','win');chGameOver=true;return;}
+  if(getAllMoves('white').length===0){updateChStatus('Компьютер выиграл 😵','lose');chGameOver=true;return;}
+  updateChStatus('Твой ход');
+}
+
+function countPieces(color){
+  var n=0;
+  for(var r=0;r<CH_SIZE;r++)for(var c=0;c<CH_SIZE;c++)
+    if(chBoard[r][c]&&chBoard[r][c].color===color) n++;
+  return n;
+}
+
+function updateChCounts(){
+  document.getElementById('chMyPieces').textContent=countPieces('white');
   document.getElementById('chCpuPieces').textContent=countPieces('black');
 }
+
 function updateChStatus(text,cls){
-  const el=document.getElementById('chStatus');
+  var el=document.getElementById('chStatus');
   el.textContent=text;
   el.className='game-status'+(cls?' '+cls:'');
 }
+
 newCheckersGame();
 </script>
 
 <script>
 // ===== МИНИ-ГОНКИ =====
-const rcCanvas=document.getElementById('racingCanvas');
-const rcCtx=rcCanvas.getContext('2d');
-const RC_W=320,RC_H=500,RC_LANES=4,RC_LANE_W=RC_W/RC_LANES;
-let rcPlayer={lane:1.5,y:RC_H-90},rcObstacles=[],rcRoadOffset=0,rcSpeed=3,rcScore=0,rcRunning=false,rcAnimId=null,rcKeys={};
-let rcBest=parseInt(localStorage.getItem('race_best')||'0');
+var rcCanvas=document.getElementById('racingCanvas');
+var rcCtx=rcCanvas.getContext('2d');
+var RC_W=320,RC_H=500,RC_LANES=4,RC_LANE_W=RC_W/RC_LANES;
+var rcPlayer={lane:1.5,y:RC_H-90},rcObstacles=[],rcRoadOffset=0,rcSpeed=3,rcScore=0,rcRunning=false,rcAnimId=null,rcKeys={};
+var rcBest=parseInt(localStorage.getItem('race_best')||'0');
 document.getElementById('raceBest').textContent=rcBest;
-const CAR_COLORS=['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff','#ff8800','#ff00ff'];
+var CAR_COLORS=['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff','#ff8800','#ff00ff'];
+
 function resetRace(){
-  rcPlayer={lane:1.5,y:RC_H-90};
-  rcObstacles=[];rcRoadOffset=0;rcSpeed=3;rcScore=0;rcRunning=false;
+  rcPlayer={lane:1.5,y:RC_H-90};rcObstacles=[];rcRoadOffset=0;rcSpeed=3;rcScore=0;rcRunning=false;
   document.getElementById('raceScore').textContent='0';
   document.getElementById('raceStatus').textContent='Нажми «Старт»';
   document.getElementById('raceStatus').className='game-status';
   document.getElementById('raceStartBtn').disabled=false;
-  if(rcAnimId)cancelAnimationFrame(rcAnimId);
+  if(rcAnimId) cancelAnimationFrame(rcAnimId);
   drawRace();
 }
+
 function startRace(){
-  if(rcRunning)return;
+  if(rcRunning) return;
   rcRunning=true;
-  rcPlayer={lane:1.5,y:RC_H-90};
-  rcObstacles=[];rcSpeed=3;rcScore=0;rcRoadOffset=0;
+  rcPlayer={lane:1.5,y:RC_H-90};rcObstacles=[];rcSpeed=3;rcScore=0;rcRoadOffset=0;
   document.getElementById('raceStartBtn').disabled=true;
   document.getElementById('raceStatus').textContent='';
   document.getElementById('raceStatus').className='game-status';
   raceLoop();
 }
+
 function spawnObstacle(){
-  const tooClose=rcObstacles.some(o=>o.y<100);
-  if(tooClose)return;
-  const lane=Math.floor(Math.random()*RC_LANES);
-  const type=Math.random();
-  let kind='car';
-  if(type<0.3)kind='cone';
-  else if(type<0.45)kind='barrel';
-  else if(type<0.55)kind='oil';
-  rcObstacles.push({lane,y:-50,kind,color:CAR_COLORS[Math.floor(Math.random()*CAR_COLORS.length)]});
+  var tooClose=rcObstacles.some(function(o){return o.y<100;});
+  if(tooClose) return;
+  var lane=Math.floor(Math.random()*RC_LANES);
+  var type=Math.random();
+  var kind='car';
+  if(type<0.3) kind='cone';
+  else if(type<0.45) kind='barrel';
+  else if(type<0.55) kind='oil';
+  rcObstacles.push({lane:lane,y:-50,kind:kind,color:CAR_COLORS[Math.floor(Math.random()*CAR_COLORS.length)]});
 }
+
 function raceLoop(){
-  if(!rcRunning)return;
-  rcRoadOffset+=rcSpeed;
-  rcScore++;
+  if(!rcRunning) return;
+  rcRoadOffset+=rcSpeed;rcScore++;
   document.getElementById('raceScore').textContent=rcScore;
   rcSpeed=3+Math.min(rcScore/250,6);
-  if(rcKeys.left&&rcPlayer.lane>0.5)rcPlayer.lane-=0.1;
-  if(rcKeys.right&&rcPlayer.lane<RC_LANES-1.5)rcPlayer.lane+=0.1;
-  if(Math.random()<0.025+rcSpeed/250)spawnObstacle();
-  rcObstacles.forEach(o=>o.y+=rcSpeed);
-  rcObstacles=rcObstacles.filter(o=>o.y<RC_H+60);
-  const px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2,py=rcPlayer.y;
-  for(const o of rcObstacles){
-    const ox=o.lane*RC_LANE_W+RC_LANE_W/2,oy=o.y;
-    const dx=Math.abs(px-ox),dy=Math.abs(py-oy);
-    let hitW=RC_LANE_W*0.65,hitH=46;
-    if(o.kind==='cone')hitH=30;
+  if(rcKeys.left&&rcPlayer.lane>0.5) rcPlayer.lane-=0.1;
+  if(rcKeys.right&&rcPlayer.lane<RC_LANES-1.5) rcPlayer.lane+=0.1;
+  if(Math.random()<0.025+rcSpeed/250) spawnObstacle();
+  rcObstacles.forEach(function(o){o.y+=rcSpeed;});
+  rcObstacles=rcObstacles.filter(function(o){return o.y<RC_H+60;});
+  var px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2,py=rcPlayer.y;
+  for(var i=0;i<rcObstacles.length;i++){
+    var o=rcObstacles[i];
+    var ox=o.lane*RC_LANE_W+RC_LANE_W/2,oy=o.y;
+    var dx=Math.abs(px-ox),dy=Math.abs(py-oy);
+    var hitW=RC_LANE_W*0.65,hitH=46;
+    if(o.kind==='cone') hitH=30;
     if(o.kind==='oil'){hitW=RC_LANE_W*0.7;hitH=40;}
     if(dx<hitW&&dy<hitH){
       rcRunning=false;
@@ -554,12 +754,10 @@ function raceLoop(){
       document.getElementById('raceStatus').className='game-status lose';
       document.getElementById('raceStartBtn').disabled=false;
       if(rcScore>rcBest){
-        rcBest=rcScore;
-        localStorage.setItem('race_best',rcBest);
+        rcBest=rcScore;localStorage.setItem('race_best',rcBest);
         document.getElementById('raceBest').textContent=rcBest;
       }
-      drawRace();
-      return;
+      drawRace();return;
     }
     if(o.kind==='oil'&&dy<40&&dx<RC_LANE_W*0.7&&!o.slipped){
       o.slipped=true;
@@ -572,24 +770,26 @@ function raceLoop(){
   drawRace();
   rcAnimId=requestAnimationFrame(raceLoop);
 }
+
 function drawRace(){
   rcCtx.fillStyle='#2a2a2a';rcCtx.fillRect(0,0,RC_W,RC_H);
   rcCtx.fillStyle='#1a3a1a';rcCtx.fillRect(0,0,3,RC_H);rcCtx.fillRect(RC_W-3,0,3,RC_H);
   rcCtx.strokeStyle='rgba(255,255,255,0.3)';rcCtx.lineWidth=2;
   rcCtx.setLineDash([25,20]);rcCtx.lineDashOffset=-rcRoadOffset;
-  for(let i=1;i<RC_LANES;i++){rcCtx.beginPath();rcCtx.moveTo(i*RC_LANE_W,0);rcCtx.lineTo(i*RC_LANE_W,RC_H);rcCtx.stroke();}
+  for(var i=1;i<RC_LANES;i++){rcCtx.beginPath();rcCtx.moveTo(i*RC_LANE_W,0);rcCtx.lineTo(i*RC_LANE_W,RC_H);rcCtx.stroke();}
   rcCtx.setLineDash([]);
   rcCtx.fillStyle='rgba(255,255,255,0.15)';rcCtx.fillRect(3,0,RC_W-6,4);rcCtx.fillRect(3,RC_H-4,RC_W-6,4);
-  rcObstacles.forEach(o=>{
-    const x=o.lane*RC_LANE_W+RC_LANE_W/2,y=o.y;
-    if(o.kind==='car')drawCar(x,y,o.color,'#000',false);
-    else if(o.kind==='cone')drawCone(x,y);
-    else if(o.kind==='barrel')drawBarrel(x,y);
-    else if(o.kind==='oil')drawOil(x,y);
+  rcObstacles.forEach(function(o){
+    var x=o.lane*RC_LANE_W+RC_LANE_W/2,y=o.y;
+    if(o.kind==='car') drawCar(x,y,o.color,'#000',false);
+    else if(o.kind==='cone') drawCone(x,y);
+    else if(o.kind==='barrel') drawBarrel(x,y);
+    else if(o.kind==='oil') drawOil(x,y);
   });
-  const px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2;
+  var px=rcPlayer.lane*RC_LANE_W+RC_LANE_W/2;
   drawCar(px,rcPlayer.y,'#f0f0f0','#ff0033',true);
 }
+
 function drawCar(cx,cy,bodyColor,accentColor,isPlayer){
   rcCtx.save();rcCtx.translate(cx,cy);
   rcCtx.fillStyle='rgba(0,0,0,0.3)';rcCtx.fillRect(-17,-23,34,50);
@@ -600,6 +800,7 @@ function drawCar(cx,cy,bodyColor,accentColor,isPlayer){
   rcCtx.fillStyle='#111';rcCtx.fillRect(-19,-18,4,10);rcCtx.fillRect(15,-18,4,10);rcCtx.fillRect(-19,10,4,10);rcCtx.fillRect(15,10,4,10);
   rcCtx.restore();
 }
+
 function drawCone(cx,cy){
   rcCtx.save();rcCtx.translate(cx,cy);
   rcCtx.fillStyle='rgba(0,0,0,0.3)';rcCtx.beginPath();rcCtx.arc(0,12,14,0,Math.PI*2);rcCtx.fill();
@@ -608,6 +809,7 @@ function drawCone(cx,cy){
   rcCtx.fillStyle='#cc4400';rcCtx.fillRect(-11,10,22,3);
   rcCtx.restore();
 }
+
 function drawBarrel(cx,cy){
   rcCtx.save();rcCtx.translate(cx,cy);
   rcCtx.fillStyle='rgba(0,0,0,0.3)';rcCtx.beginPath();rcCtx.arc(0,14,15,0,Math.PI*2);rcCtx.fill();
@@ -617,6 +819,7 @@ function drawBarrel(cx,cy){
   rcCtx.fillStyle='#000';rcCtx.font='bold 8px sans-serif';rcCtx.textAlign='center';rcCtx.textBaseline='middle';rcCtx.fillText('!',0,-1);
   rcCtx.restore();
 }
+
 function drawOil(cx,cy){
   rcCtx.save();rcCtx.translate(cx,cy);
   rcCtx.fillStyle='rgba(20,20,20,0.7)';rcCtx.beginPath();rcCtx.ellipse(0,0,28,16,0,0,Math.PI*2);rcCtx.fill();
@@ -624,46 +827,52 @@ function drawOil(cx,cy){
   rcCtx.beginPath();rcCtx.ellipse(8,4,8,4,0,0,Math.PI*2);rcCtx.fill();
   rcCtx.restore();
 }
-document.addEventListener('keydown',e=>{
-  const k=e.key.toLowerCase();
-  if(k==='arrowleft'||k==='a'){rcKeys.left=true;if(rcRunning)e.preventDefault();}
-  if(k==='arrowright'||k==='d'){rcKeys.right=true;if(rcRunning)e.preventDefault();}
+
+document.addEventListener('keydown',function(e){
+  var k=e.key.toLowerCase();
+  if(k==='arrowleft'||k==='a'){rcKeys.left=true;if(rcRunning) e.preventDefault();}
+  if(k==='arrowright'||k==='d'){rcKeys.right=true;if(rcRunning) e.preventDefault();}
 });
-document.addEventListener('keyup',e=>{
-  const k=e.key.toLowerCase();
-  if(k==='arrowleft'||k==='a')rcKeys.left=false;
-  if(k==='arrowright'||k==='d')rcKeys.right=false;
+document.addEventListener('keyup',function(e){
+  var k=e.key.toLowerCase();
+  if(k==='arrowleft'||k==='a') rcKeys.left=false;
+  if(k==='arrowright'||k==='d') rcKeys.right=false;
 });
-let touchStartX=null;
-rcCanvas.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;e.preventDefault();},{passive:false});
-rcCanvas.addEventListener('touchmove',e=>{
-  if(touchStartX===null)return;
-  const dx=e.touches[0].clientX-touchStartX;
+var touchStartX=null;
+rcCanvas.addEventListener('touchstart',function(e){touchStartX=e.touches[0].clientX;e.preventDefault();},{passive:false});
+rcCanvas.addEventListener('touchmove',function(e){
+  if(touchStartX===null) return;
+  var dx=e.touches[0].clientX-touchStartX;
   if(dx<-15){rcKeys.left=true;rcKeys.right=false;}
   else if(dx>15){rcKeys.right=true;rcKeys.left=false;}
   else{rcKeys.left=false;rcKeys.right=false;}
   e.preventDefault();
 },{passive:false});
-rcCanvas.addEventListener('touchend',()=>{rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
+rcCanvas.addEventListener('touchend',function(){rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
 drawRace();
 </script>
 
 <script>
 // ===== АИМ-ТРЕНАЖЁР =====
-const aimCanvas=document.getElementById('aimCanvas');
-const aimCtx=aimCanvas.getContext('2d');
-const aimWrap=document.getElementById('aimWrap');
-const aimCrosshair=document.getElementById('aimCrosshair');
-const AIM_W=600,AIM_H=400;
-let aimLevel=1,aimUnlocked=1,aimTargets=[],aimScore=0,aimHits=0,aimMisses=0,aimReactionTimes=[],aimTimeLeft=30,aimRunning=false,aimAnimId=null,aimTimerId=null,aimLastSpawn=0,aimEffects=[];
-let aimBestScores={1:0,2:0,3:0};
-try{const saved=JSON.parse(localStorage.getItem('aim_best')||'{}');aimBestScores={1:saved[1]||0,2:saved[2]||0,3:saved[3]||0};}catch(e){}
+var aimCanvas=document.getElementById('aimCanvas');
+var aimCtx=aimCanvas.getContext('2d');
+var aimWrap=document.getElementById('aimWrap');
+var aimCrosshair=document.getElementById('aimCrosshair');
+var AIM_W=600,AIM_H=400;
+var aimLevel=1,aimUnlocked=1,aimTargets=[],aimScore=0,aimHits=0,aimMisses=0,aimReactionTimes=[],aimTimeLeft=30,aimRunning=false,aimAnimId=null,aimTimerId=null,aimLastSpawn=0,aimEffects=[];
+var aimBestScores={1:0,2:0,3:0};
+try{var saved=JSON.parse(localStorage.getItem('aim_best')||'{}');aimBestScores={1:saved[1]||0,2:saved[2]||0,3:saved[3]||0};}catch(e){}
 document.getElementById('aimBest').textContent=aimBestScores[1]||0;
-const AIM_LEVELS={1:{name:'Лёгкий',targetSize:38,spawnInterval:900,lifetime:2500,duration:30,maxTargets:2},2:{name:'Средний',targetSize:26,spawnInterval:600,lifetime:1700,duration:30,maxTargets:3},3:{name:'Сложный',targetSize:18,spawnInterval:400,lifetime:1200,duration:30,maxTargets:4}};
+var AIM_LEVELS={
+  1:{name:'Лёгкий',targetSize:38,spawnInterval:900,lifetime:2500,duration:30,maxTargets:2},
+  2:{name:'Средний',targetSize:26,spawnInterval:600,lifetime:1700,duration:30,maxTargets:3},
+  3:{name:'Сложный',targetSize:18,spawnInterval:400,lifetime:1200,duration:30,maxTargets:4}
+};
+
 function aimSelectLevel(lvl,el){
-  if(lvl>aimUnlocked)return;
+  if(lvl>aimUnlocked) return;
   aimLevel=lvl;
-  document.querySelectorAll('.aim-level-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.aim-level-btn').forEach(function(b){b.classList.remove('active');});
   el.classList.add('active');
   document.getElementById('aimBest').textContent=aimBestScores[lvl]||0;
   aimDrawIdle();
@@ -671,9 +880,10 @@ function aimSelectLevel(lvl,el){
   document.getElementById('aimStatus').className='game-status';
   document.getElementById('aimResults').classList.remove('show');
 }
+
 function aimStart(){
-  if(aimRunning)return;
-  const cfg=AIM_LEVELS[aimLevel];
+  if(aimRunning) return;
+  var cfg=AIM_LEVELS[aimLevel];
   aimRunning=true;aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];aimTimeLeft=cfg.duration;aimLastSpawn=0;
   document.getElementById('aimStartBtn').disabled=true;
   document.getElementById('aimStatus').textContent='Поехали!';
@@ -682,26 +892,24 @@ function aimStart(){
   aimWrap.classList.add('aim-playing');
   aimCrosshair.classList.add('active');
   updateAimHUD();
-  aimTimerId=setInterval(()=>{
-    aimTimeLeft-=0.1;updateAimHUD();
-    if(aimTimeLeft<=0)aimEnd();
-  },100);
+  aimTimerId=setInterval(function(){aimTimeLeft-=0.1;updateAimHUD();if(aimTimeLeft<=0) aimEnd();},100);
   aimLoop();
 }
+
 function aimEnd(){
   aimRunning=false;
-  if(aimAnimId)cancelAnimationFrame(aimAnimId);
-  if(aimTimerId)clearInterval(aimTimerId);
+  if(aimAnimId) cancelAnimationFrame(aimAnimId);
+  if(aimTimerId) clearInterval(aimTimerId);
   aimWrap.classList.remove('aim-playing');
   aimCrosshair.classList.remove('active');
   document.getElementById('aimStartBtn').disabled=false;
   aimTargets=[];
-  const cfg=AIM_LEVELS[aimLevel];
-  const total=aimHits+aimMisses;
-  const acc=total>0?Math.round(aimHits/total*100):0;
-  const avgRT=aimReactionTimes.length>0?Math.round(aimReactionTimes.reduce((a,b)=>a+b,0)/aimReactionTimes.length):0;
-  const bestRT=aimReactionTimes.length>0?Math.min(...aimReactionTimes):0;
-  const finalScore=aimScore+Math.round(acc*2);
+  var cfg=AIM_LEVELS[aimLevel];
+  var total=aimHits+aimMisses;
+  var acc=total>0?Math.round(aimHits/total*100):0;
+  var avgRT=aimReactionTimes.length>0?Math.round(aimReactionTimes.reduce(function(a,b){return a+b;},0)/aimReactionTimes.length):0;
+  var bestRT=aimReactionTimes.length>0?Math.min.apply(null,aimReactionTimes):0;
+  var finalScore=aimScore+Math.round(acc*2);
   document.getElementById('aimResHits').textContent=aimHits;
   document.getElementById('aimResMiss').textContent=aimMisses;
   document.getElementById('aimResAcc').textContent=acc+'%';
@@ -721,54 +929,56 @@ function aimEnd(){
   }
   if(aimLevel<3&&aimHits>=15){
     aimUnlocked=Math.max(aimUnlocked,aimLevel+1);
-    const nextBtn=document.getElementById('aimLvl'+(aimLevel+1));
-    if(nextBtn)nextBtn.classList.remove('locked');
+    var nextBtn=document.getElementById('aimLvl'+(aimLevel+1));
+    if(nextBtn) nextBtn.classList.remove('locked');
     document.getElementById('aimStatus').textContent+=' 📖 Открыт уровень '+(aimLevel+1)+'!';
   }
   aimDrawIdle();
 }
+
 function updateAimHUD(){
   document.getElementById('aimScore').textContent=aimScore;
-  const total=aimHits+aimMisses;
+  var total=aimHits+aimMisses;
   document.getElementById('aimAcc').textContent=(total>0?Math.round(aimHits/total*100):0)+'%';
   document.getElementById('aimTime').textContent=Math.max(0,Math.ceil(aimTimeLeft));
-  const cfg=AIM_LEVELS[aimLevel];
+  var cfg=AIM_LEVELS[aimLevel];
   document.getElementById('aimTimerFill').style.width=Math.max(0,aimTimeLeft/cfg.duration*100)+'%';
 }
+
 function aimSpawnTarget(){
-  const cfg=AIM_LEVELS[aimLevel];
-  if(aimTargets.length>=cfg.maxTargets)return;
-  const r=cfg.targetSize;
-  const x=r+Math.random()*(AIM_W-2*r);
-  const y=r+Math.random()*(AIM_H-2*r);
-  const colors=['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff'];
-  aimTargets.push({x,y,r,color:colors[Math.floor(Math.random()*colors.length)],born:performance.now(),lifetime:cfg.lifetime});
+  var cfg=AIM_LEVELS[aimLevel];
+  if(aimTargets.length>=cfg.maxTargets) return;
+  var r=cfg.targetSize;
+  var x=r+Math.random()*(AIM_W-2*r);
+  var y=r+Math.random()*(AIM_H-2*r);
+  var colors=['#ff0033','#00aaff','#00ff66','#ffcc00','#aa00ff'];
+  aimTargets.push({x:x,y:y,r:r,color:colors[Math.floor(Math.random()*colors.length)],born:performance.now(),lifetime:cfg.lifetime});
 }
+
 function aimLoop(timestamp){
-  if(!aimRunning)return;
-  const cfg=AIM_LEVELS[aimLevel];
-  if(!aimLastSpawn)aimLastSpawn=timestamp;
-  if(timestamp-aimLastSpawn>cfg.spawnInterval){
-    aimSpawnTarget();aimLastSpawn=timestamp;
-  }
-  const now=performance.now();
-  aimTargets=aimTargets.filter(t=>{
+  if(!aimRunning) return;
+  var cfg=AIM_LEVELS[aimLevel];
+  if(!aimLastSpawn) aimLastSpawn=timestamp;
+  if(timestamp-aimLastSpawn>cfg.spawnInterval){aimSpawnTarget();aimLastSpawn=timestamp;}
+  var now=performance.now();
+  aimTargets=aimTargets.filter(function(t){
     if(now-t.born>t.lifetime){aimMisses++;updateAimHUD();return false;}
     return true;
   });
   aimDraw();
   aimAnimId=requestAnimationFrame(aimLoop);
 }
+
 function aimDraw(){
   aimCtx.fillStyle='#0a0a0a';aimCtx.fillRect(0,0,AIM_W,AIM_H);
   aimCtx.strokeStyle='rgba(255,255,255,0.03)';aimCtx.lineWidth=1;
-  for(let x=0;x<AIM_W;x+=50){aimCtx.beginPath();aimCtx.moveTo(x,0);aimCtx.lineTo(x,AIM_H);aimCtx.stroke();}
-  for(let y=0;y<AIM_H;y+=50){aimCtx.beginPath();aimCtx.moveTo(0,y);aimCtx.lineTo(AIM_W,y);aimCtx.stroke();}
-  const now=performance.now();
-  aimTargets.forEach(t=>{
-    const age=now-t.born;
-    const lifeLeft=1-age/t.lifetime;
-    const alpha=lifeLeft<0.3?lifeLeft/0.3:1;
+  for(var x=0;x<AIM_W;x+=50){aimCtx.beginPath();aimCtx.moveTo(x,0);aimCtx.lineTo(x,AIM_H);aimCtx.stroke();}
+  for(var y=0;y<AIM_H;y+=50){aimCtx.beginPath();aimCtx.moveTo(0,y);aimCtx.lineTo(AIM_W,y);aimCtx.stroke();}
+  var now=performance.now();
+  aimTargets.forEach(function(t){
+    var age=now-t.born;
+    var lifeLeft=1-age/t.lifetime;
+    var alpha=lifeLeft<0.3?lifeLeft/0.3:1;
     aimCtx.globalAlpha=alpha*0.3;aimCtx.fillStyle=t.color;
     aimCtx.beginPath();aimCtx.arc(t.x,t.y,t.r+4,0,Math.PI*2);aimCtx.fill();
     aimCtx.globalAlpha=alpha;aimCtx.fillStyle=t.color;
@@ -781,37 +991,39 @@ function aimDraw(){
     aimCtx.beginPath();aimCtx.arc(t.x,t.y,t.r+8,-Math.PI/2,-Math.PI/2+Math.PI*2*lifeLeft);aimCtx.stroke();
     aimCtx.globalAlpha=1;
   });
-  aimEffects=aimEffects.filter(e=>{
+  aimEffects=aimEffects.filter(function(e){
     aimCtx.globalAlpha=e.alpha;aimCtx.strokeStyle=e.color;aimCtx.lineWidth=2;
     aimCtx.beginPath();aimCtx.arc(e.x,e.y,e.r,0,Math.PI*2);aimCtx.stroke();
     e.r+=3;e.alpha-=0.05;aimCtx.globalAlpha=1;
     return e.alpha>0;
   });
 }
+
 function aimDrawIdle(){
   aimCtx.fillStyle='#0a0a0a';aimCtx.fillRect(0,0,AIM_W,AIM_H);
   aimCtx.strokeStyle='rgba(255,255,255,0.03)';aimCtx.lineWidth=1;
-  for(let x=0;x<AIM_W;x+=50){aimCtx.beginPath();aimCtx.moveTo(x,0);aimCtx.lineTo(x,AIM_H);aimCtx.stroke();}
-  for(let y=0;y<AIM_H;y+=50){aimCtx.beginPath();aimCtx.moveTo(0,y);aimCtx.lineTo(AIM_W,y);aimCtx.stroke();}
+  for(var x=0;x<AIM_W;x+=50){aimCtx.beginPath();aimCtx.moveTo(x,0);aimCtx.lineTo(x,AIM_H);aimCtx.stroke();}
+  for(var y=0;y<AIM_H;y+=50){aimCtx.beginPath();aimCtx.moveTo(0,y);aimCtx.lineTo(AIM_W,y);aimCtx.stroke();}
   aimCtx.fillStyle='rgba(255,255,255,0.1)';aimCtx.font='bold 24px Orbitron';
   aimCtx.textAlign='center';aimCtx.textBaseline='middle';
-  const cfg=AIM_LEVELS[aimLevel];
+  var cfg=AIM_LEVELS[aimLevel];
   aimCtx.fillText('Уровень '+aimLevel+': '+cfg.name,AIM_W/2,AIM_H/2-15);
   aimCtx.font='14px Montserrat';aimCtx.fillStyle='rgba(255,255,255,0.05)';
   aimCtx.fillText('Нажми «Старт»',AIM_W/2,AIM_H/2+20);
 }
-aimCanvas.addEventListener('click',e=>{
-  if(!aimRunning)return;
-  const rect=aimCanvas.getBoundingClientRect();
-  const scale=AIM_W/rect.width;
-  const x=(e.clientX-rect.left)*scale;
-  const y=(e.clientY-rect.top)*scale;
-  let hit=false;
-  for(let i=aimTargets.length-1;i>=0;i--){
-    const t=aimTargets[i];
-    const dx=x-t.x,dy=y-t.y;
+
+aimCanvas.addEventListener('click',function(e){
+  if(!aimRunning) return;
+  var rect=aimCanvas.getBoundingClientRect();
+  var scale=AIM_W/rect.width;
+  var x=(e.clientX-rect.left)*scale;
+  var y=(e.clientY-rect.top)*scale;
+  var hit=false;
+  for(var i=aimTargets.length-1;i>=0;i--){
+    var t=aimTargets[i];
+    var dx=x-t.x,dy=y-t.y;
     if(Math.sqrt(dx*dx+dy*dy)<=t.r+4){
-      const rt=performance.now()-t.born;
+      var rt=performance.now()-t.born;
       aimReactionTimes.push(rt);
       aimHits++;
       aimScore+=Math.max(10,Math.round(100-rt/10));
@@ -824,16 +1036,18 @@ aimCanvas.addEventListener('click',e=>{
   }
   if(!hit){aimMisses++;updateAimHUD();}
 });
-aimWrap.addEventListener('mousemove',e=>{
-  if(!aimRunning)return;
-  const rect=aimCanvas.getBoundingClientRect();
+
+aimWrap.addEventListener('mousemove',function(e){
+  if(!aimRunning) return;
+  var rect=aimCanvas.getBoundingClientRect();
   aimCrosshair.style.left=(e.clientX-rect.left)+'px';
   aimCrosshair.style.top=(e.clientY-rect.top)+'px';
 });
+
 function aimReset(){
   aimRunning=false;
-  if(aimAnimId)cancelAnimationFrame(aimAnimId);
-  if(aimTimerId)clearInterval(aimTimerId);
+  if(aimAnimId) cancelAnimationFrame(aimAnimId);
+  if(aimTimerId) clearInterval(aimTimerId);
   aimWrap.classList.remove('aim-playing');
   aimCrosshair.classList.remove('active');
   aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];
@@ -844,25 +1058,28 @@ function aimReset(){
   document.getElementById('aimStatus').textContent='Уровень '+aimLevel+'. Нажми «Старт»';
   document.getElementById('aimStatus').className='game-status';
 }
+
 aimDrawIdle();
 </script>
 
 <script>
 // ===== FLAPPY BIRD =====
-const fbCanvas=document.getElementById('flappyCanvas');
-const fbCtx=fbCanvas.getContext('2d');
-const FB_W=400,FB_H=500,FB_GROUND_Y=440,FB_GRAVITY=0.1,FB_JUMP=-3,FB_PIPE_W=62,FB_PIPE_GAP=140,FB_PIPE_SPACING=200,FB_PIPE_SPEED=2.5;
-let fbBird={x:100,y:250,vy:0,rot:0,wingPhase:0};
-let fbPipes=[],fbScore=0,fbRunning=false,fbAnimId=null,fbDead=false,fbClouds=[],fbGroundOffset=0,fbFlash=0;
-let fbBestScore=parseInt(localStorage.getItem('fb_best')||'0');
+var fbCanvas=document.getElementById('flappyCanvas');
+var fbCtx=fbCanvas.getContext('2d');
+var FB_W=400,FB_H=500,FB_GROUND_Y=440,FB_GRAVITY=0.1,FB_JUMP=-3,FB_PIPE_W=62,FB_PIPE_GAP=140,FB_PIPE_SPACING=200,FB_PIPE_SPEED=2.5;
+var fbBird={x:100,y:250,vy:0,rot:0,wingPhase:0};
+var fbPipes=[],fbScore=0,fbRunning=false,fbAnimId=null,fbDead=false,fbClouds=[],fbGroundOffset=0,fbFlash=0;
+var fbBestScore=parseInt(localStorage.getItem('fb_best')||'0');
 document.getElementById('fbBest').textContent=fbBestScore;
+
 function fbInitClouds(){
   fbClouds=[];
-  for(let i=0;i<4;i++){
+  for(var i=0;i<4;i++){
     fbClouds.push({x:Math.random()*FB_W,y:30+Math.random()*180,scale:0.5+Math.random()*0.5,speed:0.15+Math.random()*0.2});
   }
 }
 fbInitClouds();
+
 function fbReset(){
   fbBird={x:100,y:250,vy:0,rot:0,wingPhase:0};
   fbPipes=[];fbScore=0;fbRunning=false;fbDead=false;fbFlash=0;
@@ -870,11 +1087,12 @@ function fbReset(){
   document.getElementById('fbStatus').textContent='Нажми «Старт»';
   document.getElementById('fbStatus').className='game-status';
   document.getElementById('fbStartBtn').disabled=false;
-  if(fbAnimId)cancelAnimationFrame(fbAnimId);
+  if(fbAnimId) cancelAnimationFrame(fbAnimId);
   fbDraw();
 }
+
 function fbStart(){
-  if(fbRunning)return;
+  if(fbRunning) return;
   fbBird={x:100,y:250,vy:0,rot:0,wingPhase:0};
   fbPipes=[];fbScore=0;fbRunning=true;fbDead=false;fbFlash=0;
   document.getElementById('fbScore').textContent='0';
@@ -884,16 +1102,14 @@ function fbStart(){
   fbPipes.push({x:FB_W+30,gapY:180+Math.random()*140,passed:false});
   fbLoop();
 }
-function fbJump(){
-  if(!fbRunning||fbDead)return;
-  fbBird.vy=FB_JUMP;fbBird.wingPhase=0;
-}
+
+function fbJump(){if(!fbRunning||fbDead) return;fbBird.vy=FB_JUMP;fbBird.wingPhase=0;}
+
 function fbDie(){
-  if(fbDead)return;
+  if(fbDead) return;
   fbDead=true;fbFlash=1;fbRunning=false;
   if(fbScore>fbBestScore){
-    fbBestScore=fbScore;
-    localStorage.setItem('fb_best',fbBestScore);
+    fbBestScore=fbScore;localStorage.setItem('fb_best',fbBestScore);
     document.getElementById('fbBest').textContent=fbBestScore;
   }
   document.getElementById('fbStatus').textContent='💀 Очки: '+fbScore+' (рекорд: '+fbBestScore+')';
@@ -901,51 +1117,51 @@ function fbDie(){
   document.getElementById('fbStartBtn').disabled=false;
   fbDeathLoop();
 }
+
 function fbDeathLoop(){
-  if(!fbDead)return;
+  if(!fbDead) return;
   fbBird.vy+=FB_GRAVITY;fbBird.y+=fbBird.vy;
   fbBird.rot=Math.min(fbBird.rot+0.12,1.5);
   if(fbBird.y>FB_GROUND_Y-15){fbBird.y=FB_GROUND_Y-15;fbBird.vy=0;fbDraw();return;}
   fbDraw();requestAnimationFrame(fbDeathLoop);
 }
+
 function fbLoop(){
-  if(!fbRunning||fbDead)return;
+  if(!fbRunning||fbDead) return;
   fbBird.vy+=FB_GRAVITY;fbBird.y+=fbBird.vy;
   fbBird.rot=Math.max(-0.5,Math.min(1.4,fbBird.vy*0.09));
   fbBird.wingPhase+=0.3;
-  fbClouds.forEach(c=>{c.x-=c.speed;if(c.x<-70){c.x=FB_W+30;c.y=30+Math.random()*180;c.scale=0.5+Math.random()*0.5;}});
-  fbGroundOffset+=FB_PIPE_SPEED;
-  if(fbGroundOffset>=24)fbGroundOffset=0;
-  fbPipes.forEach(p=>p.x-=FB_PIPE_SPEED);
+  fbClouds.forEach(function(c){c.x-=c.speed;if(c.x<-70){c.x=FB_W+30;c.y=30+Math.random()*180;c.scale=0.5+Math.random()*0.5;}});
+  fbGroundOffset+=FB_PIPE_SPEED;if(fbGroundOffset>=24) fbGroundOffset=0;
+  fbPipes.forEach(function(p){p.x-=FB_PIPE_SPEED;});
   if(fbPipes.length===0||fbPipes[fbPipes.length-1].x<FB_W-FB_PIPE_SPACING){
     fbPipes.push({x:FB_W,gapY:130+Math.random()*170,passed:false});
   }
-  fbPipes.forEach(p=>{
-    if(!p.passed&&p.x+FB_PIPE_W<fbBird.x){
-      p.passed=true;fbScore++;
-      document.getElementById('fbScore').textContent=fbScore;
-    }
+  fbPipes.forEach(function(p){
+    if(!p.passed&&p.x+FB_PIPE_W<fbBird.x){p.passed=true;fbScore++;document.getElementById('fbScore').textContent=fbScore;}
   });
-  fbPipes=fbPipes.filter(p=>p.x>-FB_PIPE_W);
+  fbPipes=fbPipes.filter(function(p){return p.x>-FB_PIPE_W;});
   if(fbBird.y+15>FB_GROUND_Y){fbBird.y=FB_GROUND_Y-15;fbDie();return;}
   if(fbBird.y-15<0){fbBird.y=15;fbBird.vy=0;}
-  for(const p of fbPipes){
+  for(var i=0;i<fbPipes.length;i++){
+    var p=fbPipes[i];
     if(fbBird.x+14>p.x&&fbBird.x-14<p.x+FB_PIPE_W){
-      const topY=p.gapY-FB_PIPE_GAP/2;
-      const botY=p.gapY+FB_PIPE_GAP/2;
+      var topY=p.gapY-FB_PIPE_GAP/2;
+      var botY=p.gapY+FB_PIPE_GAP/2;
       if(fbBird.y-15<topY||fbBird.y+15>botY){fbDie();return;}
     }
   }
-  if(fbFlash>0)fbFlash-=0.05;
+  if(fbFlash>0) fbFlash-=0.05;
   fbDraw();
   fbAnimId=requestAnimationFrame(fbLoop);
 }
+
 function fbDraw(){
-  const sky=fbCtx.createLinearGradient(0,0,0,FB_H);
+  var sky=fbCtx.createLinearGradient(0,0,0,FB_H);
   sky.addColorStop(0,'#4ec0ca');sky.addColorStop(0.6,'#71c5cf');sky.addColorStop(1,'#9bd8df');
   fbCtx.fillStyle=sky;fbCtx.fillRect(0,0,FB_W,FB_H);
-  fbClouds.forEach(c=>fbDrawCloud(c.x,c.y,c.scale));
-  fbPipes.forEach(p=>fbDrawPipe(p));
+  fbClouds.forEach(function(c){fbDrawCloud(c.x,c.y,c.scale);});
+  fbPipes.forEach(function(p){fbDrawPipe(p);});
   fbDrawGround();fbDrawBird();
   if(fbFlash>0){fbCtx.fillStyle='rgba(255,255,255,'+fbFlash+')';fbCtx.fillRect(0,0,FB_W,FB_H);}
   if(fbRunning&&!fbDead){
@@ -959,6 +1175,7 @@ function fbDraw(){
     fbCtx.fillText('Нажми «Старт» или клик',FB_W/2,FB_H/2-80);
   }
 }
+
 function fbDrawCloud(x,y,s){
   fbCtx.save();fbCtx.translate(x,y);fbCtx.scale(s,s);
   fbCtx.fillStyle='rgba(255,255,255,0.85)';fbCtx.beginPath();
@@ -966,48 +1183,46 @@ function fbDrawCloud(x,y,s){
   fbCtx.arc(-20,5,14,0,Math.PI*2);fbCtx.arc(10,-10,14,0,Math.PI*2);
   fbCtx.fill();fbCtx.restore();
 }
+
 function fbDrawPipe(p){
-  const topH=p.gapY-FB_PIPE_GAP/2;
-  const botY=p.gapY+FB_PIPE_GAP/2;
-  const botH=FB_GROUND_Y-botY;
-  const grad1=fbCtx.createLinearGradient(p.x,0,p.x+FB_PIPE_W,0);
+  var topH=p.gapY-FB_PIPE_GAP/2;
+  var botY=p.gapY+FB_PIPE_GAP/2;
+  var botH=FB_GROUND_Y-botY;
+  var grad1=fbCtx.createLinearGradient(p.x,0,p.x+FB_PIPE_W,0);
   grad1.addColorStop(0,'#5a8f29');grad1.addColorStop(0.3,'#7ec850');grad1.addColorStop(0.5,'#94d858');grad1.addColorStop(0.7,'#7ec850');grad1.addColorStop(1,'#4a7a20');
   fbCtx.fillStyle=grad1;
-  fbCtx.fillRect(p.x,0,FB_PIPE_W,topH);
-  fbCtx.fillRect(p.x-4,topH-26,FB_PIPE_W+8,26);
-  fbCtx.fillRect(p.x,botY,FB_PIPE_W,botH);
-  fbCtx.fillRect(p.x-4,botY,FB_PIPE_W+8,26);
+  fbCtx.fillRect(p.x,0,FB_PIPE_W,topH);fbCtx.fillRect(p.x-4,topH-26,FB_PIPE_W+8,26);
+  fbCtx.fillRect(p.x,botY,FB_PIPE_W,botH);fbCtx.fillRect(p.x-4,botY,FB_PIPE_W+8,26);
   fbCtx.strokeStyle='#3d6b15';fbCtx.lineWidth=2;
-  fbCtx.strokeRect(p.x,0,FB_PIPE_W,topH);
-  fbCtx.strokeRect(p.x-4,topH-26,FB_PIPE_W+8,26);
-  fbCtx.strokeRect(p.x,botY,FB_PIPE_W,botH);
-  fbCtx.strokeRect(p.x-4,botY,FB_PIPE_W+8,26);
+  fbCtx.strokeRect(p.x,0,FB_PIPE_W,topH);fbCtx.strokeRect(p.x-4,topH-26,FB_PIPE_W+8,26);
+  fbCtx.strokeRect(p.x,botY,FB_PIPE_W,botH);fbCtx.strokeRect(p.x-4,botY,FB_PIPE_W+8,26);
   fbCtx.fillStyle='rgba(255,255,255,0.2)';
-  fbCtx.fillRect(p.x+6,0,6,topH);
-  fbCtx.fillRect(p.x+6,botY,6,botH);
+  fbCtx.fillRect(p.x+6,0,6,topH);fbCtx.fillRect(p.x+6,botY,6,botH);
 }
+
 function fbDrawGround(){
-  const grad=fbCtx.createLinearGradient(0,FB_GROUND_Y,0,FB_H);
+  var grad=fbCtx.createLinearGradient(0,FB_GROUND_Y,0,FB_H);
   grad.addColorStop(0,'#ded895');grad.addColorStop(0.3,'#d6c97e');grad.addColorStop(1,'#c4a850');
   fbCtx.fillStyle=grad;fbCtx.fillRect(0,FB_GROUND_Y,FB_W,FB_H-FB_GROUND_Y);
   fbCtx.fillStyle='#7ec850';fbCtx.fillRect(0,FB_GROUND_Y-3,FB_W,3);
   fbCtx.fillStyle='#5a8f29';fbCtx.fillRect(0,FB_GROUND_Y,FB_W,2);
   fbCtx.fillStyle='rgba(180,160,80,0.4)';
-  for(let x=-24;x<FB_W+24;x+=24){
+  for(var x=-24;x<FB_W+24;x+=24){
     fbCtx.fillRect(x-fbGroundOffset,FB_GROUND_Y+5,12,3);
     fbCtx.fillRect(x-fbGroundOffset+12,FB_GROUND_Y+15,12,3);
     fbCtx.fillRect(x-fbGroundOffset,FB_GROUND_Y+30,12,3);
     fbCtx.fillRect(x-fbGroundOffset+12,FB_GROUND_Y+40,12,3);
   }
 }
+
 function fbDrawBird(){
-  const bx=fbBird.x,by=fbBird.y;
+  var bx=fbBird.x,by=fbBird.y;
   fbCtx.save();fbCtx.translate(bx,by);fbCtx.rotate(fbBird.rot);
   fbCtx.fillStyle='rgba(0,0,0,0.15)';fbCtx.beginPath();fbCtx.ellipse(2,2,18,14,0,0,Math.PI*2);fbCtx.fill();
   fbCtx.fillStyle='#f7d51d';fbCtx.beginPath();fbCtx.ellipse(0,0,17,13,0,0,Math.PI*2);fbCtx.fill();
   fbCtx.fillStyle='#f0e0a0';fbCtx.beginPath();fbCtx.ellipse(-2,5,12,8,0,0,Math.PI*2);fbCtx.fill();
   fbCtx.strokeStyle='#c9a015';fbCtx.lineWidth=2;fbCtx.beginPath();fbCtx.ellipse(0,0,17,13,0,0,Math.PI*2);fbCtx.stroke();
-  const wingY=Math.sin(fbBird.wingPhase)*5;
+  var wingY=Math.sin(fbBird.wingPhase)*5;
   fbCtx.fillStyle='#e6b800';fbCtx.beginPath();fbCtx.ellipse(-5,wingY,9,6,-0.3,0,Math.PI*2);fbCtx.fill();
   fbCtx.strokeStyle='#c9a015';fbCtx.lineWidth=1.5;fbCtx.stroke();
   fbCtx.fillStyle='#fff';fbCtx.beginPath();fbCtx.arc(8,-5,6,0,Math.PI*2);fbCtx.fill();
@@ -1019,44 +1234,52 @@ function fbDrawBird(){
   fbCtx.fillStyle='#e65520';fbCtx.beginPath();fbCtx.moveTo(14,3);fbCtx.lineTo(22,4);fbCtx.lineTo(14,5);fbCtx.closePath();fbCtx.fill();
   fbCtx.restore();
 }
-fbCanvas.addEventListener('mousedown',e=>{if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();});
-document.addEventListener('keydown',e=>{if(e.code==='Space'){if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();}});
-fbCanvas.addEventListener('touchstart',e=>{if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();},{passive:false});
+
+fbCanvas.addEventListener('mousedown',function(e){if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();});
+document.addEventListener('keydown',function(e){if(e.code==='Space'){if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();}});
+fbCanvas.addEventListener('touchstart',function(e){if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();},{passive:false});
 fbDraw();
 </script>
 
 <script>
-// ===== КАЗИНО =====
-let casinoBalance=getUserBalance();
-let _syncTimer=null;
+// ===== КАЗИНО (СЛОТЫ + КОЛЕСО + КРЕДИТ) =====
+var casinoBalance=getUserBalance()||100;
+var _syncTimer=null;
+
 function updateBalance(){
+  if(isNaN(casinoBalance)||casinoBalance<0) casinoBalance=100;
   setUserBalance(casinoBalance);
   document.getElementById('balanceNum').textContent=casinoBalance;
-  if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;
-  if(document.getElementById('rouletteBalanceNum'))document.getElementById('rouletteBalanceNum').textContent=casinoBalance;
-  if(_syncTimer)clearTimeout(_syncTimer);
+  var cbn=document.getElementById('caseBalanceNum'); if(cbn) cbn.textContent=casinoBalance;
+  var rbn=document.getElementById('rouletteBalanceNum'); if(rbn) rbn.textContent=casinoBalance;
+  if(_syncTimer) clearTimeout(_syncTimer);
   _syncTimer=setTimeout(syncBalanceToServer,3000);
 }
+
 function resetBalance(){
   casinoBalance=100;updateBalance();
   document.getElementById('wheelResult').textContent='Баланс сброшен до 100 🪙';
   document.getElementById('wheelResult').className='wheel-result';
   document.getElementById('slotsResult').textContent='';
 }
+
 updateBalance();
+
 function switchCasino(name,el){
-  document.querySelectorAll('.casino-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.casino-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.casino-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.casino-section').forEach(function(s){s.classList.remove('active');});
   el.classList.add('active');
   document.getElementById('casino-'+name).classList.add('active');
-  if(name==='wheel')drawWheel(wheelAngle||0);
+  if(name==='wheel') drawWheel(wheelAngle||0);
 }
+
 // --- СЛОТЫ ---
-let slotsSpinning=false;
+var slotsSpinning=false;
+
 function spinSlots(){
-  if(slotsSpinning)return;
-  let bet=parseInt(document.getElementById('slotsBet').value)||1;
-  if(bet<1)bet=1;
+  if(slotsSpinning) return;
+  var bet=parseInt(document.getElementById('slotsBet').value)||1;
+  if(bet<1) bet=1;
   if(casinoBalance<bet){
     document.getElementById('slotsResult').textContent='Недостаточно монет!';
     document.getElementById('slotsResult').className='slots-result';
@@ -1068,28 +1291,34 @@ function spinSlots(){
   document.getElementById('slotsSpinBtn').disabled=true;
   document.getElementById('slotsResult').textContent='Крутится...';
   document.getElementById('slotsResult').className='slots-result';
-  const reels=['reel1','reel2','reel3'];
-  reels.forEach(id=>{const el=document.getElementById(id);el.classList.add('spinning');el.textContent='';});
-  const winNums=['333','777','999'];
-  const winChance=0.45;
-  let results;
+  var reels=['reel1','reel2','reel3'];
+  reels.forEach(function(id){
+    var el=document.getElementById(id);
+    el.classList.add('spinning');
+    el.textContent='';
+  });
+  var winNums=['333','777','999'];
+  var winChance=0.45;
+  var results;
   if(Math.random()<winChance){
-    const win=winNums[Math.floor(Math.random()*3)];
+    var win=winNums[Math.floor(Math.random()*3)];
     results=[parseInt(win[0]),parseInt(win[1]),parseInt(win[2])];
   }else{
-    do{results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];}while(winNums.includes(results.join('')));
+    do{
+      results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];
+    }while(winNums.indexOf(results.join(''))!==-1);
   }
-  reels.forEach((id,i)=>{
-    setTimeout(()=>{
-      const el=document.getElementById(id);
+  reels.forEach(function(id,i){
+    setTimeout(function(){
+      var el=document.getElementById(id);
       el.classList.remove('spinning');
       el.textContent=results[i];
       if(i===2){
         slotsSpinning=false;
         document.getElementById('slotsSpinBtn').disabled=false;
-        const combo=results.join('');
-        if(winNums.includes(combo)){
-          const prize=bet*5;
+        var combo=results.join('');
+        if(winNums.indexOf(combo)!==-1){
+          var prize=bet*5;
           casinoBalance+=prize;
           updateBalance();
           document.getElementById('slotsResult').textContent='🎉 '+combo+' — ВЫИГРЫШ! +'+prize+' 🪙';
@@ -1106,41 +1335,59 @@ function spinSlots(){
     },300+i*250);
   });
 }
+
 // --- КОЛЕСО ФОРТУНЫ ---
-const wheelCanvas=document.getElementById('wheelCanvas');
-const wheelCtx=wheelCanvas.getContext('2d');
-const WHEEL_SECTORS=['0','1','2','3','4','5','x2','x3','x5','x10'];
-const WHEEL_COLORS=['#333','#ff0033','#333','#00ff66','#333','#00aaff','#aa00ff','#ffcc00','#ff6600','#00ff66'];
-const WHEEL_SIZE=10;
-let wheelAngle=0;
-let wheelSpinning=false;
+var wheelCanvas=document.getElementById('wheelCanvas');
+var wheelCtx=wheelCanvas.getContext('2d');
+var WHEEL_SECTORS=['0','1','2','3','4','5','x2','x3','x5','x10'];
+var WHEEL_COLORS=['#333','#ff0033','#333','#00ff66','#333','#00aaff','#aa00ff','#ffcc00','#ff6600','#00ff66'];
+var WHEEL_SIZE=10;
+var wheelAngle=0;
+var wheelSpinning=false;
+
 function drawWheel(angle){
-  const cx=180,cy=180,r=170;
+  var cx=180,cy=180,r=170;
   wheelCtx.clearRect(0,0,360,360);
-  for(let i=0;i<WHEEL_SIZE;i++){
-    const start=(i/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
-    const end=((i+1)/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
-    wheelCtx.beginPath();wheelCtx.moveTo(cx,cy);wheelCtx.arc(cx,cy,r,start,end);wheelCtx.closePath();
-    wheelCtx.fillStyle=WHEEL_COLORS[i];wheelCtx.fill();
-    wheelCtx.strokeStyle='rgba(255,255,255,0.2)';wheelCtx.lineWidth=2;wheelCtx.stroke();
-    const mid=(start+end)/2;
-    const tx=cx+Math.cos(mid)*r*0.65;
-    const ty=cy+Math.sin(mid)*r*0.65;
-    wheelCtx.save();wheelCtx.translate(tx,ty);wheelCtx.rotate(mid+Math.PI/2);
-    wheelCtx.fillStyle='#fff';wheelCtx.font='bold 18px Orbitron';
-    wheelCtx.textAlign='center';wheelCtx.textBaseline='middle';
+  for(var i=0;i<WHEEL_SIZE;i++){
+    var start=(i/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
+    var end=((i+1)/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx,cy);
+    wheelCtx.arc(cx,cy,r,start,end);
+    wheelCtx.closePath();
+    wheelCtx.fillStyle=WHEEL_COLORS[i];
+    wheelCtx.fill();
+    wheelCtx.strokeStyle='rgba(255,255,255,0.2)';
+    wheelCtx.lineWidth=2;
+    wheelCtx.stroke();
+    var mid=(start+end)/2;
+    var tx=cx+Math.cos(mid)*r*0.65;
+    var ty=cy+Math.sin(mid)*r*0.65;
+    wheelCtx.save();
+    wheelCtx.translate(tx,ty);
+    wheelCtx.rotate(mid+Math.PI/2);
+    wheelCtx.fillStyle='#fff';
+    wheelCtx.font='bold 18px Orbitron';
+    wheelCtx.textAlign='center';
+    wheelCtx.textBaseline='middle';
     wheelCtx.fillText(WHEEL_SECTORS[i],0,0);
     wheelCtx.restore();
   }
-  wheelCtx.beginPath();wheelCtx.arc(cx,cy,50,0,Math.PI*2);
-  wheelCtx.fillStyle='#1a1a1a';wheelCtx.fill();
-  wheelCtx.strokeStyle='#ff0033';wheelCtx.lineWidth=3;wheelCtx.stroke();
+  wheelCtx.beginPath();
+  wheelCtx.arc(cx,cy,50,0,Math.PI*2);
+  wheelCtx.fillStyle='#1a1a1a';
+  wheelCtx.fill();
+  wheelCtx.strokeStyle='#ff0033';
+  wheelCtx.lineWidth=3;
+  wheelCtx.stroke();
 }
+
 drawWheel(0);
+
 function spinWheel(){
-  if(wheelSpinning)return;
-  let bet=parseInt(document.getElementById('wheelBet').value)||1;
-  if(bet<1)bet=1;
+  if(wheelSpinning) return;
+  var bet=parseInt(document.getElementById('wheelBet').value)||1;
+  if(bet<1) bet=1;
   if(casinoBalance<bet){
     document.getElementById('wheelResult').textContent='Недостаточно монет!';
     document.getElementById('wheelResult').className='wheel-result';
@@ -1153,17 +1400,17 @@ function spinWheel(){
   document.getElementById('wheelResult').textContent='Крутится...';
   document.getElementById('wheelResult').className='wheel-result';
   wheelAngle=0;
-  const targetIndex=Math.floor(Math.random()*WHEEL_SIZE);
-  const sectorAngle=(Math.PI*2)/WHEEL_SIZE;
-  const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;
-  const startAngle=0;
-  const totalRotation=targetAngle-startAngle;
-  const duration=1200;
-  const startTime=performance.now();
+  var targetIndex=Math.floor(Math.random()*WHEEL_SIZE);
+  var sectorAngle=(Math.PI*2)/WHEEL_SIZE;
+  var targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;
+  var startAngle=0;
+  var totalRotation=targetAngle-startAngle;
+  var duration=1200;
+  var startTime=performance.now();
   function animate(now){
-    const elapsed=now-startTime;
-    const t=Math.min(elapsed/duration,1);
-    const eased=1-Math.pow(1-t,3);
+    var elapsed=now-startTime;
+    var t=Math.min(elapsed/duration,1);
+    var eased=1-Math.pow(1-t,3);
     wheelAngle=startAngle+totalRotation*eased;
     drawWheel(wheelAngle);
     if(t<1){
@@ -1171,10 +1418,10 @@ function spinWheel(){
     }else{
       wheelSpinning=false;
       document.getElementById('wheelSpinBtn').disabled=false;
-      const sector=WHEEL_SECTORS[targetIndex];
-      let prize=0,msg='';
-      if(sector.startsWith('x')){
-        const mult=parseInt(sector.substring(1));
+      var sector=WHEEL_SECTORS[targetIndex];
+      var prize=0,msg='';
+      if(sector.charAt(0)==='x'){
+        var mult=parseInt(sector.substring(1));
         prize=bet*mult;
         msg='🎉 '+sector+' — ставка x'+mult+' = +'+prize+' 🪙!';
       }else{
@@ -1186,7 +1433,7 @@ function spinWheel(){
       document.getElementById('wheelResult').textContent=msg;
       document.getElementById('wheelResult').className='wheel-result win';
       if(casinoBalance<1){
-        setTimeout(()=>{
+        setTimeout(function(){
           if(casinoBalance<1){
             casinoBalance=100;updateBalance();
             document.getElementById('wheelResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';
@@ -1197,14 +1444,16 @@ function spinWheel(){
   }
   requestAnimationFrame(animate);
 }
-// ===== КРЕДИТНАЯ СИСТЕМА =====
-let creditAmount=0,creditTimer=null,creditEndTime=0;
-const CREDIT_SUM=10000000,CREDIT_MINUTES=5;
+
+// --- КРЕДИТ ---
+var creditAmount=0,creditTimer=null,creditEndTime=0;
+var CREDIT_SUM=10000000,CREDIT_MINUTES=5;
+
 function initCredit(){
-  const saved=localStorage.getItem('casino_credit');
+  var saved=localStorage.getItem('casino_credit');
   if(saved){
     try{
-      const data=JSON.parse(saved);
+      var data=JSON.parse(saved);
       if(data.endTime>Date.now()){
         creditAmount=data.amount;
         creditEndTime=data.endTime;
@@ -1212,7 +1461,7 @@ function initCredit(){
       }else{
         if(data.amount>0){
           casinoBalance-=data.amount;
-          if(casinoBalance<0)casinoBalance=0;
+          if(casinoBalance<0) casinoBalance=0;
           updateBalance();
         }
         localStorage.removeItem('casino_credit');
@@ -1220,6 +1469,7 @@ function initCredit(){
     }catch(e){localStorage.removeItem('casino_credit');}
   }
 }
+
 function takeCredit(){
   if(creditAmount>0){
     document.getElementById('creditStatus').textContent='У тебя уже есть активный кредит!';
@@ -1233,15 +1483,16 @@ function takeCredit(){
   startCreditTimer();
   document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 зачислен!';
 }
+
 function startCreditTimer(){
-  if(creditTimer)clearInterval(creditTimer);
+  if(creditTimer) clearInterval(creditTimer);
   updateCreditDisplay();
-  creditTimer=setInterval(()=>{
-    const remaining=creditEndTime-Date.now();
+  creditTimer=setInterval(function(){
+    var remaining=creditEndTime-Date.now();
     if(remaining<=0){
       clearInterval(creditTimer);creditTimer=null;
       casinoBalance-=creditAmount;
-      if(casinoBalance<0)casinoBalance=0;
+      if(casinoBalance<0) casinoBalance=0;
       updateBalance();
       creditAmount=0;
       localStorage.removeItem('casino_credit');
@@ -1252,58 +1503,65 @@ function startCreditTimer(){
     }
   },1000);
 }
+
 function updateCreditDisplay(){
-  const remaining=creditEndTime-Date.now();
-  const m=Math.floor(remaining/60000);
-  const s=Math.floor((remaining%60000)/1000);
+  var remaining=creditEndTime-Date.now();
+  var m=Math.floor(remaining/60000);
+  var s=Math.floor((remaining%60000)/1000);
   document.getElementById('creditTimer').textContent=m+':'+(s<10?'0':'')+s;
   document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙. Осталось:';
 }
+
 initCredit();
 </script>
 
 <script>
 // ===== ДУРАК =====
-const D_SUITS=['\u2660','\u2665','\u2666','\u2663'];
-const D_RANKS=['6','7','8','9','10','\u0412','\u0414','\u041A','\u0422'];
-let dDeck=[],dTrump=-1,dPlayerHand=[],dAiHand=[],dTable=[];
-let dAttacker='player',dPhase='init',dGameActive=false,dDifficulty=1,dDiscardPile=0;
+var D_SUITS=['\u2660','\u2665','\u2666','\u2663'];
+var D_RANKS=['6','7','8','9','10','\u0412','\u0414','\u041A','\u0422'];
+var dDeck=[],dTrump=-1,dPlayerHand=[],dAiHand=[],dTable=[];
+var dAttacker='player',dPhase='init',dGameActive=false,dDifficulty=1,dDiscardPile=0;
+
 function dSetBet(val){document.getElementById('durakBet').value=val;}
+
 function dSelectDiff(lvl,el){
   dDifficulty=lvl;
-  document.querySelectorAll('#game-durak .aim-level-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#game-durak .aim-level-btn').forEach(function(b){b.classList.remove('active');});
   el.classList.add('active');
 }
+
 function dCreateDeck(){
-  const deck=[];
-  for(let s=0;s<4;s++)for(let r=0;r<9;r++)deck.push({suit:s,rank:r});
-  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  var deck=[];
+  for(var s=0;s<4;s++)for(var r=0;r<9;r++)deck.push({suit:s,rank:r});
+  for(var i=deck.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=deck[i];deck[i]=deck[j];deck[j]=tmp;}
   return deck;
 }
+
 function dBeats(card,attack,trump){
-  if(card.suit===trump&&attack.suit!==trump)return true;
-  if(card.suit===attack.suit&&card.rank>attack.rank)return true;
-  if(card.suit===trump&&attack.suit===trump&&card.rank>attack.rank)return true;
+  if(card.suit===trump&&attack.suit!==trump) return true;
+  if(card.suit===attack.suit&&card.rank>attack.rank) return true;
+  if(card.suit===trump&&attack.suit===trump&&card.rank>attack.rank) return true;
   return false;
 }
-function dGetBeats(hand,attack,trump){return hand.filter(c=>dBeats(c,attack,trump));}
+
+function dGetBeats(hand,attack,trump){return hand.filter(function(c){return dBeats(c,attack,trump);});}
+
 function dDrawHands(){
-  while(dPlayerHand.length<6&&dDeck.length>0)dPlayerHand.push(dDeck.pop());
-  while(dAiHand.length<6&&dDeck.length>0)dAiHand.push(dDeck.pop());
+  while(dPlayerHand.length<6&&dDeck.length>0) dPlayerHand.push(dDeck.pop());
+  while(dAiHand.length<6&&dDeck.length>0) dAiHand.push(dDeck.pop());
 }
+
 function dCardName(c){return D_RANKS[c.rank]+D_SUITS[c.suit];}
 function dCardColor(s){return s===1||s===2?'#ff5555':'#000';}
+
 function dStartGame(){
-  let bet=parseInt(document.getElementById('durakBet').value)||1;
-  if(bet<1)bet=1;
-  if(casinoBalance<bet){
-    document.getElementById('durakStatus').textContent='Недостаточно монет!';
-    return;
-  }
+  var bet=parseInt(document.getElementById('durakBet').value)||1;
+  if(bet<1) bet=1;
+  if(casinoBalance<bet){document.getElementById('durakStatus').textContent='Недостаточно монет!';return;}
   casinoBalance-=bet;updateBalance();
   dDeck=dCreateDeck();dPlayerHand=[];dAiHand=[];dTable=[];dDiscardPile=0;
   dGameActive=true;dAttacker='player';dPhase='player_attack';
-  for(let i=0;i<6;i++){dPlayerHand.push(dDeck.pop());dAiHand.push(dDeck.pop());}
+  for(var i=0;i<6;i++){dPlayerHand.push(dDeck.pop());dAiHand.push(dDeck.pop());}
   dTrump=dDeck[0].suit;
   document.getElementById('durakStartBtn').disabled=true;
   document.getElementById('durakDoneBtn').style.display='none';
@@ -1312,34 +1570,34 @@ function dStartGame(){
   document.getElementById('durakStatus').textContent='Ты атакуешь. Кликни карту из руки.';
   document.getElementById('durakStatus').className='durak-status';
 }
+
 function dPlayerClick(idx){
-  if(dPhase==='player_attack')dPlayerAttack(idx);
-  else if(dPhase==='player_defend')dPlayerDefend(idx);
+  if(dPhase==='player_attack') dPlayerAttack(idx);
+  else if(dPhase==='player_defend') dPlayerDefend(idx);
 }
+
 function dPlayerAttack(idx){
-  if(dPhase!=='player_attack')return;
-  const card=dPlayerHand[idx];
+  if(dPhase!=='player_attack') return;
+  var card=dPlayerHand[idx];
   if(dTable.length>0){
-    const ranks=new Set();
-    dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});
-    if(!ranks.has(card.rank)){
-      document.getElementById('durakStatus').textContent='Можно подкинуть только карты того же ранга!';
-      return;
-    }
+    var ranks={};
+    dTable.forEach(function(p){if(p.attack) ranks[p.attack.rank]=true;if(p.defense) ranks[p.defense.rank]=true;});
+    if(!ranks[card.rank]){document.getElementById('durakStatus').textContent='Можно подкинуть только карты того же ранга!';return;}
   }
-  if(dTable.length>=6)return;
+  if(dTable.length>=6) return;
   dPlayerHand.splice(idx,1);
   dTable.push({attack:card,defense:null});
   document.getElementById('durakDoneBtn').style.display='none';
   dRender();
   setTimeout(dAiDefend,400);
 }
+
 function dAiDefend(){
-  const pair=dTable[dTable.length-1];
-  if(!pair||pair.defense!==null)return;
-  const beats=dGetBeats(dAiHand,pair.attack,dTrump);
+  var pair=dTable[dTable.length-1];
+  if(!pair||pair.defense!==null) return;
+  var beats=dGetBeats(dAiHand,pair.attack,dTrump);
   if(beats.length===0){
-    dAiHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));
+    dAiHand=dAiHand.concat(dTable.flatMap(function(p){return [p.attack,p.defense].filter(function(c){return c;});}));
     dTable=[];
     dDrawHands();dCheckWin();
     if(dGameActive){
@@ -1350,12 +1608,12 @@ function dAiDefend(){
     }
     return;
   }
-  let dc;
+  var dc;
   if(dDifficulty===1){dc=beats[Math.floor(Math.random()*beats.length)];}
   else{
-    const nt=beats.filter(c=>c.suit!==dTrump);
-    const pool=nt.length?nt:beats;
-    pool.sort((a,b)=>a.rank-b.rank);
+    var nt=beats.filter(function(c){return c.suit!==dTrump;});
+    var pool=nt.length?nt:beats;
+    pool.sort(function(a,b){return a.rank-b.rank;});
     dc=pool[0];
   }
   dAiHand.splice(dAiHand.indexOf(dc),1);
@@ -1367,8 +1625,9 @@ function dAiDefend(){
     document.getElementById('durakDoneBtn').style.display='inline-block';
   }
 }
+
 function dPlayerDone(){
-  if(dPhase!=='player_attack'||dTable.length===0)return;
+  if(dPhase!=='player_attack'||dTable.length===0) return;
   dDiscardPile+=dTable.length;dTable=[];
   dDrawHands();dCheckWin();
   if(dGameActive){
@@ -1379,22 +1638,23 @@ function dPlayerDone(){
     setTimeout(dAiAttack,600);
   }
 }
+
 function dAiAttack(){
-  if(!dGameActive)return;
+  if(!dGameActive) return;
   if(dAiHand.length===0){dCheckWin();return;}
-  let card;
+  var card;
   if(dDifficulty===1){card=dAiHand[Math.floor(Math.random()*dAiHand.length)];}
   else{
-    const sorted=[...dAiHand].sort((a,b)=>{
-      if(a.suit===dTrump&&b.suit!==dTrump)return 1;
-      if(a.suit!==dTrump&&b.suit===dTrump)return -1;
+    var sorted=dAiHand.slice().sort(function(a,b){
+      if(a.suit===dTrump&&b.suit!==dTrump) return 1;
+      if(a.suit!==dTrump&&b.suit===dTrump) return -1;
       return a.rank-b.rank;
     });
     card=sorted[0];
   }
   dAiHand.splice(dAiHand.indexOf(card),1);
   dTable.push({attack:card,defense:null});
-  const beats=dGetBeats(dPlayerHand,card,dTrump);
+  var beats=dGetBeats(dPlayerHand,card,dTrump);
   if(beats.length===0){
     dPhase='player_take';
     document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Нечем отбиться — нажми «Взять».';
@@ -1407,10 +1667,11 @@ function dAiAttack(){
     dRender();
   }
 }
+
 function dPlayerDefend(idx){
-  if(dPhase!=='player_defend')return;
-  const card=dPlayerHand[idx];
-  const pair=dTable[dTable.length-1];
+  if(dPhase!=='player_defend') return;
+  var card=dPlayerHand[idx];
+  var pair=dTable[dTable.length-1];
   if(!dBeats(card,pair.attack,dTrump)){
     document.getElementById('durakStatus').textContent=dCardName(card)+' не бьёт '+dCardName(pair.attack)+'!';
     return;
@@ -1420,14 +1681,14 @@ function dPlayerDefend(idx){
   document.getElementById('durakTakeBtn').style.display='none';
   dCheckWin();
   if(dGameActive){
-    const ranks=new Set();
-    dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});
-    const addable=dAiHand.filter(c=>ranks.has(c.rank));
+    var ranks={};
+    dTable.forEach(function(p){if(p.attack) ranks[p.attack.rank]=true;if(p.defense) ranks[p.defense.rank]=true;});
+    var addable=dAiHand.filter(function(c){return ranks[c.rank];});
     if(addable.length>0&&dTable.length<6&&(dDifficulty>=2||Math.random()<0.4)){
-      let addCard=dDifficulty===3?addable.sort((a,b)=>a.rank-b.rank)[0]:addable[Math.floor(Math.random()*addable.length)];
+      var addCard=dDifficulty===3?addable.sort(function(a,b){return a.rank-b.rank;})[0]:addable[Math.floor(Math.random()*addable.length)];
       dAiHand.splice(dAiHand.indexOf(addCard),1);
       dTable.push({attack:addCard,defense:null});
-      const beats2=dGetBeats(dPlayerHand,addCard,dTrump);
+      var beats2=dGetBeats(dPlayerHand,addCard,dTrump);
       if(beats2.length===0){
         dPhase='player_take';
         document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Нечем отбиться — «Взять».';
@@ -1450,9 +1711,10 @@ function dPlayerDefend(idx){
     }
   }
 }
+
 function dPlayerTake(){
-  if(dPhase!=='player_take'&&dPhase!=='player_defend')return;
-  dPlayerHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));
+  if(dPhase!=='player_take'&&dPhase!=='player_defend') return;
+  dPlayerHand=dPlayerHand.concat(dTable.flatMap(function(p){return [p.attack,p.defense].filter(function(c){return c;});}));
   dTable=[];
   document.getElementById('durakTakeBtn').style.display='none';
   dDrawHands();dCheckWin();
@@ -1463,6 +1725,7 @@ function dPlayerTake(){
     setTimeout(dAiAttack,600);
   }
 }
+
 function dCheckWin(){
   if(dDeck.length===0){
     if(dPlayerHand.length===0&&dAiHand.length===0){dGameActive=false;dWin();return;}
@@ -1472,10 +1735,11 @@ function dCheckWin(){
   if(dPlayerHand.length===0&&dDeck.length===0){dGameActive=false;dWin();}
   if(dAiHand.length===0&&dDeck.length===0){dGameActive=false;dLose();}
 }
+
 function dWin(){
-  const bet=parseInt(document.getElementById('durakBet').value)||1;
-  const mult=[100,1000,10000][dDifficulty-1];
-  const prize=bet*mult;
+  var bet=parseInt(document.getElementById('durakBet').value)||1;
+  var mult=[100,1000,10000][dDifficulty-1];
+  var prize=bet*mult;
   casinoBalance+=prize;updateBalance();
   document.getElementById('durakStatus').textContent='🎉 Ты выиграл! +'+prize.toLocaleString('ru')+' 🪙 (x'+mult+')';
   document.getElementById('durakStatus').className='durak-status win';
@@ -1484,6 +1748,7 @@ function dWin(){
   document.getElementById('durakTakeBtn').style.display='none';
   dPhase='init';dRender();
 }
+
 function dLose(){
   document.getElementById('durakStatus').textContent='💀 Ты проиграл — ты дурак!';
   document.getElementById('durakStatus').className='durak-status lose';
@@ -1492,39 +1757,40 @@ function dLose(){
   document.getElementById('durakTakeBtn').style.display='none';
   dPhase='init';dRender();
 }
+
 function dRender(){
-  let aiHTML='';
-  for(let i=0;i<dAiHand.length;i++)aiHTML+='<div class="durak-card-back"></div>';
+  var aiHTML='';
+  for(var i=0;i<dAiHand.length;i++) aiHTML+='<div class="durak-card-back"></div>';
   document.getElementById('durakAiHand').innerHTML=aiHTML;
-  let tHTML='';
-  dTable.forEach(p=>{
+  var tHTML='';
+  dTable.forEach(function(p){
     tHTML+='<div class="durak-pair">';
     if(p.attack){
-      const col=dCardColor(p.attack.suit);
+      var col=dCardColor(p.attack.suit);
       tHTML+='<div class="durak-card"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.attack.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span></div>';
     }
     if(p.defense){
-      const col=dCardColor(p.defense.suit);
-      tHTML+='<div class="durak-card defense"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.defense.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span></div>';
+      var col2=dCardColor(p.defense.suit);
+      tHTML+='<div class="durak-card defense"><span class="durak-rank-top" style="color:'+col2+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col2+'">'+D_SUITS[p.defense.suit]+'</span><span class="durak-rank-bot" style="color:'+col2+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span></div>';
     }
     tHTML+='</div>';
   });
   document.getElementById('durakBattle').innerHTML=tHTML;
-  let dInfo='';
+  var dInfo='';
   if(dDeck.length>0){
-    const tc=dCardColor(dTrump);
+    var tc=dCardColor(dTrump);
     dInfo='<div class="durak-trump-badge">Козырь: <span class="durak-suit" style="color:'+tc+'">'+D_SUITS[dTrump]+'</span></div><div class="durak-info-item">🂠 Колода: '+dDeck.length+'</div>';
   }else{
     dInfo='<div class="durak-info-item">Колода пуста</div>';
   }
   dInfo+='<div class="durak-info-item">У АИ: '+dAiHand.length+' карт</div><div class="durak-info-item">Сброс: '+dDiscardPile+'</div>';
   document.getElementById('durakDeckInfo').innerHTML=dInfo;
-  let pHTML='';
-  const canClick=dPhase==='player_attack'||dPhase==='player_defend';
-  dPlayerHand.forEach((c,i)=>{
-    const col=dCardColor(c.suit);
-    const cl=canClick?' clickable':'';
-    const clk=canClick?'onclick="dPlayerClick('+i+')"':'';
+  var pHTML='';
+  var canClick=dPhase==='player_attack'||dPhase==='player_defend';
+  dPlayerHand.forEach(function(c,i){
+    var col=dCardColor(c.suit);
+    var cl=canClick?' clickable':'';
+    var clk=canClick?'onclick="dPlayerClick('+i+')"':'';
     pHTML+='<div class="durak-card'+cl+'" '+clk+'><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[c.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span></div>';
   });
   document.getElementById('durakPlayerHand').innerHTML=pHTML;
@@ -1533,7 +1799,7 @@ function dRender(){
 
 <script>
 // ===== КЕЙС НА МОНЕТЫ =====
-const CASE_ITEMS=[
+var CASE_ITEMS=[
   {name:'x0',mult:0,color:'#888888',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#888" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 48 Q40 56 56 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x0</text></svg>'},
   {name:'x1',mult:1,color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#00cc44" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 48 Q40 56 56 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x1</text></svg>'},
   {name:'x2',mult:2,color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#aaff00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 50 L56 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x2</text></svg>'},
@@ -1545,76 +1811,84 @@ const CASE_ITEMS=[
   {name:'x100',mult:100,color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff00aa" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M14 20 L28 34 L14 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 20 L52 34 L66 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M22 42 L58 42 L54 56 L26 56 Z" fill="#fff"/><path d="M30 44 L30 56 M40 44 L40 56 M50 44 L50 56" stroke="#000" stroke-width="2"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x100</text></svg>'},
   {name:'x500',mult:500,color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff0000" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M10 18 L28 34 L10 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M70 18 L52 34 L70 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M20 40 L60 40 L56 58 L24 58 Z" fill="#fff"/><path d="M29 42 L29 58 M40 42 L40 58 M51 42 L51 58" stroke="#000" stroke-width="2.5"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x500</text></svg>'}
 ];
-const CASE_WEIGHTS=[25,25,18,12,8,5,3,2,1.5,0.5];
-let caseSpinning=false;
-function updateCaseBalance(){const el=document.getElementById('caseBalanceNum');if(el)el.textContent=casinoBalance;}
+var CASE_WEIGHTS=[25,25,18,12,8,5,3,2,1.5,0.5];
+var caseSpinning=false;
+
+function updateCaseBalance(){
+  var el=document.getElementById('caseBalanceNum');
+  if(el) el.textContent=casinoBalance;
+}
+
 function renderCaseList(){
-  const container=document.getElementById('caseItemsList');
-  if(!container)return;
-  let html='';
-  CASE_ITEMS.forEach((d,i)=>{
+  var container=document.getElementById('caseItemsList');
+  if(!container) return;
+  var html='';
+  CASE_ITEMS.forEach(function(d,i){
     html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid '+d.color+'40;border-radius:8px;min-width:75px">'+d.svg+'<span style="font-size:.7rem;font-weight:700;color:'+d.color+'">'+d.name+'</span><span style="font-size:.65rem;color:#666">шанс '+CASE_WEIGHTS[i]+'%</span></div>';
   });
   container.innerHTML=html;
 }
 renderCaseList();
+
 function weightedRandomCase(){
-  const total=CASE_WEIGHTS.reduce((a,b)=>a+b,0);
-  let r=Math.random()*total;
-  for(let i=0;i<CASE_WEIGHTS.length;i++){r-=CASE_WEIGHTS[i];if(r<=0)return i;}
+  var total=CASE_WEIGHTS.reduce(function(a,b){return a+b;},0);
+  var r=Math.random()*total;
+  for(var i=0;i<CASE_WEIGHTS.length;i++){r-=CASE_WEIGHTS[i];if(r<=0) return i;}
   return 0;
 }
+
 function buildCaseTrack(winningIdx){
-  const total=50;
-  const track=[];
-  for(let i=0;i<total;i++){track.push(CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)]);}
+  var total=50;
+  var track=[];
+  for(var i=0;i<total;i++){track.push(CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)]);}
   track[45]=CASE_ITEMS[winningIdx];
   return track;
 }
+
 function openCase(){
-  if(caseSpinning)return;
-  const betEl=document.getElementById('caseBet');
-  let bet=parseInt(betEl?betEl.value:'50')||50;
-  if(bet<1)bet=1;
+  if(caseSpinning) return;
+  var betEl=document.getElementById('caseBet');
+  var bet=parseInt(betEl?betEl.value:'50')||50;
+  if(bet<1) bet=1;
   if(typeof casinoBalance==='undefined'||casinoBalance<bet){
     document.getElementById('caseResult').textContent='Недостаточно монет!';
     return;
   }
   casinoBalance-=bet;
-  if(typeof updateBalance==='function')updateBalance();
+  if(typeof updateBalance==='function') updateBalance();
   caseSpinning=true;
   document.getElementById('caseOpenBtn').disabled=true;
   document.getElementById('caseResult').textContent='Крутится...';
-  const winIdx=weightedRandomCase();
-  const winningItem=CASE_ITEMS[winIdx];
-  const track=buildCaseTrack(winIdx);
-  const trackEl=document.getElementById('caseTrack');
-  if(!trackEl)return;
-  let trackHTML='';
-  track.forEach(d=>{
+  var winIdx=weightedRandomCase();
+  var winningItem=CASE_ITEMS[winIdx];
+  var track=buildCaseTrack(winIdx);
+  var trackEl=document.getElementById('caseTrack');
+  if(!trackEl) return;
+  var trackHTML='';
+  track.forEach(function(d){
     trackHTML+='<div class="case-item" style="border-color:'+d.color+'40">'+d.svg+'<span class="case-item-name" style="color:'+d.color+'">'+d.name+'</span></div>';
   });
   trackEl.innerHTML=trackHTML;
-  const speedEl=document.getElementById('caseSpeed');
-  const speed=parseInt(speedEl?speedEl.value:'5')||5;
-  const duration=Math.max(2000,6000-speed*400);
-  const itemWidth=84+12;
-  const winEl=document.querySelector('.case-window');
-  const winW=winEl?winEl.offsetWidth:300;
-  const targetOffset=-(45*itemWidth)+(winW/2-itemWidth/2);
+  var speedEl=document.getElementById('caseSpeed');
+  var speed=parseInt(speedEl?speedEl.value:'5')||5;
+  var duration=Math.max(2000,6000-speed*400);
+  var itemWidth=84+12;
+  var winEl=document.querySelector('.case-window');
+  var winW=winEl?winEl.offsetWidth:300;
+  var targetOffset=-(45*itemWidth)+(winW/2-itemWidth/2);
   trackEl.style.transition='none';
   trackEl.style.transform='translateX(0)';
   void trackEl.offsetWidth;
   trackEl.style.transition='transform '+duration+'ms cubic-bezier(0.15,0.9,0.2,1)';
   trackEl.style.transform='translateX('+targetOffset+'px)';
   clearTimeout(window._caseTimer);
-  window._caseTimer=setTimeout(()=>{
+  window._caseTimer=setTimeout(function(){
     caseSpinning=false;
     document.getElementById('caseOpenBtn').disabled=false;
-    let prize=bet*winningItem.mult;
+    var prize=bet*winningItem.mult;
     if(winningItem.mult>0){
       casinoBalance+=prize;
-      if(typeof updateBalance==='function')updateBalance();
+      if(typeof updateBalance==='function') updateBalance();
       document.getElementById('caseResult').innerHTML=winningItem.svg+' <span style="color:'+winningItem.color+'">'+winningItem.name+'</span> — +'+prize.toLocaleString('ru')+' 🪙!';
     }else{
       document.getElementById('caseResult').innerHTML=winningItem.svg+' <span style="color:'+winningItem.color+'">'+winningItem.name+'</span> — повезёт в другой раз!';
@@ -1625,25 +1899,27 @@ function openCase(){
 
 <script>
 // ===== РУЛЕТКА =====
-const ROULETTE_NUMS=[];
-for(let i=0;i<=30;i++){ROULETTE_NUMS.push({num:i,color:i===0?'green':(i%2===1?'red':'black')});}
-const ROULETTE_COLORS={green:'#00cc44',red:'#cc2200',black:'#1a1a1a'};
-let rouletteAngle=0,rouletteSpinning=false,rouletteBetType=null,rouletteBetNumber=0;
+var ROULETTE_NUMS=[];
+for(var i=0;i<=30;i++){ROULETTE_NUMS.push({num:i,color:i===0?'green':(i%2===1?'red':'black')});}
+var ROULETTE_COLORS={green:'#00cc44',red:'#cc2200',black:'#1a1a1a'};
+var rouletteAngle=0,rouletteSpinning=false,rouletteBetType=null,rouletteBetNumber=0;
+
 function updateRouletteBalance(){
-  const el=document.getElementById('rouletteBalanceNum');
-  if(el)el.textContent=casinoBalance;
+  var el=document.getElementById('rouletteBalanceNum');
+  if(el) el.textContent=casinoBalance;
 }
+
 function drawRouletteWheel(angle){
-  const canvas=document.getElementById('rouletteCanvas');
-  if(!canvas)return;
-  const ctx=canvas.getContext('2d');
-  const cx=180,cy=180,r=170;
-  const n=ROULETTE_NUMS.length;
-  const sa=(Math.PI*2)/n;
+  var canvas=document.getElementById('rouletteCanvas');
+  if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var cx=180,cy=180,r=170;
+  var n=ROULETTE_NUMS.length;
+  var sa=(Math.PI*2)/n;
   ctx.clearRect(0,0,360,360);
-  for(let i=0;i<n;i++){
-    const start=i*sa+angle-Math.PI/2;
-    const end=start+sa;
+  for(var i=0;i<n;i++){
+    var start=i*sa+angle-Math.PI/2;
+    var end=start+sa;
     ctx.beginPath();
     ctx.moveTo(cx,cy);
     ctx.arc(cx,cy,r,start,end);
@@ -1653,9 +1929,9 @@ function drawRouletteWheel(angle){
     ctx.strokeStyle='rgba(255,255,255,0.25)';
     ctx.lineWidth=1;
     ctx.stroke();
-    const mid=(start+end)/2;
-    const tx=cx+Math.cos(mid)*r*0.72;
-    const ty=cy+Math.sin(mid)*r*0.72;
+    var mid=(start+end)/2;
+    var tx=cx+Math.cos(mid)*r*0.72;
+    var ty=cy+Math.sin(mid)*r*0.72;
     ctx.save();
     ctx.translate(tx,ty);
     ctx.rotate(mid+Math.PI/2);
@@ -1674,51 +1950,47 @@ function drawRouletteWheel(angle){
   ctx.lineWidth=3;
   ctx.stroke();
 }
+
 function rouletteSelectBet(type){
-  if(rouletteSpinning)return;
+  if(rouletteSpinning) return;
   rouletteBetType=type;
-  if(type==='number')rouletteBetNumber=parseInt(document.getElementById('rouletteNumber').value)||0;
-  document.querySelectorAll('.roulette-bet-btn').forEach(b=>b.classList.remove('active'));
-  const map={number:'rouletteBetNumber',red:'rouletteBetRed',black:'rouletteBetBlack',green:'rouletteBetGreen'};
-  const el=document.getElementById(map[type]);
-  if(el)el.classList.add('active');
-  let desc='';
-  if(type==='number')desc='На число '+rouletteBetNumber+' (×100)';
-  else if(type==='red')desc='На красное (×5)';
-  else if(type==='black')desc='На чёрное (×5)';
-  else if(type==='green')desc='На зелёное (×100)';
+  if(type==='number') rouletteBetNumber=parseInt(document.getElementById('rouletteNumber').value)||0;
+  document.querySelectorAll('.roulette-bet-btn').forEach(function(b){b.classList.remove('active');});
+  var map={number:'rouletteBetNumber',red:'rouletteBetRed',black:'rouletteBetBlack',green:'rouletteBetGreen'};
+  var el=document.getElementById(map[type]);
+  if(el) el.classList.add('active');
+  var desc='';
+  if(type==='number') desc='На число '+rouletteBetNumber+' (×100)';
+  else if(type==='red') desc='На красное (×5)';
+  else if(type==='black') desc='На чёрное (×5)';
+  else if(type==='green') desc='На зелёное (×100)';
   document.getElementById('rouletteCurrentBet').textContent='Ставка: '+desc;
 }
+
 function spinRoulette(){
-  if(rouletteSpinning)return;
-  if(!rouletteBetType){
-    document.getElementById('rouletteResult').textContent='Выбери ставку!';
-    return;
-  }
-  let bet=parseInt(document.getElementById('rouletteBet').value)||10;
-  if(bet<1)bet=1;
-  if(casinoBalance<bet){
-    document.getElementById('rouletteResult').textContent='Недостаточно монет!';
-    return;
-  }
+  if(rouletteSpinning) return;
+  if(!rouletteBetType){document.getElementById('rouletteResult').textContent='Выбери ставку!';return;}
+  var bet=parseInt(document.getElementById('rouletteBet').value)||10;
+  if(bet<1) bet=1;
+  if(casinoBalance<bet){document.getElementById('rouletteResult').textContent='Недостаточно монет!';return;}
   casinoBalance-=bet;
   updateBalance();
   rouletteSpinning=true;
   document.getElementById('rouletteSpinBtn').disabled=true;
   document.getElementById('rouletteResult').textContent='Крутится...';
   document.getElementById('rouletteResult').className='roulette-result';
-  const winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);
-  const sa=(Math.PI*2)/ROULETTE_NUMS.length;
-  const from=rouletteAngle;
-  const stopAt=winIdx*sa+sa/2;
-  let to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;
-  while(to-from<Math.PI*2*5)to+=Math.PI*2;
-  const duration=4000;
-  const startTime=performance.now();
+  var winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);
+  var sa=(Math.PI*2)/ROULETTE_NUMS.length;
+  var from=rouletteAngle;
+  var stopAt=winIdx*sa+sa/2;
+  var to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;
+  while(to-from<Math.PI*2*5) to+=Math.PI*2;
+  var duration=4000;
+  var startTime=performance.now();
   function animate(now){
-    const elapsed=now-startTime;
-    const t=Math.min(elapsed/duration,1);
-    const eased=1-Math.pow(1-t,3);
+    var elapsed=now-startTime;
+    var t=Math.min(elapsed/duration,1);
+    var eased=1-Math.pow(1-t,3);
     rouletteAngle=from+(to-from)*eased;
     drawRouletteWheel(rouletteAngle);
     if(t<1){
@@ -1726,14 +1998,14 @@ function spinRoulette(){
     }else{
       rouletteSpinning=false;
       document.getElementById('rouletteSpinBtn').disabled=false;
-      const result=ROULETTE_NUMS[winIdx];
-      let won=false,mult=0;
+      var result=ROULETTE_NUMS[winIdx];
+      var won=false,mult=0;
       if(rouletteBetType==='number'&&rouletteBetNumber===result.num){won=true;mult=100;}
       else if(rouletteBetType==='green'&&result.color==='green'){won=true;mult=100;}
       else if(rouletteBetType==='red'&&result.color==='red'){won=true;mult=5;}
       else if(rouletteBetType==='black'&&result.color==='black'){won=true;mult=5;}
       if(won){
-        const prize=bet*mult;
+        var prize=bet*mult;
         casinoBalance+=prize;
         updateBalance();
         document.getElementById('rouletteResult').innerHTML='🎉 Выпало '+result.num+' ('+result.color+')! ×'+mult+' = +'+prize.toLocaleString('ru')+' 🪙!';
@@ -1746,15 +2018,17 @@ function spinRoulette(){
   }
   requestAnimationFrame(animate);
 }
+
 drawRouletteWheel(0);
 </script>
 
 <script>
 // ===== БИРЖА =====
-let mktBalance=getUserBalance();
-let mktPortfolio=JSON.parse(localStorage.getItem('mkt_portfolio')||'{}');
-let mktBankDeposit=parseInt(localStorage.getItem('mkt_bank_deposit')||'0');
-const STOCKS=[
+var mktBalance=getUserBalance()||100;
+var mktPortfolio=JSON.parse(localStorage.getItem('mkt_portfolio')||'{}');
+var mktBankDeposit=parseInt(localStorage.getItem('mkt_bank_deposit')||'0');
+
+var STOCKS=[
   {ticker:'TECH',name:'Технологии',sector:'IT',price:850,vol:0.04,drift:0.001,color:'#00aaff'},
   {ticker:'GOLD',name:'Золотодобыча',sector:'Сырьё',price:1200,vol:0.02,drift:0.0005,color:'#ffcc00'},
   {ticker:'OIL',name:'Нефтегаз',sector:'Энергетика',price:420,vol:0.035,drift:-0.0003,color:'#555'},
@@ -1776,87 +2050,90 @@ const STOCKS=[
   {ticker:'SPACE',name:'Космос',sector:'IT',price:2200,vol:0.05,drift:0.0017,color:'#aa88ff'},
   {ticker:'EDU',name:'Образование',sector:'Услуги',price:120,vol:0.016,drift:0.0006,color:'#44ff88'}
 ];
-STOCKS.forEach(s=>{
+
+STOCKS.forEach(function(s){
   s.history=[s.price];
-  for(let i=0;i<60;i++){
-    const change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
+  for(var i=0;i<60;i++){
+    var change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
     s.price=Math.max(1,s.price+change);
     s.history.push(s.price);
   }
   s.prevPrice=s.history[s.history.length-2]||s.price;
 });
-let selectedStock=null;
+
+var selectedStock=null;
+
 function updateMktBalance(){
-  mktBalance=getUserBalance();
-  const el=document.getElementById('mktBalance');
-  if(el)el.textContent=mktBalance.toLocaleString('ru');
+  mktBalance=getUserBalance()||100;
+  var el=document.getElementById('mktBalance');
+  if(el) el.textContent=mktBalance.toLocaleString('ru');
 }
+
 function mktToast(msg,cls){
-  const t=document.getElementById('mktToast');
+  var t=document.getElementById('mktToast');
   t.textContent=msg;
   t.className='mkt-toast show '+(cls||'');
-  setTimeout(()=>t.classList.remove('show'),2500);
+  setTimeout(function(){t.classList.remove('show');},2500);
 }
+
 function switchMktTab(name,el){
-  document.querySelectorAll('.mkt-sub-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.mkt-sub-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.mkt-sub-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.mkt-sub-section').forEach(function(s){s.classList.remove('active');});
   el.classList.add('active');
   document.getElementById(name).classList.add('active');
-  if(name==='mktportfolio')renderPortfolio();
-  if(name==='mktbank')updateBankDisplay();
+  if(name==='mktportfolio') renderPortfolio();
+  if(name==='mktbank') updateBankDisplay();
 }
+
 function drawSparkline(canvas,data,color){
-  const ctx=canvas.getContext('2d');
-  const w=canvas.width,h=canvas.height;
+  var ctx=canvas.getContext('2d');
+  var w=canvas.width,h=canvas.height;
   ctx.clearRect(0,0,w,h);
-  if(data.length<2)return;
-  const min=Math.min(...data),max=Math.max(...data);
-  const range=max-min||1;
-  ctx.strokeStyle=color;
-  ctx.lineWidth=1.5;
-  ctx.beginPath();
-  data.forEach((v,i)=>{
-    const x=(i/(data.length-1))*w;
-    const y=h-((v-min)/range)*(h-4)-2;
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  if(data.length<2) return;
+  var min=Math.min.apply(null,data),max=Math.max.apply(null,data);
+  var range=max-min||1;
+  ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.beginPath();
+  data.forEach(function(v,i){
+    var x=(i/(data.length-1))*w;
+    var y=h-((v-min)/range)*(h-4)-2;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
   });
   ctx.stroke();
 }
+
 function renderStockGrid(){
-  const grid=document.getElementById('stockGrid');
-  if(!grid)return;
-  grid.innerHTML=STOCKS.map(s=>{
-    const change=s.price-s.prevPrice;
-    const pct=(change/s.prevPrice*100).toFixed(2);
-    const up=change>=0;
+  var grid=document.getElementById('stockGrid');
+  if(!grid) return;
+  grid.innerHTML=STOCKS.map(function(s){
+    var change=s.price-s.prevPrice;
+    var pct=(change/s.prevPrice*100).toFixed(2);
+    var up=change>=0;
     return '<div class="stock-card" onclick="selectStock(\''+s.ticker+'\')"><div style="display:flex;justify-content:space-between;align-items:center"><span class="stock-ticker">'+s.ticker+'</span><span class="sector-badge">'+s.sector+'</span></div><div class="stock-name">'+s.name+'</div><div class="stock-price">'+s.price.toFixed(0)+' 🪙</div><div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pct)+'%</div><canvas class="stock-spark" width="180" height="30" id="spark-'+s.ticker+'"></canvas></div>';
   }).join('');
-  STOCKS.forEach(s=>{
-    const c=document.getElementById('spark-'+s.ticker);
-    if(c)drawSparkline(c,s.history,s.color);
+  STOCKS.forEach(function(s){
+    var c=document.getElementById('spark-'+s.ticker);
+    if(c) drawSparkline(c,s.history,s.color);
   });
 }
+
 function drawDetailChart(canvas,data,color){
-  const ctx=canvas.getContext('2d');
-  const w=canvas.width,h=canvas.height;
+  var ctx=canvas.getContext('2d');
+  var w=canvas.width,h=canvas.height;
   ctx.clearRect(0,0,w,h);
-  if(data.length<2)return;
-  const min=Math.min(...data),max=Math.max(...data);
-  const range=max-min||1;
-  const pad=10;
-  ctx.strokeStyle='rgba(255,255,255,0.05)';
-  ctx.lineWidth=1;
-  for(let i=0;i<8;i++){
-    const y=pad+(h-pad*2)*i/7;
+  if(data.length<2) return;
+  var min=Math.min.apply(null,data),max=Math.max.apply(null,data);
+  var range=max-min||1;
+  var pad=10;
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(var i=0;i<8;i++){
+    var y=pad+(h-pad*2)*i/7;
     ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
   }
-  ctx.strokeStyle=color;
-  ctx.lineWidth=2;
-  ctx.beginPath();
-  data.forEach((v,i)=>{
-    const x=pad+(i/(data.length-1))*(w-pad*2);
-    const y=h-pad-((v-min)/range)*(h-pad*2);
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();
+  data.forEach(function(v,i){
+    var x=pad+(i/(data.length-1))*(w-pad*2);
+    var y=h-pad-((v-min)/range)*(h-pad*2);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
   });
   ctx.stroke();
   ctx.lineTo(w-pad,h-pad);
@@ -1864,37 +2141,38 @@ function drawDetailChart(canvas,data,color){
   ctx.closePath();
   ctx.fillStyle=color+'15';
   ctx.fill();
-  ctx.fillStyle='#666';
-  ctx.font='10px Montserrat';
-  ctx.textAlign='left';
+  ctx.fillStyle='#666';ctx.font='10px Montserrat';ctx.textAlign='left';
   ctx.fillText(max.toFixed(0),pad+2,12);
   ctx.fillText(min.toFixed(0),pad+2,h-4);
 }
+
 function selectStock(ticker){
-  selectedStock=STOCKS.find(s=>s.ticker===ticker);
-  if(!selectedStock)return;
-  const s=selectedStock;
-  const change=s.price-s.prevPrice;
-  const pct=(change/s.prevPrice*100).toFixed(2);
-  const up=change>=0;
-  const owned=mktPortfolio[ticker]||0;
-  const ownedVal=owned*s.price;
+  selectedStock=STOCKS.find(function(s){return s.ticker===ticker;});
+  if(!selectedStock) return;
+  var s=selectedStock;
+  var change=s.price-s.prevPrice;
+  var pct=(change/s.prevPrice*100).toFixed(2);
+  var up=change>=0;
+  var owned=mktPortfolio[ticker]||0;
+  var ownedVal=owned*s.price;
   document.getElementById('stockDetail').innerHTML='<div class="stock-detail"><div class="stock-detail-header"><div><div class="stock-detail-name" style="color:'+s.color+'">'+s.ticker+'</div><div style="color:#666;font-size:.85rem">'+s.name+' · '+s.sector+'</div>'+(owned>0?'<div style="margin-top:5px;font-size:.85rem;color:var(--green)">В портфеле: '+owned+' шт. = '+ownedVal.toFixed(0)+' 🪙</div>':'')+'</div><div style="text-align:right"><div class="stock-detail-price">'+s.price.toFixed(0)+' 🪙</div><div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pct)+'%</div></div></div><canvas class="detail-chart" width="800" height="200" id="detailChart"></canvas><div class="trade-box"><input type="number" id="tradeQty" value="1" min="1" max="9999"><button class="trade-btn buy" onclick="buyStock()">📥 Купить</button><button class="trade-btn sell" onclick="sellStock()" '+(owned>0?'':'disabled')+'>📤 Продать</button></div><div style="margin-top:10px;font-size:.8rem;color:#666">Стоимость покупки: <span id="tradeCost">'+s.price.toFixed(0)+' 🪙</span></div></div>';
-  const c=document.getElementById('detailChart');
-  if(c)drawDetailChart(c,s.history,s.color);
+  var c=document.getElementById('detailChart');
+  if(c) drawDetailChart(c,s.history,s.color);
   document.getElementById('tradeQty').addEventListener('input',updateTradeCost);
   document.getElementById('stockDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+
 function updateTradeCost(){
-  if(!selectedStock)return;
-  const qty=parseInt(document.getElementById('tradeQty').value)||1;
+  if(!selectedStock) return;
+  var qty=parseInt(document.getElementById('tradeQty').value)||1;
   document.getElementById('tradeCost').textContent=(qty*selectedStock.price).toFixed(0)+' 🪙';
 }
+
 function buyStock(){
-  if(!selectedStock)return;
-  const qty=parseInt(document.getElementById('tradeQty').value)||1;
+  if(!selectedStock) return;
+  var qty=parseInt(document.getElementById('tradeQty').value)||1;
   if(qty<1){mktToast('Введите количество','err');return;}
-  const cost=qty*selectedStock.price;
+  var cost=qty*selectedStock.price;
   if(mktBalance<cost){mktToast('Недостаточно монет!','err');return;}
   mktBalance-=cost;
   setUserBalance(mktBalance);
@@ -1904,51 +2182,55 @@ function buyStock(){
   mktToast('Куплено '+qty+' '+selectedStock.ticker+' за '+cost.toFixed(0)+' 🪙','ok');
   selectStock(selectedStock.ticker);
 }
+
 function sellStock(){
-  if(!selectedStock)return;
-  const qty=parseInt(document.getElementById('tradeQty').value)||1;
+  if(!selectedStock) return;
+  var qty=parseInt(document.getElementById('tradeQty').value)||1;
   if(qty<1){mktToast('Введите количество','err');return;}
-  const owned=mktPortfolio[selectedStock.ticker]||0;
+  var owned=mktPortfolio[selectedStock.ticker]||0;
   if(owned<qty){mktToast('Недостаточно акций!','err');return;}
-  const revenue=qty*selectedStock.price;
+  var revenue=qty*selectedStock.price;
   mktBalance+=revenue;
   setUserBalance(mktBalance);
   mktPortfolio[selectedStock.ticker]=owned-qty;
-  if(mktPortfolio[selectedStock.ticker]<=0)delete mktPortfolio[selectedStock.ticker];
+  if(mktPortfolio[selectedStock.ticker]<=0) delete mktPortfolio[selectedStock.ticker];
   localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
   updateMktBalance();
   mktToast('Продано '+qty+' '+selectedStock.ticker+' за '+revenue.toFixed(0)+' 🪙','ok');
   selectStock(selectedStock.ticker);
 }
+
 function renderPortfolio(){
-  const list=document.getElementById('portfolioList');
-  if(!list)return;
-  const tickers=Object.keys(mktPortfolio).filter(t=>mktPortfolio[t]>0);
+  var list=document.getElementById('portfolioList');
+  if(!list) return;
+  var tickers=Object.keys(mktPortfolio).filter(function(t){return mktPortfolio[t]>0;});
   if(tickers.length===0){
     list.innerHTML='<div class="portfolio-empty">Портфель пуст. Купите акции на вкладке «Акции».</div>';
     return;
   }
-  let totalCost=0,totalVal=0;
-  list.innerHTML=tickers.map(t=>{
-    const s=STOCKS.find(st=>st.ticker===t);
-    if(!s)return'';
-    const qty=mktPortfolio[t];
-    const costBasis=s.history[0]*qty;
-    const curVal=s.price*qty;
+  var totalCost=0,totalVal=0;
+  list.innerHTML=tickers.map(function(t){
+    var s=STOCKS.find(function(st){return st.ticker===t;});
+    if(!s) return '';
+    var qty=mktPortfolio[t];
+    var costBasis=s.history[0]*qty;
+    var curVal=s.price*qty;
     totalCost+=costBasis;totalVal+=curVal;
-    const pnl=curVal-costBasis;
-    const pnlPct=(pnl/costBasis*100).toFixed(1);
-    const up=pnl>=0;
+    var pnl=curVal-costBasis;
+    var pnlPct=(pnl/costBasis*100).toFixed(1);
+    var up=pnl>=0;
     return '<div class="portfolio-item"><div><div style="font-family:Orbitron,sans-serif;font-weight:900;color:'+s.color+'">'+s.ticker+'</div><div style="font-size:.8rem;color:#666">'+qty+' шт. · '+s.name+'</div></div><div style="text-align:right"><div style="font-weight:700">'+curVal.toFixed(0)+' 🪙</div><div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pnlPct)+'% ('+(pnl>0?'+':'')+pnl.toFixed(0)+')</div></div></div>';
   }).join('');
   list.innerHTML+='<div class="stock-detail" style="margin-top:15px"><div style="display:flex;justify-content:space-between"><div style="font-weight:700">Общая стоимость</div><div style="font-family:Orbitron,sans-serif;font-weight:900;color:var(--primary)">'+totalVal.toFixed(0)+' 🪙</div></div><div style="display:flex;justify-content:space-between;margin-top:8px"><div style="font-size:.85rem;color:#666">Прибыль/убыток</div><div class="stock-change '+(totalVal-totalCost>=0?'up':'down')+'">'+(totalVal-totalCost>=0?'+':'')+(totalVal-totalCost).toFixed(0)+' 🪙 ('+((totalVal-totalCost)/totalCost*100).toFixed(1)+'%)</div></div></div>';
 }
+
 function updateBankDisplay(){
-  const el=document.getElementById('bankDeposit');
-  if(el)el.textContent=mktBankDeposit.toLocaleString('ru')+' 🪙';
+  var el=document.getElementById('bankDeposit');
+  if(el) el.textContent=mktBankDeposit.toLocaleString('ru')+' 🪙';
 }
+
 function bankDepositAction(){
-  const amt=parseInt(document.getElementById('bankAmount').value)||0;
+  var amt=parseInt(document.getElementById('bankAmount').value)||0;
   if(amt<1){mktToast('Введите сумму','err');return;}
   if(mktBalance<amt){mktToast('Недостаточно монет!','err');return;}
   mktBalance-=amt;
@@ -1958,8 +2240,9 @@ function bankDepositAction(){
   updateMktBalance();updateBankDisplay();
   mktToast('Внесено '+amt+' 🪙 в банк','ok');
 }
+
 function bankWithdrawAction(){
-  const amt=parseInt(document.getElementById('bankAmount').value)||0;
+  var amt=parseInt(document.getElementById('bankAmount').value)||0;
   if(amt<1){mktToast('Введите сумму','err');return;}
   if(mktBankDeposit<amt){mktToast('В банке недостаточно средств!','err');return;}
   mktBankDeposit-=amt;
@@ -1969,34 +2252,36 @@ function bankWithdrawAction(){
   updateMktBalance();updateBankDisplay();
   mktToast('Снято '+amt+' 🪙 из банка','ok');
 }
+
 function bankInterest(){
   if(mktBankDeposit>0){
-    const rate=0.05/(24*60*6);
-    const interest=Math.max(1,Math.round(mktBankDeposit*rate));
+    var rate=0.05/(24*60*6);
+    var interest=Math.max(1,Math.round(mktBankDeposit*rate));
     mktBankDeposit+=interest;
     localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
     updateBankDisplay();
   }
 }
+
 function marketTick(){
-  STOCKS.forEach(s=>{
+  STOCKS.forEach(function(s){
     s.prevPrice=s.price;
-    const change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
+    var change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
     s.price=Math.max(1,s.price+change);
     s.history.push(s.price);
-    if(s.history.length>60)s.history.shift();
+    if(s.history.length>60) s.history.shift();
   });
   renderStockGrid();
   if(selectedStock){
-    const c=document.getElementById('detailChart');
-    if(c)drawDetailChart(c,selectedStock.history,selectedStock.color);
-    const header=document.querySelector('.stock-detail-price');
+    var c=document.getElementById('detailChart');
+    if(c) drawDetailChart(c,selectedStock.history,selectedStock.color);
+    var header=document.querySelector('.stock-detail-price');
     if(header){
-      const s=selectedStock;
-      const change=s.price-s.prevPrice;
-      const pct=(change/s.prevPrice*100).toFixed(2);
+      var s=selectedStock;
+      var change=s.price-s.prevPrice;
+      var pct=(change/s.prevPrice*100).toFixed(2);
       header.textContent=s.price.toFixed(0)+' 🪙';
-      const chgEl=document.querySelector('.stock-change');
+      var chgEl=document.querySelector('.stock-change');
       if(chgEl){
         chgEl.className='stock-change '+(change>=0?'up':'down');
         chgEl.textContent=(change>=0?'▲':'▼')+' '+Math.abs(pct)+'%';
@@ -2005,15 +2290,13 @@ function marketTick(){
     updateTradeCost();
   }
 }
+
 updateMktBalance();
 renderStockGrid();
 updateBankDisplay();
-setInterval(()=>{marketTick();bankInterest();},3000);
-setInterval(()=>{
-  setUserBalance(mktBalance);
-  if(typeof syncBalanceToServer==='function')syncBalanceToServer();
-},30000);
-window.addEventListener('beforeunload',()=>{
+setInterval(function(){marketTick();bankInterest();},3000);
+setInterval(function(){setUserBalance(mktBalance);if(typeof syncBalanceToServer==='function') syncBalanceToServer();},30000);
+window.addEventListener('beforeunload',function(){
   setUserBalance(mktBalance);
   localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
   localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
@@ -2022,49 +2305,52 @@ window.addEventListener('beforeunload',()=>{
 
 <script>
 // ===== СИНХРОНИЗАЦИЯ БАЛАНСА =====
-const SYNC_REPO='6m-class/6m-class';
-const SYNC_API=`https://api.github.com/repos/${SYNC_REPO}`;
-const _sk='6m-class';
-const _se=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];
-const SYNC_TOKEN=_se.map((c,i)=>String.fromCharCode(c^_sk.charCodeAt(i%_sk.length))).join('');
-const SYNC_HEADERS={'Authorization':`Bearer ${SYNC_TOKEN}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-let _syncUser=null;
+var SYNC_REPO='6m-class/6m-class';
+var SYNC_API='https://api.github.com/repos/'+SYNC_REPO;
+var _sk='6m-class';
+var _se=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];
+var SYNC_TOKEN=_se.map(function(c,i){return String.fromCharCode(c^_sk.charCodeAt(i%_sk.length));}).join('');
+var SYNC_HEADERS={'Authorization':'Bearer '+SYNC_TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+var _syncUser=null;
 try{_syncUser=JSON.parse(localStorage.getItem('class_user')||'null');}catch(e){}
+
 function utf8ToB64(str){
-  return btoa([...new TextEncoder().encode(str)].map(b=>String.fromCharCode(b)).join(''));
+  return btoa([].slice.call(new TextEncoder().encode(str)).map(function(b){return String.fromCharCode(b);}).join(''));
 }
-let _syncLock=false;
+
+var _syncLock=false;
 async function syncBalanceToServer(){
-  if(!_syncUser||_syncLock)return;
+  if(!_syncUser||_syncLock) return;
   _syncLock=true;
   try{
-    const balance=getUserBalance();
-    const resp=await fetch(`https://raw.githubusercontent.com/${SYNC_REPO}/main/accounts.json?v=${Date.now()}`,{cache:'no-store'});
-    if(!resp.ok)return;
-    let accounts=await resp.json();
-    if(!Array.isArray(accounts))return;
-    const acc=accounts.find(a=>a.login===_syncUser.login);
-    if(!acc)return;
-    if(acc.coins===balance)return;
+    var balance=getUserBalance();
+    var resp=await fetch('https://raw.githubusercontent.com/'+SYNC_REPO+'/main/accounts.json?v='+Date.now(),{cache:'no-store'});
+    if(!resp.ok) return;
+    var accounts=await resp.json();
+    if(!Array.isArray(accounts)) return;
+    var acc=accounts.find(function(a){return a.login===_syncUser.login;});
+    if(!acc) return;
+    if(acc.coins===balance) return;
     acc.coins=balance;
-    const newData=JSON.stringify(accounts,null,2);
-    const newDataB64=utf8ToB64(newData);
-    let sha=null;
+    var newData=JSON.stringify(accounts,null,2);
+    var newDataB64=utf8ToB64(newData);
+    var sha=null;
     try{
-      const meta=await fetch(`${SYNC_API}/contents/accounts.json`,{cache:'no-store',headers:SYNC_HEADERS});
-      const d=await meta.json();
+      var meta=await fetch(SYNC_API+'/contents/accounts.json',{cache:'no-store',headers:SYNC_HEADERS});
+      var d=await meta.json();
       sha=d.sha;
     }catch(e){}
-    const body={message:`Sync balance for ${_syncUser.login}: ${balance}`,content:newDataB64};
-    if(sha)body.sha=sha;
-    await fetch(`${SYNC_API}/contents/accounts.json`,{
+    var body={message:'Sync balance for '+_syncUser.login+': '+balance,content:newDataB64};
+    if(sha) body.sha=sha;
+    await fetch(SYNC_API+'/contents/accounts.json',{
       method:'PUT',
-      headers:{...SYNC_HEADERS,'Content-Type':'application/json'},
+      headers:Object.assign({},SYNC_HEADERS,{'Content-Type':'application/json'}),
       body:JSON.stringify(body)
     });
   }catch(e){console.log('Sync error:',e.message);}
   finally{_syncLock=false;}
 }
+
 setInterval(syncBalanceToServer,30000);
 window.addEventListener('beforeunload',syncBalanceToServer);
 </script>
