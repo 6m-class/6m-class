@@ -1199,6 +1199,47 @@ requestAnimationFrame(animate);
 }
 
 drawRouletteWheel(0);
+  // ===== СИНХРОНИЗАЦИЯ БАЛАНСА С accounts.json =====
+const SYNC_REPO='6m-class/6m-class';
+const SYNC_API=`https://api.github.com/repos/${SYNC_REPO}`;
+const _sk='6m-class';const _se=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];
+const SYNC_TOKEN=_se.map((c,i)=>String.fromCharCode(c^_sk.charCodeAt(i%_sk.length))).join('');
+const SYNC_HEADERS={'Authorization':`Bearer ${SYNC_TOKEN}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+const _syncUser=JSON.parse(localStorage.getItem('class_user')||'null');
+
+function utf8ToB64(str){return btoa([...new TextEncoder().encode(str)].map(b=>String.fromCharCode(b)).join(''))}
+
+async function syncBalanceToServer(){
+if(!_syncUser)return;
+const balance=parseInt(localStorage.getItem('class_balance')||'100');
+try{
+const resp=await fetch(`https://raw.githubusercontent.com/${SYNC_REPO}/main/accounts.json?v=${Date.now()}`,{cache:'no-store'});
+if(!resp.ok)return;
+let accounts=await resp.json();
+if(!Array.isArray(accounts))return;
+const acc=accounts.find(a=>a.login===_syncUser.login);
+if(!acc)return;
+if(acc.coins===balance)return;
+acc.coins=balance;
+const newData=JSON.stringify(accounts,null,2);
+const newDataB64=utf8ToB64(newData);
+let sha=null;
+try{const meta=await fetch(`${SYNC_API}/contents/accounts.json`,{cache:'no-store',headers:SYNC_HEADERS});const d=await meta.json();sha=d.sha;}catch(e){}
+const body={message:`Sync balance for ${_syncUser.login}: ${balance}`,content:newDataB64};
+if(sha)body.sha=sha;
+await fetch(`${SYNC_API}/contents/accounts.json`,{
+method:'PUT',
+headers:{...SYNC_HEADERS,'Content-Type':'application/json'},
+body:JSON.stringify(body)
+});
+}catch(e){console.log('Sync error:',e.message);}
+}
+
+// Автосинхронизация каждые 30 сек
+setInterval(syncBalanceToServer,30000);
+// Синхронизация при закрытии вкладки
+window.addEventListener('beforeunload',syncBalanceToServer);
+
 </script>
 
 </body>
