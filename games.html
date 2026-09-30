@@ -571,32 +571,279 @@ fbDraw();
 </script>
 
 <script>
+<script>
 // ===== КАЗИНО =====
 let casinoBalance=getUserBalance();
 let _syncTimer=null;
-function updateBalance(){setUserBalance(casinoBalance);document.getElementById('balanceNum').textContent=casinoBalance;if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;if(document.getElementById('rouletteBalanceNum'))document.getElementById('rouletteBalanceNum').textContent=casinoBalance;if(_syncTimer)clearTimeout(_syncTimer);_syncTimer=setTimeout(syncBalanceToServer,3000);}
-function resetBalance(){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent='Баланс сброшен до 100 🪙';document.getElementById('wheelResult').className='wheel-result';document.getElementById('slotsResult').textContent='';}
+
+function updateBalance(){
+  setUserBalance(casinoBalance);
+  document.getElementById('balanceNum').textContent=casinoBalance;
+  if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;
+  if(document.getElementById('rouletteBalanceNum'))document.getElementById('rouletteBalanceNum').textContent=casinoBalance;
+  if(_syncTimer)clearTimeout(_syncTimer);
+  _syncTimer=setTimeout(syncBalanceToServer,3000);
+}
+
+function resetBalance(){
+  casinoBalance=100;
+  updateBalance();
+  document.getElementById('wheelResult').textContent='Баланс сброшен до 100 🪙';
+  document.getElementById('wheelResult').className='wheel-result';
+  document.getElementById('slotsResult').textContent='';
+}
+
 updateBalance();
-function switchCasino(name,el){document.querySelectorAll('.casino-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.casino-section').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('casino-'+name).classList.add('active');if(name==='wheel')drawWheel(wheelAngle||0);}
+
+function switchCasino(name,el){
+  document.querySelectorAll('.casino-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.casino-section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('casino-'+name).classList.add('active');
+  if(name==='wheel')drawWheel(wheelAngle||0);
+}
+
+// --- СЛОТЫ ---
 let slotsSpinning=false;
-function spinSlots(){if(slotsSpinning)return;let bet=parseInt(document.getElementById('slotsBet').value)||1;if(bet<1)bet=1;if(casinoBalance<bet){document.getElementById('slotsResult').textContent='Недостаточно монет!';document.getElementById('slotsResult').className='slots-result';return;}casinoBalance-=bet;updateBalance();slotsSpinning=true;document.getElementById('slotsSpinBtn').disabled=true;document.getElementById('slotsResult').textContent='Крутится...';document.getElementById('slotsResult').className='slots-result';const reels=['reel1','reel2','reel3'];reels.forEach(id=>{const el=document.getElementById(id);el.classList.add('spinning');el.textContent='';});const winNums=['333','777','999'];const winChance=0.45;let results;if(Math.random()<winChance){const win=winNums[Math.floor(Math.random()*3)];results=[parseInt(win[0]),parseInt(win[1]),parseInt(win[2])];}else{do{results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];}while(winNums.includes(results.join('')));}reels.forEach((id,i)=>{setTimeout(()=>{const el=document.getElementById(id);el.classList.remove('spinning');el.textContent=results[i];if(i===2){slotsSpinning=false;document.getElementById('slotsSpinBtn').disabled=false;const combo=results.join('');if(winNums.includes(combo)){const prize=bet*5;casinoBalance+=prize;updateBalance();document.getElementById('slotsResult').textContent='🎉 '+combo+' — ВЫИГРЫШ! +'+prize+' 🪙';document.getElementById('slotsResult').className='slots-result win';}else{document.getElementById('slotsResult').textContent=combo+' — повезёт в следующий раз!';}if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('slotsResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}}},300+i*250);});}
+function spinSlots(){
+  if(slotsSpinning)return;
+  let bet=parseInt(document.getElementById('slotsBet').value)||1;
+  if(bet<1)bet=1;
+  if(casinoBalance<bet){
+    document.getElementById('slotsResult').textContent='Недостаточно монет!';
+    document.getElementById('slotsResult').className='slots-result';
+    return;
+  }
+  casinoBalance-=bet;
+  updateBalance();
+  slotsSpinning=true;
+  document.getElementById('slotsSpinBtn').disabled=true;
+  document.getElementById('slotsResult').textContent='Крутится...';
+  document.getElementById('slotsResult').className='slots-result';
+  const reels=['reel1','reel2','reel3'];
+  reels.forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.add('spinning');
+    el.textContent='';
+  });
+  const winNums=['333','777','999'];
+  const winChance=0.45;
+  let results;
+  if(Math.random()<winChance){
+    const win=winNums[Math.floor(Math.random()*3)];
+    results=[parseInt(win[0]),parseInt(win[1]),parseInt(win[2])];
+  }else{
+    do{
+      results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];
+    }while(winNums.includes(results.join('')));
+  }
+  reels.forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      el.classList.remove('spinning');
+      el.textContent=results[i];
+      if(i===2){
+        slotsSpinning=false;
+        document.getElementById('slotsSpinBtn').disabled=false;
+        const combo=results.join('');
+        if(winNums.includes(combo)){
+          const prize=bet*5;
+          casinoBalance+=prize;
+          updateBalance();
+          document.getElementById('slotsResult').textContent='🎉 '+combo+' — ВЫИГРЫШ! +'+prize+' 🪙';
+          document.getElementById('slotsResult').className='slots-result win';
+        }else{
+          document.getElementById('slotsResult').textContent=combo+' — повезёт в следующий раз!';
+        }
+        if(casinoBalance<1){
+          casinoBalance=100;
+          updateBalance();
+          document.getElementById('slotsResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';
+        }
+      }
+    },300+i*250);
+  });
+}
+
+// --- КОЛЕСО ФОРТУНЫ ---
 const wheelCanvas=document.getElementById('wheelCanvas');
 const wheelCtx=wheelCanvas.getContext('2d');
 const WHEEL_SECTORS=['0','1','2','3','4','5','x2','x3','x5','x10'];
 const WHEEL_COLORS=['#333','#ff0033','#333','#00ff66','#333','#00aaff','#aa00ff','#ffcc00','#ff6600','#00ff66'];
 const WHEEL_SIZE=10;
-let wheelAngle=0;let wheelSpinning=false;
-function drawWheel(angle){const cx=180,cy=180,r=170;wheelCtx.clearRect(0,0,360,360);for(let i=0;i<WHEEL_SIZE;i++){const start=(i/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;const end=((i+1)/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;wheelCtx.beginPath();wheelCtx.moveTo(cx,cy);wheelCtx.arc(cx,cy,r,start,end);wheelCtx.closePath();wheelCtx.fillStyle=WHEEL_COLORS[i];wheelCtx.fill();wheelCtx.strokeStyle='rgba(255,255,255,0.2)';wheelCtx.lineWidth=2;wheelCtx.stroke();const mid=(start+end)/2;const tx=cx+Math.cos(mid)*r*0.65;const ty=cy+Math.sin(mid)*r*0.65;wheelCtx.save();wheelCtx.translate(tx,ty);wheelCtx.rotate(mid+Math.PI/2);wheelCtx.fillStyle='#fff';wheelCtx.font='bold 18px Orbitron';wheelCtx.textAlign='center';wheelCtx.textBaseline='middle';wheelCtx.fillText(WHEEL_SECTORS[i],0,0);wheelCtx.restore();}wheelCtx.beginPath();wheelCtx.arc(cx,cy,50,0,Math.PI*2);wheelCtx.fillStyle='#1a1a1a';wheelCtx.fill();wheelCtx.strokeStyle='#ff0033';wheelCtx.lineWidth=3;wheelCtx.stroke();}
+let wheelAngle=0;
+let wheelSpinning=false;
+
+function drawWheel(angle){
+  const cx=180,cy=180,r=170;
+  wheelCtx.clearRect(0,0,360,360);
+  for(let i=0;i<WHEEL_SIZE;i++){
+    const start=(i/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
+    const end=((i+1)/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx,cy);
+    wheelCtx.arc(cx,cy,r,start,end);
+    wheelCtx.closePath();
+    wheelCtx.fillStyle=WHEEL_COLORS[i];
+    wheelCtx.fill();
+    wheelCtx.strokeStyle='rgba(255,255,255,0.2)';
+    wheelCtx.lineWidth=2;
+    wheelCtx.stroke();
+    const mid=(start+end)/2;
+    const tx=cx+Math.cos(mid)*r*0.65;
+    const ty=cy+Math.sin(mid)*r*0.65;
+    wheelCtx.save();
+    wheelCtx.translate(tx,ty);
+    wheelCtx.rotate(mid+Math.PI/2);
+    wheelCtx.fillStyle='#fff';
+    wheelCtx.font='bold 18px Orbitron';
+    wheelCtx.textAlign='center';
+    wheelCtx.textBaseline='middle';
+    wheelCtx.fillText(WHEEL_SECTORS[i],0,0);
+    wheelCtx.restore();
+  }
+  wheelCtx.beginPath();
+  wheelCtx.arc(cx,cy,50,0,Math.PI*2);
+  wheelCtx.fillStyle='#1a1a1a';
+  wheelCtx.fill();
+  wheelCtx.strokeStyle='#ff0033';
+  wheelCtx.lineWidth=3;
+  wheelCtx.stroke();
+}
 drawWheel(0);
-function spinWheel(){if(wheelSpinning)return;let bet=parseInt(document.getElementById('wheelBet').value)||1;if(bet<1)bet=1;if(casinoBalance<bet){document.getElementById('wheelResult').textContent='Недостаточно монет!';document.getElementById('wheelResult').className='wheel-result';return;}casinoBalance-=bet;updateBalance();wheelSpinning=true;document.getElementById('wheelSpinBtn').disabled=true;document.getElementById('wheelResult').textContent='Крутится...';document.getElementById('wheelResult').className='wheel-result';wheelAngle=0;const targetIndex=Math.floor(Math.random()*WHEEL_SIZE);const sectorAngle=(Math.PI*2)/WHEEL_SIZE;const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;const startAngle=0;const totalRotation=targetAngle-startAngle;const duration=1200;const startTime=performance.now();function animate(now){const elapsed=now-startTime;const t=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-t,3);wheelAngle=startAngle+totalRotation*eased;drawWheel(wheelAngle);if(t<1){requestAnimationFrame(animate);}else{wheelSpinning=false;document.getElementById('wheelSpinBtn').disabled=false;const sector=WHEEL_SECTORS[targetIndex];let prize=0,msg='';if(sector.startsWith('x')){const mult=parseInt(sector.substring(1));prize=bet*mult;msg='🎉 '+sector+' — ставка x'+mult+' = +'+prize+' 🪙!';}else{prize=Math.round(parseInt(sector)*bet/10);msg='Выпал сектор '+sector+' → +'+prize+' 🪙';}casinoBalance+=prize;updateBalance();document.getElementById('wheelResult').textContent=msg;document.getElementById('wheelResult').className='wheel-result win';if(casinoBalance<1){setTimeout(()=>{if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}},1000);}}}requestAnimationFrame(animate);}
-let creditAmount=0,creditTimer=null,creditEndTime=0;const CREDIT_SUM=10000000,CREDIT_MINUTES=5;
-function initCredit(){const saved=localStorage.getItem('casino_credit');if(saved){try{const data=JSON.parse(saved);if(data.endTime>Date.now()){creditAmount=data.amount;creditEndTime=data.endTime;startCreditTimer();}else{if(data.amount>0){casinoBalance-=data.amount;if(casinoBalance<0)casinoBalance=0;updateBalance();}localStorage.removeItem('casino_credit');}}catch(e){localStorage.removeItem('casino_credit');}}}
-function takeCredit(){if(creditAmount>0){document.getElementById('creditStatus').textContent='У тебя уже есть активный кредит!';return;}creditAmount=CREDIT_SUM;casinoBalance+=creditAmount;updateBalance();creditEndTime=Date.now()+CREDIT_MINUTES*60*1000;localStorage.setItem('casino_credit',JSON.stringify({amount:creditAmount,endTime:creditEndTime}));startCreditTimer();document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 зачислен!';}
-function startCreditTimer(){if(creditTimer)clearInterval(creditTimer);updateCreditDisplay();creditTimer=setInterval(()=>{const remaining=creditEndTime-Date.now();if(remaining<=0){clearInterval(creditTimer);creditTimer=null;casinoBalance-=creditAmount;if(casinoBalance<0)casinoBalance=0;updateBalance();creditAmount=0;localStorage.removeItem('casino_credit');document.getElementById('creditStatus').textContent='⏰ Время вышло! Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 списан.';document.getElementById('creditTimer').textContent='';}else{updateCreditDisplay();}},1000);}
-function updateCreditDisplay(){const remaining=creditEndTime-Date.now();const m=Math.floor(remaining/60000);const s=Math.floor((remaining%60000)/1000);document.getElementById('creditTimer').textContent=m+':'+(s<10?'0':'')+s;document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙. Осталось:';}
+
+function spinWheel(){
+  if(wheelSpinning)return;
+  let bet=parseInt(document.getElementById('wheelBet').value)||1;
+  if(bet<1)bet=1;
+  if(casinoBalance<bet){
+    document.getElementById('wheelResult').textContent='Недостаточно монет!';
+    document.getElementById('wheelResult').className='wheel-result';
+    return;
+  }
+  casinoBalance-=bet;
+  updateBalance();
+  wheelSpinning=true;
+  document.getElementById('wheelSpinBtn').disabled=true;
+  document.getElementById('wheelResult').textContent='Крутится...';
+  document.getElementById('wheelResult').className='wheel-result';
+  wheelAngle=0;
+  const targetIndex=Math.floor(Math.random()*WHEEL_SIZE);
+  const sectorAngle=(Math.PI*2)/WHEEL_SIZE;
+  const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;
+  const startAngle=0;
+  const totalRotation=targetAngle-startAngle;
+  const duration=1200;
+  const startTime=performance.now();
+  function animate(now){
+    const elapsed=now-startTime;
+    const t=Math.min(elapsed/duration,1);
+    const eased=1-Math.pow(1-t,3);
+    wheelAngle=startAngle+totalRotation*eased;
+    drawWheel(wheelAngle);
+    if(t<1){
+      requestAnimationFrame(animate);
+    }else{
+      wheelSpinning=false;
+      document.getElementById('wheelSpinBtn').disabled=false;
+      const sector=WHEEL_SECTORS[targetIndex];
+      let prize=0,msg='';
+      if(sector.startsWith('x')){
+        const mult=parseInt(sector.substring(1));
+        prize=bet*mult;
+        msg='🎉 '+sector+' — ставка x'+mult+' = +'+prize+' 🪙!';
+      }else{
+        prize=Math.round(parseInt(sector)*bet/10);
+        msg='Выпал сектор '+sector+' → +'+prize+' 🪙';
+      }
+      casinoBalance+=prize;
+      updateBalance();
+      document.getElementById('wheelResult').textContent=msg;
+      document.getElementById('wheelResult').className='wheel-result win';
+      if(casinoBalance<1){
+        setTimeout(()=>{
+          if(casinoBalance<1){
+            casinoBalance=100;
+            updateBalance();
+            document.getElementById('wheelResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';
+          }
+        },1000);
+      }
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+// ===== КРЕДИТНАЯ СИСТЕМА =====
+let creditAmount=0,creditTimer=null,creditEndTime=0;
+const CREDIT_SUM=10000000,CREDIT_MINUTES=5;
+
+function initCredit(){
+  const saved=localStorage.getItem('casino_credit');
+  if(saved){
+    try{
+      const data=JSON.parse(saved);
+      if(data.endTime>Date.now()){
+        creditAmount=data.amount;
+        creditEndTime=data.endTime;
+        startCreditTimer();
+      }else{
+        if(data.amount>0){
+          casinoBalance-=data.amount;
+          if(casinoBalance<0)casinoBalance=0;
+          updateBalance();
+        }
+        localStorage.removeItem('casino_credit');
+      }
+    }catch(e){localStorage.removeItem('casino_credit');}
+  }
+}
+
+function takeCredit(){
+  if(creditAmount>0){
+    document.getElementById('creditStatus').textContent='У тебя уже есть активный кредит!';
+    return;
+  }
+  creditAmount=CREDIT_SUM;
+  casinoBalance+=creditAmount;
+  updateBalance();
+  creditEndTime=Date.now()+CREDIT_MINUTES*60*1000;
+  localStorage.setItem('casino_credit',JSON.stringify({amount:creditAmount,endTime:creditEndTime}));
+  startCreditTimer();
+  document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 зачислен!';
+}
+
+function startCreditTimer(){
+  if(creditTimer)clearInterval(creditTimer);
+  updateCreditDisplay();
+  creditTimer=setInterval(()=>{
+    const remaining=creditEndTime-Date.now();
+    if(remaining<=0){
+      clearInterval(creditTimer);
+      creditTimer=null;
+      casinoBalance-=creditAmount;
+      if(casinoBalance<0)casinoBalance=0;
+      updateBalance();
+      creditAmount=0;
+      localStorage.removeItem('casino_credit');
+      document.getElementById('creditStatus').textContent='⏰ Время вышло! Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 списан.';
+      document.getElementById('creditTimer').textContent='';
+    }else{
+      updateCreditDisplay();
+    }
+  },1000);
+}
+
+function updateCreditDisplay(){
+  const remaining=creditEndTime-Date.now();
+  const m=Math.floor(remaining/60000);
+  const s=Math.floor((remaining%60000)/1000);
+  document.getElementById('creditTimer').textContent=m+':'+(s<10?'0':'')+s;
+  document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙. Осталось:';
+}
+
 initCredit();
 </script>
-
 <script>
 // ===== ДУРАК =====
 const D_SUITS=['\u2660','\u2665','\u2666','\u2663'];
@@ -639,17 +886,137 @@ function openCase(){if(caseSpinning)return;const betEl=document.getElementById('
 </script>
 
 <script>
+<script>
 // ===== РУЛЕТКА =====
 const ROULETTE_NUMS=[];
 for(let i=0;i<=30;i++){ROULETTE_NUMS.push({num:i,color:i===0?'green':(i%2===1?'red':'black')});}
 const ROULETTE_COLORS={green:'#00cc44',red:'#cc2200',black:'#1a1a1a'};
 let rouletteAngle=0,rouletteSpinning=false,rouletteBetType=null,rouletteBetNumber=0;
-function updateRouletteBalance(){const el=document.getElementById('rouletteBalanceNum');if(el)el.textContent=casinoBalance;}
-function drawRouletteWheel(angle){const canvas=document.getElementById('rouletteCanvas');if(!canvas)return;const ctx=canvas.getContext('2d');const cx=180,cy=180,r=170;const n=ROULETTE_NUMS.length;const sa=(Math.PI*2)/n;ctx.clearRect(0,0,360,360);for(let i=0;i<n;i++){const start=i*sa+angle-Math.PI/2;const end=start+sa;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();ctx.fillStyle=ROULETTE_COLORS[ROULETTE_NUMS[i].color];ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;ctx.stroke();const mid=(start+end)/2;const tx=cx+Math.cos(mid)*r*0.72;const ty=cy+Math.sin(mid)*r*0.72;ctx.save();ctx.translate(tx,ty);ctx.rotate(mid+Math.PI/2);ctx.fillStyle='#fff';ctx.font='bold 11px Orbitron';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ROULETTE_NUMS[i].num,0,0);ctx.restore();}ctx.beginPath();ctx.arc(cx,cy,40,0,Math.PI*2);ctx.fillStyle='#1a1a1a';ctx.fill();ctx.strokeStyle='#ff0033';ctx.lineWidth=3;ctx.stroke();}
-function rouletteSelectBet(type){if(rouletteSpinning)return;rouletteBetType=type;if(type==='number')rouletteBetNumber=parseInt(document.getElementById('rouletteNumber').value)||0;document.querySelectorAll('.roulette-bet-btn').forEach(b=>b.classList.remove('active'));const map={number:'rouletteBetNumber',red:'rouletteBetRed',black:'rouletteBetBlack',green:'rouletteBetGreen'};const el=document.getElementById(map[type]);if(el)el.classList.add('active');let desc='';if(type==='number')desc='На число '+rouletteBetNumber+' (×100)';else if(type==='red')desc='На красное (×5)';else if(type==='black')desc='На чёрное (×5)';else if(type==='green')desc='На зелёное (×100)';document.getElementById('rouletteCurrentBet').textContent='Ставка: '+desc;}
-function spinRoulette(){if(rouletteSpinning)return;if(!rouletteBetType){document.getElementById('rouletteResult').textContent='Выбери ставку!';return;}let bet=parseInt(document.getElementById('rouletteBet').value)||10;if(bet<1)bet=1;if(casinoBalance<bet){document.getElementById('rouletteResult').textContent='Недостаточно монет!';return;}casinoBalance-=bet;updateBalance();rouletteSpinning=true;document.getElementById('rouletteSpinBtn').disabled=true;document.getElementById('rouletteResult').textContent='Крутится...';document.getElementById('rouletteResult').className='roulette-result';const winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);const sa=(Math.PI*2)/ROULETTE_NUMS.length;const from=rouletteAngle;const stopAt=winIdx*sa+sa/2;let to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;while(to-from<Math.PI*2*5)to+=Math.PI*2;const duration=4000;const startTime=performance.now();function animate(now){const elapsed=now-startTime;const t=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-t,3);rouletteAngle=from+(to-from)*eased;drawRouletteWheel(rouletteAngle);if(t<1){requestAnimationFrame(animate);}else{rouletteSpinning=false;document.getElementById('rouletteSpinBtn').disabled=false;const result=ROULETTE_NUMS[winIdx];let won=false,mult=0;if(rouletteBetType==='number'&&rouletteBetNumber===result.num){won=true;mult=100;}else if(rouletteBetType==='green'&&result.color==='green'){won=true;mult=100;}else if(rouletteBetType==='red'&&result.color==='red'){won=true;mult=5;}else if(rouletteBetType==='black'&&result.color==='black'){won=true;mult=5;}if(won){const prize=bet*mult;casinoBalance+=prize;updateBalance();document.getElementById('rouletteResult').innerHTML='🎉 Выпало '+result.num+' ('+result.color+')! ×'+mult+' = +'+prize.toLocaleString('ru')+' 🪙!';document.getElementById('rouletteResult').className='roulette-result win';}else{document.getElementById('rouletteResult').innerHTML='Выпало '+result.num+' ('+result.color+'). Повезёт в следующий раз!';document.getElementById('rouletteResult').className='roulette-result';}}}requestAnimationFrame(animate);}
+
+function updateRouletteBalance(){
+  const el=document.getElementById('rouletteBalanceNum');
+  if(el)el.textContent=casinoBalance;
+}
+
+function drawRouletteWheel(angle){
+  const canvas=document.getElementById('rouletteCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const cx=180,cy=180,r=170;
+  const n=ROULETTE_NUMS.length;
+  const sa=(Math.PI*2)/n;
+  ctx.clearRect(0,0,360,360);
+  for(let i=0;i<n;i++){
+    const start=i*sa+angle-Math.PI/2;
+    const end=start+sa;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,end);
+    ctx.closePath();
+    ctx.fillStyle=ROULETTE_COLORS[ROULETTE_NUMS[i].color];
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.25)';
+    ctx.lineWidth=1;
+    ctx.stroke();
+    const mid=(start+end)/2;
+    const tx=cx+Math.cos(mid)*r*0.72;
+    const ty=cy+Math.sin(mid)*r*0.72;
+    ctx.save();
+    ctx.translate(tx,ty);
+    ctx.rotate(mid+Math.PI/2);
+    ctx.fillStyle='#fff';
+    ctx.font='bold 11px Orbitron';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(ROULETTE_NUMS[i].num,0,0);
+    ctx.restore();
+  }
+  ctx.beginPath();
+  ctx.arc(cx,cy,40,0,Math.PI*2);
+  ctx.fillStyle='#1a1a1a';
+  ctx.fill();
+  ctx.strokeStyle='#ff0033';
+  ctx.lineWidth=3;
+  ctx.stroke();
+}
+
+function rouletteSelectBet(type){
+  if(rouletteSpinning)return;
+  rouletteBetType=type;
+  if(type==='number')rouletteBetNumber=parseInt(document.getElementById('rouletteNumber').value)||0;
+  document.querySelectorAll('.roulette-bet-btn').forEach(b=>b.classList.remove('active'));
+  const map={number:'rouletteBetNumber',red:'rouletteBetRed',black:'rouletteBetBlack',green:'rouletteBetGreen'};
+  const el=document.getElementById(map[type]);
+  if(el)el.classList.add('active');
+  let desc='';
+  if(type==='number')desc='На число '+rouletteBetNumber+' (×100)';
+  else if(type==='red')desc='На красное (×5)';
+  else if(type==='black')desc='На чёрное (×5)';
+  else if(type==='green')desc='На зелёное (×100)';
+  document.getElementById('rouletteCurrentBet').textContent='Ставка: '+desc;
+}
+
+function spinRoulette(){
+  if(rouletteSpinning)return;
+  if(!rouletteBetType){
+    document.getElementById('rouletteResult').textContent='Выбери ставку!';
+    return;
+  }
+  let bet=parseInt(document.getElementById('rouletteBet').value)||10;
+  if(bet<1)bet=1;
+  if(casinoBalance<bet){
+    document.getElementById('rouletteResult').textContent='Недостаточно монет!';
+    return;
+  }
+  casinoBalance-=bet;
+  updateBalance();
+  rouletteSpinning=true;
+  document.getElementById('rouletteSpinBtn').disabled=true;
+  document.getElementById('rouletteResult').textContent='Крутится...';
+  document.getElementById('rouletteResult').className='roulette-result';
+  const winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);
+  const sa=(Math.PI*2)/ROULETTE_NUMS.length;
+  const from=rouletteAngle;
+  const stopAt=winIdx*sa+sa/2;
+  let to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;
+  while(to-from<Math.PI*2*5)to+=Math.PI*2;
+  const duration=4000;
+  const startTime=performance.now();
+  function animate(now){
+    const elapsed=now-startTime;
+    const t=Math.min(elapsed/duration,1);
+    const eased=1-Math.pow(1-t,3);
+    rouletteAngle=from+(to-from)*eased;
+    drawRouletteWheel(rouletteAngle);
+    if(t<1){
+      requestAnimationFrame(animate);
+    }else{
+      rouletteSpinning=false;
+      document.getElementById('rouletteSpinBtn').disabled=false;
+      const result=ROULETTE_NUMS[winIdx];
+      let won=false,mult=0;
+      if(rouletteBetType==='number'&&rouletteBetNumber===result.num){won=true;mult=100;}
+      else if(rouletteBetType==='green'&&result.color==='green'){won=true;mult=100;}
+      else if(rouletteBetType==='red'&&result.color==='red'){won=true;mult=5;}
+      else if(rouletteBetType==='black'&&result.color==='black'){won=true;mult=5;}
+      if(won){
+        const prize=bet*mult;
+        casinoBalance+=prize;
+        updateBalance();
+        document.getElementById('rouletteResult').innerHTML='🎉 Выпало '+result.num+' ('+result.color+')! ×'+mult+' = +'+prize.toLocaleString('ru')+' 🪙!';
+        document.getElementById('rouletteResult').className='roulette-result win';
+      }else{
+        document.getElementById('rouletteResult').innerHTML='Выпало '+result.num+' ('+result.color+'). Повезёт в следующий раз!';
+        document.getElementById('rouletteResult').className='roulette-result';
+      }
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
 drawRouletteWheel(0);
 </script>
+
 
 <script>
 // ===== БИРЖА =====
