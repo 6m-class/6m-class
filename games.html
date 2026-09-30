@@ -394,19 +394,7 @@ if(name==='casino')drawWheel(wheelAngle||0);
 if(name==='case')updateCaseBalance();
 if(name==='roulette'){updateRouletteBalance();drawRouletteWheel(rouletteAngle||0);}
 }
-<div class="section" id="sec-market">
- <div class="card">
-  <div class="card-header"><div class="card-title">Управление фондовым рынком</div><div class="card-badge" id="mktStockCount">20</div></div>
-  <p style="color:#666;font-size:.85rem;margin-bottom:15px">Каждую акцию можно «пнуть» вверх или вниз — цена изменится у всех в реальном времени. Данные хранятся в <b>market.json</b>.</p>
-  <div class="field"><label>Глобальный тренд рынка</label><select id="mktTrend"><option value="0">Нейтрально</option><option value="1">🚀 Рост (бычий)</option><option value="-1">📉 Падение (медвежий)</option></select></div>
-  <button class="btn btn-primary" onclick="setMarketTrend()">Применить тренд</button>
-  <div class="msg" id="msgMarket"></div>
- </div>
- <div class="card">
-  <div class="card-header"><div class="card-title">Акции</div></div>
-  <div class="item-list" id="mktAdminList"></div>
- </div>
-</div>
+
 
 </script>
 
