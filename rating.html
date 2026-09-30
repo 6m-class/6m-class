@@ -6,6 +6,7 @@
 <title>Рейтинг | Класс</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <script src="settings.js"></script>
+<script src="balance.js"></script>
 <style>
 :root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2)}
 [data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
@@ -72,6 +73,18 @@ function logout(){localStorage.removeItem('class_user');localStorage.removeItem(
 const isMobile=window.innerWidth<600;const pc=document.getElementById('particles');const cnt=isMobile?10:20;
 for(let i=0;i<cnt;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
 
+function getLocalBalance(){
+try{
+const s=localStorage.getItem('user_balances');
+if(s){
+const balances=JSON.parse(s);
+const u=localStorage.getItem('class_user')||'guest';
+if(balances&&balances[u]!==undefined)return balances[u];
+}
+}catch(e){}
+return null;
+}
+
 async function loadRating(){
 try{
 const resp=await fetch(`https://raw.githubusercontent.com/${REPO}/main/accounts.json?v=${Date.now()}`,{cache:'no-store'});
@@ -83,6 +96,11 @@ const table=document.getElementById('ratingTable');
 let html='';
 accounts.forEach((acc,i)=>{
 const isMe=acc.login===user.login;
+let coins=acc.coins||0;
+if(isMe){
+const local=getLocalBalance();
+if(local!==null)coins=local;
+}
 const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
 const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
 let avatarHTML;
@@ -96,7 +114,7 @@ html+=`<div class="rating-row${isMe?' me':''}">
 <div class="rating-rank ${rankClass}">${medal}</div>
 ${avatarHTML}
 <div class="rating-name">${esc(acc.name)}${acc.role==='admin'?'<span class="admin-badge">👑</span>':''}</div>
-<div class="rating-coins">${(acc.coins||0).toLocaleString('ru')}</div>
+<div class="rating-coins">${coins.toLocaleString('ru')}</div>
 </div>`;
 });
 table.innerHTML=html;
