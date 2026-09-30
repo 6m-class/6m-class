@@ -8,7 +8,7 @@
 <script src="settings.js"></script>
 <script src="balance.js"></script>
 <style>
-:root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2)}
+:root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2);--green:#00ff66;--red:#ff4444}
 [data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
 [data-theme="green"]{--primary:#00ff66;--primary-rgb:0,255,102;--glow:rgba(0,255,102,0.15);--border:rgba(0,255,102,0.3);--shadow:rgba(0,255,102,0.2)}
 [data-theme="blue"]{--primary:#00aaff;--primary-rgb:0,170,255;--glow:rgba(0,170,255,0.15);--border:rgba(0,170,255,0.3);--shadow:rgba(0,170,255,0.2)}
@@ -162,6 +162,48 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .roulette-bet-btn.green{border-color:#00ff66;color:#00ff66}
 .roulette-bet-btn.num{border-color:var(--primary);color:var(--primary)}
 .roulette-current-bet{text-align:center;margin:10px 0;font-weight:700;color:var(--primary)}
+.mkt-balance{position:fixed;top:15px;right:15px;background:rgba(20,20,20,0.95);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:900;color:var(--primary);z-index:999;box-shadow:0 0 20px var(--shadow);display:flex;align-items:center;gap:6px}
+.mkt-sub-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.mkt-sub-tab{padding:10px 20px;border:1px solid var(--border);border-radius:8px;background:rgba(20,20,20,0.6);color:#aaa;cursor:pointer;font-weight:700;font-size:.85rem;transition:.3s;text-transform:uppercase}
+.mkt-sub-tab:hover{border-color:var(--primary);color:var(--primary)}
+.mkt-sub-tab.active{background:var(--primary);color:#000;border-color:var(--primary)}
+.mkt-sub-section{display:none}
+.mkt-sub-section.active{display:block}
+.stock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.stock-card{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:10px;padding:15px;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.stock-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 5px 20px var(--shadow)}
+.stock-ticker{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.1rem;color:var(--primary)}
+.stock-name{font-size:.75rem;color:#666;margin-bottom:8px}
+.stock-price{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900}
+.stock-change{font-size:.85rem;font-weight:700}
+.stock-change.up{color:var(--green)}
+.stock-change.down{color:var(--red)}
+.stock-spark{width:100%;height:30px;margin-top:8px}
+.sector-badge{font-size:.65rem;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.05);color:#888;font-weight:700;text-transform:uppercase}
+.stock-detail{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:25px;margin-bottom:20px}
+.stock-detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.stock-detail-name{font-family:'Orbitron',sans-serif;font-size:1.4rem}
+.stock-detail-price{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900}
+.detail-chart{width:100%;height:200px;background:rgba(0,0,0,0.3);border-radius:8px;margin:15px 0}
+.trade-box{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px}
+.trade-box input{width:100px;padding:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none}
+.trade-btn{padding:10px 24px;border:none;border-radius:8px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:.3s}
+.trade-btn.buy{background:var(--green);color:#000}
+.trade-btn.buy:hover{box-shadow:0 0 20px rgba(0,255,102,0.4);transform:translateY(-2px)}
+.trade-btn.sell{background:var(--red);color:#fff}
+.trade-btn.sell:hover{box-shadow:0 0 20px rgba(255,68,68,0.4);transform:translateY(-2px)}
+.trade-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.portfolio-empty{text-align:center;padding:40px;color:#555}
+.portfolio-item{display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+.bank-box{max-width:500px;margin:0 auto;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:30px;text-align:center}
+.bank-rate{font-size:.85rem;color:#666;margin:10px 0}
+.bank-deposit{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin:15px 0}
+.bank-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+.bank-input{width:120px;padding:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none}
+.mkt-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(20,20,20,0.95);border:1px solid var(--border);border-radius:10px;padding:12px 24px;font-weight:700;z-index:9999;transition:.3s;opacity:0;pointer-events:none}
+.mkt-toast.show{opacity:1}
+.mkt-toast.ok{border-color:var(--green);color:var(--green)}
+.mkt-toast.err{border-color:var(--red);color:var(--red)}
 </style>
 </head>
 <body>
@@ -185,7 +227,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 <div class="game-tab" onclick="switchGame('durak',this)">&#129528; Дурак</div>
 <div class="game-tab" onclick="switchGame('case',this)">&#128230; Кейс на монеты</div>
 <div class="game-tab" onclick="switchGame('roulette',this)">&#127920; Рулетка</div>
-<div class="game-tab" onclick="switchGame('market',this)">&#127920; Биржа</div>
+<div class="game-tab" onclick="switchGame('market',this)">&#128200; Биржа</div>
 </div>
 <!-- ШАШКИ -->
 <div class="game-section active" id="game-checkers">
@@ -377,6 +419,36 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 <div class="game-controls"><button class="game-btn" id="rouletteSpinBtn" onclick="spinRoulette()">🎰 Крутить</button></div>
 </div>
+<!-- БИРЖА -->
+<div class="game-section" id="game-market">
+<div class="mkt-balance"><span>🪙</span> <span id="mktBalance">100</span></div>
+<div class="mkt-sub-tabs">
+<div class="mkt-sub-tab active" onclick="switchMktTab('mktstocks',this)">📈 Акции</div>
+<div class="mkt-sub-tab" onclick="switchMktTab('mktportfolio',this)">💼 Портфель</div>
+<div class="mkt-sub-tab" onclick="switchMktTab('mktbank',this)">🏦 Банк</div>
+</div>
+<div class="mkt-sub-section active" id="mktstocks">
+<div id="stockGrid" class="stock-grid"></div>
+<div id="stockDetail"></div>
+</div>
+<div class="mkt-sub-section" id="mktportfolio">
+<div id="portfolioList"></div>
+</div>
+<div class="mkt-sub-section" id="mktbank">
+<div class="bank-box">
+<div style="font-size:1.2rem;font-weight:700;margin-bottom:10px">🏦 Банк класса</div>
+<div class="bank-rate">Ставка: 5% в день · Начисление каждые 10 секунд</div>
+<div class="bank-deposit" id="bankDeposit">0 🪙</div>
+<div class="bank-actions">
+<input type="number" class="bank-input" id="bankAmount" value="100" min="1">
+<button class="trade-btn buy" onclick="bankDepositAction()">📥 Внести</button>
+<button class="trade-btn sell" onclick="bankWithdrawAction()">📤 Снять</button>
+</div>
+<div style="margin-top:15px;font-size:.8rem;color:#555">Проценты начисляются автоматически, пока вы на этой странице.</div>
+</div>
+</div>
+<div class="mkt-toast" id="mktToast"></div>
+</div>
 <script>
 function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
 applyStoredTheme();
@@ -393,9 +465,8 @@ document.getElementById('game-'+name).classList.add('active');
 if(name==='casino')drawWheel(wheelAngle||0);
 if(name==='case')updateCaseBalance();
 if(name==='roulette'){updateRouletteBalance();drawRouletteWheel(rouletteAngle||0);}
+if(name==='market'){updateMktBalance();renderStockGrid();}
 }
-
-
 </script>
 
 <script>
@@ -417,6 +488,7 @@ function updateChCounts(){document.getElementById('chMyPieces').textContent=coun
 function updateChStatus(text,cls){const el=document.getElementById('chStatus');el.textContent=text;el.className='game-status'+(cls?' '+cls:'');}
 newCheckersGame();
 </script>
+
 <script>
 // ===== МИНИ-ГОНКИ =====
 const rcCanvas=document.getElementById('racingCanvas');
@@ -443,6 +515,7 @@ rcCanvas.addEventListener('touchmove',e=>{if(touchStartX===null)return;const dx=
 rcCanvas.addEventListener('touchend',()=>{rcKeys.left=false;rcKeys.right=false;touchStartX=null;});
 drawRace();
 </script>
+
 <script>
 // ===== АИМ-ТРЕНАЖЁР =====
 const aimCanvas=document.getElementById('aimCanvas');
@@ -468,6 +541,7 @@ aimWrap.addEventListener('mousemove',e=>{if(!aimRunning)return;const rect=aimCan
 function aimReset(){aimRunning=false;if(aimAnimId)cancelAnimationFrame(aimAnimId);if(aimTimerId)clearInterval(aimTimerId);aimWrap.classList.remove('aim-playing');aimCrosshair.classList.remove('active');aimScore=0;aimHits=0;aimMisses=0;aimReactionTimes=[];aimTargets=[];aimEffects=[];aimTimeLeft=AIM_LEVELS[aimLevel].duration;document.getElementById('aimStartBtn').disabled=false;document.getElementById('aimResults').classList.remove('show');updateAimHUD();aimDrawIdle();document.getElementById('aimStatus').textContent='Уровень '+aimLevel+'. Нажми «Старт»';document.getElementById('aimStatus').className='game-status';}
 aimDrawIdle();
 </script>
+
 <script>
 // ===== FLAPPY BIRD =====
 const fbCanvas=document.getElementById('flappyCanvas');
@@ -495,220 +569,31 @@ document.addEventListener('keydown',e=>{if(e.code==='Space'){if(fbRunning&&!fbDe
 fbCanvas.addEventListener('touchstart',e=>{if(fbRunning&&!fbDead){fbJump();}else if(!fbRunning&&!fbDead){fbStart();}e.preventDefault();},{passive:false});
 fbDraw();
 </script>
+
 <script>
 // ===== КАЗИНО =====
 let casinoBalance=getUserBalance();
 let _syncTimer=null;
-function updateBalance(){
-setUserBalance(casinoBalance);
-document.getElementById('balanceNum').textContent=casinoBalance;
-if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;
-if(document.getElementById('rouletteBalanceNum'))document.getElementById('rouletteBalanceNum').textContent=casinoBalance;
-if(_syncTimer)clearTimeout(_syncTimer);
-_syncTimer=setTimeout(syncBalanceToServer,3000);
-}
+function updateBalance(){setUserBalance(casinoBalance);document.getElementById('balanceNum').textContent=casinoBalance;if(document.getElementById('caseBalanceNum'))document.getElementById('caseBalanceNum').textContent=casinoBalance;if(document.getElementById('rouletteBalanceNum'))document.getElementById('rouletteBalanceNum').textContent=casinoBalance;if(_syncTimer)clearTimeout(_syncTimer);_syncTimer=setTimeout(syncBalanceToServer,3000);}
 function resetBalance(){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent='Баланс сброшен до 100 🪙';document.getElementById('wheelResult').className='wheel-result';document.getElementById('slotsResult').textContent='';}
 updateBalance();
-function switchCasino(name,el){
-document.querySelectorAll('.casino-tab').forEach(t=>t.classList.remove('active'));
-document.querySelectorAll('.casino-section').forEach(s=>s.classList.remove('active'));
-el.classList.add('active');
-document.getElementById('casino-'+name).classList.add('active');
-if(name==='wheel')drawWheel(wheelAngle||0);
-}
-// --- СЛОТЫ ---
+function switchCasino(name,el){document.querySelectorAll('.casino-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.casino-section').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('casino-'+name).classList.add('active');if(name==='wheel')drawWheel(wheelAngle||0);}
 let slotsSpinning=false;
-function spinSlots(){
-if(slotsSpinning)return;
-let bet=parseInt(document.getElementById('slotsBet').value)||1;
-if(bet<1)bet=1;
-if(casinoBalance<bet){document.getElementById('slotsResult').textContent='Недостаточно монет!';document.getElementById('slotsResult').className='slots-result';return;}
-casinoBalance-=bet;updateBalance();
-slotsSpinning=true;
-document.getElementById('slotsSpinBtn').disabled=true;
-document.getElementById('slotsResult').textContent='Крутится...';
-document.getElementById('slotsResult').className='slots-result';
-const reels=['reel1','reel2','reel3'];
-reels.forEach(id=>{const el=document.getElementById(id);el.classList.add('spinning');el.textContent='';});
-const winNums=['333','777','999'];
-const winChance=0.45;
-let results;
-if(Math.random()<winChance){
-const win=winNums[Math.floor(Math.random()*3)];
-results=[parseInt(win[0]),parseInt(win[1]),parseInt(win[2])];
-}else{
-do{
-results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];
-}while(winNums.includes(results.join('')));
-}
-reels.forEach((id,i)=>{
-setTimeout(()=>{
-const el=document.getElementById(id);
-el.classList.remove('spinning');
-el.textContent=results[i];
-if(i===2){
-slotsSpinning=false;
-document.getElementById('slotsSpinBtn').disabled=false;
-const combo=results.join('');
-if(winNums.includes(combo)){
-const prize=bet*5;
-casinoBalance+=prize;updateBalance();
-document.getElementById('slotsResult').textContent='🎉 '+combo+' — ВЫИГРЫШ! +'+prize+' 🪙';
-document.getElementById('slotsResult').className='slots-result win';
-}else{
-document.getElementById('slotsResult').textContent=combo+' — повезёт в следующий раз!';
-}
-if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('slotsResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}
-}
-},300+i*250);
-});
-}
-// --- КОЛЕСО ФОРТУНЫ ---
+function spinSlots(){if(slotsSpinning)return;let bet=parseInt(document.getElementById('slotsBet').value)||1;if(bet<1)bet=1;if(casinoBalance<bet){document.getElementById('slotsResult').textContent='Недостаточно монет!';document.getElementById('slotsResult').className='slots-result';return;}casinoBalance-=bet;updateBalance();slotsSpinning=true;document.getElementById('slotsSpinBtn').disabled=true;document.getElementById('slotsResult').textContent='Крутится...';document.getElementById('slotsResult').className='slots-result';const reels=['reel1','reel2','reel3'];reels.forEach(id=>{const el=document.getElementById(id);el.classList.add('spinning');el.textContent='';});const winNums=['333','777','999'];const winChance=0.45;let results;if(Math.random()<winChance){const win=winNums[Math.floor(Math.random()*3)];results=[parseInt(win[0]),parseInt(win[1]),parseInt(win[2])];}else{do{results=[Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)];}while(winNums.includes(results.join('')));}reels.forEach((id,i)=>{setTimeout(()=>{const el=document.getElementById(id);el.classList.remove('spinning');el.textContent=results[i];if(i===2){slotsSpinning=false;document.getElementById('slotsSpinBtn').disabled=false;const combo=results.join('');if(winNums.includes(combo)){const prize=bet*5;casinoBalance+=prize;updateBalance();document.getElementById('slotsResult').textContent='🎉 '+combo+' — ВЫИГРЫШ! +'+prize+' 🪙';document.getElementById('slotsResult').className='slots-result win';}else{document.getElementById('slotsResult').textContent=combo+' — повезёт в следующий раз!';}if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('slotsResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}}},300+i*250);});}
 const wheelCanvas=document.getElementById('wheelCanvas');
 const wheelCtx=wheelCanvas.getContext('2d');
 const WHEEL_SECTORS=['0','1','2','3','4','5','x2','x3','x5','x10'];
 const WHEEL_COLORS=['#333','#ff0033','#333','#00ff66','#333','#00aaff','#aa00ff','#ffcc00','#ff6600','#00ff66'];
 const WHEEL_SIZE=10;
-let wheelAngle=0;
-let wheelSpinning=false;
-function drawWheel(angle){
-const cx=180,cy=180,r=170;
-wheelCtx.clearRect(0,0,360,360);
-for(let i=0;i<WHEEL_SIZE;i++){
-const start=(i/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
-const end=((i+1)/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;
-wheelCtx.beginPath();
-wheelCtx.moveTo(cx,cy);
-wheelCtx.arc(cx,cy,r,start,end);
-wheelCtx.closePath();
-wheelCtx.fillStyle=WHEEL_COLORS[i];
-wheelCtx.fill();
-wheelCtx.strokeStyle='rgba(255,255,255,0.2)';
-wheelCtx.lineWidth=2;
-wheelCtx.stroke();
-const mid=(start+end)/2;
-const tx=cx+Math.cos(mid)*r*0.65;
-const ty=cy+Math.sin(mid)*r*0.65;
-wheelCtx.save();
-wheelCtx.translate(tx,ty);
-wheelCtx.rotate(mid+Math.PI/2);
-wheelCtx.fillStyle='#fff';
-wheelCtx.font='bold 18px Orbitron';
-wheelCtx.textAlign='center';
-wheelCtx.textBaseline='middle';
-wheelCtx.fillText(WHEEL_SECTORS[i],0,0);
-wheelCtx.restore();
-}
-wheelCtx.beginPath();
-wheelCtx.arc(cx,cy,50,0,Math.PI*2);
-wheelCtx.fillStyle='#1a1a1a';
-wheelCtx.fill();
-wheelCtx.strokeStyle='#ff0033';
-wheelCtx.lineWidth=3;
-wheelCtx.stroke();
-}
+let wheelAngle=0;let wheelSpinning=false;
+function drawWheel(angle){const cx=180,cy=180,r=170;wheelCtx.clearRect(0,0,360,360);for(let i=0;i<WHEEL_SIZE;i++){const start=(i/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;const end=((i+1)/WHEEL_SIZE)*Math.PI*2+angle-Math.PI/2;wheelCtx.beginPath();wheelCtx.moveTo(cx,cy);wheelCtx.arc(cx,cy,r,start,end);wheelCtx.closePath();wheelCtx.fillStyle=WHEEL_COLORS[i];wheelCtx.fill();wheelCtx.strokeStyle='rgba(255,255,255,0.2)';wheelCtx.lineWidth=2;wheelCtx.stroke();const mid=(start+end)/2;const tx=cx+Math.cos(mid)*r*0.65;const ty=cy+Math.sin(mid)*r*0.65;wheelCtx.save();wheelCtx.translate(tx,ty);wheelCtx.rotate(mid+Math.PI/2);wheelCtx.fillStyle='#fff';wheelCtx.font='bold 18px Orbitron';wheelCtx.textAlign='center';wheelCtx.textBaseline='middle';wheelCtx.fillText(WHEEL_SECTORS[i],0,0);wheelCtx.restore();}wheelCtx.beginPath();wheelCtx.arc(cx,cy,50,0,Math.PI*2);wheelCtx.fillStyle='#1a1a1a';wheelCtx.fill();wheelCtx.strokeStyle='#ff0033';wheelCtx.lineWidth=3;wheelCtx.stroke();}
 drawWheel(0);
-function spinWheel(){
-if(wheelSpinning)return;
-let bet=parseInt(document.getElementById('wheelBet').value)||1;
-if(bet<1)bet=1;
-if(casinoBalance<bet){document.getElementById('wheelResult').textContent='Недостаточно монет!';document.getElementById('wheelResult').className='wheel-result';return;}
-casinoBalance-=bet;updateBalance();
-wheelSpinning=true;
-document.getElementById('wheelSpinBtn').disabled=true;
-document.getElementById('wheelResult').textContent='Крутится...';
-document.getElementById('wheelResult').className='wheel-result';
-wheelAngle=0;
-const targetIndex=Math.floor(Math.random()*WHEEL_SIZE);
-const sectorAngle=(Math.PI*2)/WHEEL_SIZE;
-const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;
-const startAngle=0;
-const totalRotation=targetAngle-startAngle;
-const duration=1200;
-const startTime=performance.now();
-function animate(now){
-const elapsed=now-startTime;
-const t=Math.min(elapsed/duration,1);
-const eased=1-Math.pow(1-t,3);
-wheelAngle=startAngle+totalRotation*eased;
-drawWheel(wheelAngle);
-if(t<1){requestAnimationFrame(animate);}
-else{
-wheelSpinning=false;
-document.getElementById('wheelSpinBtn').disabled=false;
-const sector=WHEEL_SECTORS[targetIndex];
-let prize=0,msg='';
-if(sector.startsWith('x')){
-const mult=parseInt(sector.substring(1));
-prize=bet*mult;
-msg='🎉 '+sector+' — ставка x'+mult+' = +'+prize+' 🪙!';
-}else{
-prize=Math.round(parseInt(sector)*bet/10);
-msg='Выпал сектор '+sector+' → +'+prize+' 🪙';
-}
-casinoBalance+=prize;updateBalance();
-document.getElementById('wheelResult').textContent=msg;
-document.getElementById('wheelResult').className='wheel-result win';
-if(casinoBalance<1){
-setTimeout(()=>{
-if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}
-},1000);
-}
-}
-}
-requestAnimationFrame(animate);
-}
-// ===== КРЕДИТНАЯ СИСТЕМА =====
-let creditAmount=0,creditTimer=null,creditEndTime=0;
-const CREDIT_SUM=10000000,CREDIT_MINUTES=5;
-function initCredit(){
-const saved=localStorage.getItem('casino_credit');
-if(saved){
-try{
-const data=JSON.parse(saved);
-if(data.endTime>Date.now()){
-creditAmount=data.amount;creditEndTime=data.endTime;
-startCreditTimer();
-}else{
-if(data.amount>0){casinoBalance-=data.amount;if(casinoBalance<0)casinoBalance=0;updateBalance();}
-localStorage.removeItem('casino_credit');
-}
-}catch(e){localStorage.removeItem('casino_credit');}
-}
-}
-function takeCredit(){
-if(creditAmount>0){document.getElementById('creditStatus').textContent='У тебя уже есть активный кредит!';return;}
-creditAmount=CREDIT_SUM;
-casinoBalance+=creditAmount;updateBalance();
-creditEndTime=Date.now()+CREDIT_MINUTES*60*1000;
-localStorage.setItem('casino_credit',JSON.stringify({amount:creditAmount,endTime:creditEndTime}));
-startCreditTimer();
-document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 зачислен!';
-}
-function startCreditTimer(){
-if(creditTimer)clearInterval(creditTimer);
-updateCreditDisplay();
-creditTimer=setInterval(()=>{
-const remaining=creditEndTime-Date.now();
-if(remaining<=0){
-clearInterval(creditTimer);creditTimer=null;
-casinoBalance-=creditAmount;
-if(casinoBalance<0)casinoBalance=0;
-updateBalance();
-creditAmount=0;
-localStorage.removeItem('casino_credit');
-document.getElementById('creditStatus').textContent='⏰ Время вышло! Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 списан.';
-document.getElementById('creditTimer').textContent='';
-}else{updateCreditDisplay();}
-},1000);
-}
-function updateCreditDisplay(){
-const remaining=creditEndTime-Date.now();
-const m=Math.floor(remaining/60000);
-const s=Math.floor((remaining%60000)/1000);
-document.getElementById('creditTimer').textContent=m+':'+(s<10?'0':'')+s;
-document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙. Осталось:';
-}
+function spinWheel(){if(wheelSpinning)return;let bet=parseInt(document.getElementById('wheelBet').value)||1;if(bet<1)bet=1;if(casinoBalance<bet){document.getElementById('wheelResult').textContent='Недостаточно монет!';document.getElementById('wheelResult').className='wheel-result';return;}casinoBalance-=bet;updateBalance();wheelSpinning=true;document.getElementById('wheelSpinBtn').disabled=true;document.getElementById('wheelResult').textContent='Крутится...';document.getElementById('wheelResult').className='wheel-result';wheelAngle=0;const targetIndex=Math.floor(Math.random()*WHEEL_SIZE);const sectorAngle=(Math.PI*2)/WHEEL_SIZE;const targetAngle=-(targetIndex*sectorAngle+sectorAngle/2)+Math.PI*2*3+Math.random()*sectorAngle*0.6-sectorAngle*0.3;const startAngle=0;const totalRotation=targetAngle-startAngle;const duration=1200;const startTime=performance.now();function animate(now){const elapsed=now-startTime;const t=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-t,3);wheelAngle=startAngle+totalRotation*eased;drawWheel(wheelAngle);if(t<1){requestAnimationFrame(animate);}else{wheelSpinning=false;document.getElementById('wheelSpinBtn').disabled=false;const sector=WHEEL_SECTORS[targetIndex];let prize=0,msg='';if(sector.startsWith('x')){const mult=parseInt(sector.substring(1));prize=bet*mult;msg='🎉 '+sector+' — ставка x'+mult+' = +'+prize+' 🪙!';}else{prize=Math.round(parseInt(sector)*bet/10);msg='Выпал сектор '+sector+' → +'+prize+' 🪙';}casinoBalance+=prize;updateBalance();document.getElementById('wheelResult').textContent=msg;document.getElementById('wheelResult').className='wheel-result win';if(casinoBalance<1){setTimeout(()=>{if(casinoBalance<1){casinoBalance=100;updateBalance();document.getElementById('wheelResult').textContent+=' | Бонус: баланс восстановлен до 100 🪙';}},1000);}}}requestAnimationFrame(animate);}
+let creditAmount=0,creditTimer=null,creditEndTime=0;const CREDIT_SUM=10000000,CREDIT_MINUTES=5;
+function initCredit(){const saved=localStorage.getItem('casino_credit');if(saved){try{const data=JSON.parse(saved);if(data.endTime>Date.now()){creditAmount=data.amount;creditEndTime=data.endTime;startCreditTimer();}else{if(data.amount>0){casinoBalance-=data.amount;if(casinoBalance<0)casinoBalance=0;updateBalance();}localStorage.removeItem('casino_credit');}}catch(e){localStorage.removeItem('casino_credit');}}}
+function takeCredit(){if(creditAmount>0){document.getElementById('creditStatus').textContent='У тебя уже есть активный кредит!';return;}creditAmount=CREDIT_SUM;casinoBalance+=creditAmount;updateBalance();creditEndTime=Date.now()+CREDIT_MINUTES*60*1000;localStorage.setItem('casino_credit',JSON.stringify({amount:creditAmount,endTime:creditEndTime}));startCreditTimer();document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 зачислен!';}
+function startCreditTimer(){if(creditTimer)clearInterval(creditTimer);updateCreditDisplay();creditTimer=setInterval(()=>{const remaining=creditEndTime-Date.now();if(remaining<=0){clearInterval(creditTimer);creditTimer=null;casinoBalance-=creditAmount;if(casinoBalance<0)casinoBalance=0;updateBalance();creditAmount=0;localStorage.removeItem('casino_credit');document.getElementById('creditStatus').textContent='⏰ Время вышло! Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙 списан.';document.getElementById('creditTimer').textContent='';}else{updateCreditDisplay();}},1000);}
+function updateCreditDisplay(){const remaining=creditEndTime-Date.now();const m=Math.floor(remaining/60000);const s=Math.floor((remaining%60000)/1000);document.getElementById('creditTimer').textContent=m+':'+(s<10?'0':'')+s;document.getElementById('creditStatus').textContent='Кредит '+CREDIT_SUM.toLocaleString('ru')+' 🪙. Осталось:';}
 initCredit();
 </script>
 
@@ -719,352 +604,38 @@ const D_RANKS=['6','7','8','9','10','\u0412','\u0414','\u041A','\u0422'];
 let dDeck=[],dTrump=-1,dPlayerHand=[],dAiHand=[],dTable=[];
 let dAttacker='player',dPhase='init',dGameActive=false,dDifficulty=1,dDiscardPile=0;
 function dSetBet(val){document.getElementById('durakBet').value=val;}
-function dSelectDiff(lvl,el){
-dDifficulty=lvl;
-document.querySelectorAll('#game-durak .aim-level-btn').forEach(b=>b.classList.remove('active'));
-el.classList.add('active');
-}
-function dCreateDeck(){
-const deck=[];
-for(let s=0;s<4;s++)for(let r=0;r<9;r++)deck.push({suit:s,rank:r});
-for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
-return deck;
-}
-function dBeats(card,attack,trump){
-if(card.suit===trump&&attack.suit!==trump)return true;
-if(card.suit===attack.suit&&card.rank>attack.rank)return true;
-if(card.suit===trump&&attack.suit===trump&&card.rank>attack.rank)return true;
-return false;
-}
+function dSelectDiff(lvl,el){dDifficulty=lvl;document.querySelectorAll('#game-durak .aim-level-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function dCreateDeck(){const deck=[];for(let s=0;s<4;s++)for(let r=0;r<9;r++)deck.push({suit:s,rank:r});for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}return deck;}
+function dBeats(card,attack,trump){if(card.suit===trump&&attack.suit!==trump)return true;if(card.suit===attack.suit&&card.rank>attack.rank)return true;if(card.suit===trump&&attack.suit===trump&&card.rank>attack.rank)return true;return false;}
 function dGetBeats(hand,attack,trump){return hand.filter(c=>dBeats(c,attack,trump));}
-function dDrawHands(){
-while(dPlayerHand.length<6&&dDeck.length>0)dPlayerHand.push(dDeck.pop());
-while(dAiHand.length<6&&dDeck.length>0)dAiHand.push(dDeck.pop());
-}
+function dDrawHands(){while(dPlayerHand.length<6&&dDeck.length>0)dPlayerHand.push(dDeck.pop());while(dAiHand.length<6&&dDeck.length>0)dAiHand.push(dDeck.pop());}
 function dCardName(c){return D_RANKS[c.rank]+D_SUITS[c.suit];}
 function dCardColor(s){return s===1||s===2?'#ff5555':'#000';}
-function dStartGame(){
-let bet=parseInt(document.getElementById('durakBet').value)||1;
-if(bet<1)bet=1;
-if(casinoBalance<bet){document.getElementById('durakStatus').textContent='Недостаточно монет!';return;}
-casinoBalance-=bet;updateBalance();
-dDeck=dCreateDeck();dPlayerHand=[];dAiHand=[];dTable=[];dDiscardPile=0;
-dGameActive=true;dAttacker='player';dPhase='player_attack';
-for(let i=0;i<6;i++){dPlayerHand.push(dDeck.pop());dAiHand.push(dDeck.pop());}
-dTrump=dDeck[0].suit;
-document.getElementById('durakStartBtn').disabled=true;
-document.getElementById('durakDoneBtn').style.display='none';
-document.getElementById('durakTakeBtn').style.display='none';
-dRender();
-document.getElementById('durakStatus').textContent='Ты атакуешь. Кликни карту из руки.';
-}
-function dPlayerClick(idx){
-if(dPhase==='player_attack')dPlayerAttack(idx);
-else if(dPhase==='player_defend')dPlayerDefend(idx);
-}
-function dPlayerAttack(idx){
-if(dPhase!=='player_attack')return;
-const card=dPlayerHand[idx];
-if(dTable.length>0){
-const ranks=new Set();
-dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});
-if(!ranks.has(card.rank)){
-document.getElementById('durakStatus').textContent='Можно подкинуть только карты того же ранга!';
-return;
-}
-}
-if(dTable.length>=6)return;
-dPlayerHand.splice(idx,1);
-dTable.push({attack:card,defense:null});
-document.getElementById('durakDoneBtn').style.display='none';
-dRender();
-setTimeout(dAiDefend,400);
-}
-function dAiDefend(){
-const pair=dTable[dTable.length-1];
-if(!pair||pair.defense!==null)return;
-const beats=dGetBeats(dAiHand,pair.attack,dTrump);
-if(beats.length===0){
-dAiHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));
-dTable=[];
-dDrawHands();dCheckWin();
-if(dGameActive){
-dPhase='player_attack';
-document.getElementById('durakStatus').textContent='АИ забрал карты! Атакуй снова.';
-document.getElementById('durakDoneBtn').style.display='none';
-dRender();
-}
-return;
-}
-let dc;
-if(dDifficulty===1){dc=beats[Math.floor(Math.random()*beats.length)];}
-else{const nt=beats.filter(c=>c.suit!==dTrump);const pool=nt.length?nt:beats;pool.sort((a,b)=>a.rank-b.rank);dc=pool[0];}
-dAiHand.splice(dAiHand.indexOf(dc),1);
-pair.defense=dc;
-dRender();dCheckWin();
-if(dGameActive){
-dPhase='player_attack';
-document.getElementById('durakStatus').textContent='АИ отбился '+dCardName(dc)+'. Подкинь карту или нажми «Готово».';
-document.getElementById('durakDoneBtn').style.display='inline-block';
-}
-}
-function dPlayerDone(){
-if(dPhase!=='player_attack'||dTable.length===0)return;
-dDiscardPile+=dTable.length;dTable=[];
-dDrawHands();dCheckWin();
-if(dGameActive){
-dAttacker='ai';dPhase='ai_attack';
-document.getElementById('durakDoneBtn').style.display='none';
-document.getElementById('durakStatus').textContent='Ход переходит к АИ...';
-dRender();
-setTimeout(dAiAttack,600);
-}
-}
-function dAiAttack(){
-if(!dGameActive)return;
-if(dAiHand.length===0){dCheckWin();return;}
-let card;
-if(dDifficulty===1){card=dAiHand[Math.floor(Math.random()*dAiHand.length)];}
-else{const sorted=[...dAiHand].sort((a,b)=>{if(a.suit===dTrump&&b.suit!==dTrump)return 1;if(a.suit!==dTrump&&b.suit===dTrump)return -1;return a.rank-b.rank;});card=sorted[0];}
-dAiHand.splice(dAiHand.indexOf(card),1);
-dTable.push({attack:card,defense:null});
-const beats=dGetBeats(dPlayerHand,card,dTrump);
-if(beats.length===0){
-dPhase='player_take';
-document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Нечем отбиться — нажми «Взять».';
-document.getElementById('durakTakeBtn').style.display='inline-block';
-dRender();
-}else{
-dPhase='player_defend';
-document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Отбейся — кликни карту.';
-document.getElementById('durakTakeBtn').style.display='inline-block';
-dRender();
-}
-}
-function dPlayerDefend(idx){
-if(dPhase!=='player_defend')return;
-const card=dPlayerHand[idx];
-const pair=dTable[dTable.length-1];
-if(!dBeats(card,pair.attack,dTrump)){
-document.getElementById('durakStatus').textContent=dCardName(card)+' не бьёт '+dCardName(pair.attack)+'!';
-return;
-}
-dPlayerHand.splice(idx,1);
-pair.defense=card;
-document.getElementById('durakTakeBtn').style.display='none';
-dCheckWin();
-if(dGameActive){
-const ranks=new Set();
-dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});
-const addable=dAiHand.filter(c=>ranks.has(c.rank));
-if(addable.length>0&&dTable.length<6&&(dDifficulty>=2||Math.random()<0.4)){
-let addCard=dDifficulty===3?addable.sort((a,b)=>a.rank-b.rank)[0]:addable[Math.floor(Math.random()*addable.length)];
-dAiHand.splice(dAiHand.indexOf(addCard),1);
-dTable.push({attack:addCard,defense:null});
-const beats2=dGetBeats(dPlayerHand,addCard,dTrump);
-if(beats2.length===0){
-dPhase='player_take';
-document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Нечем отбиться — «Взять».';
-document.getElementById('durakTakeBtn').style.display='inline-block';
-dRender();
-}else{
-dPhase='player_defend';
-document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Отбейся.';
-document.getElementById('durakTakeBtn').style.display='inline-block';
-dRender();
-}
-}else{
-dDiscardPile+=dTable.length;dTable=[];
-dDrawHands();dCheckWin();
-if(dGameActive){
-dAttacker='player';dPhase='player_attack';
-document.getElementById('durakStatus').textContent='Ты отбился! Твоя атака.';
-dRender();
-}
-}
-}
-}
-function dPlayerTake(){
-if(dPhase!=='player_take'&&dPhase!=='player_defend')return;
-dPlayerHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));
-dTable=[];
-document.getElementById('durakTakeBtn').style.display='none';
-dDrawHands();dCheckWin();
-if(dGameActive){
-dAttacker='ai';dPhase='ai_attack';
-document.getElementById('durakStatus').textContent='Ты взял карты. АИ атакует снова...';
-dRender();
-setTimeout(dAiAttack,600);
-}
-}
-function dCheckWin(){
-if(dDeck.length===0){
-if(dPlayerHand.length===0&&dAiHand.length===0){dGameActive=false;dWin();return;}
-if(dAiHand.length===0){dGameActive=false;dLose();return;}
-if(dPlayerHand.length===0){dGameActive=false;dWin();return;}
-}
-if(dPlayerHand.length===0&&dDeck.length===0){dGameActive=false;dWin();}
-if(dAiHand.length===0&&dDeck.length===0){dGameActive=false;dLose();}
-}
-function dWin(){
-const bet=parseInt(document.getElementById('durakBet').value)||1;
-const mult=[100,1000,10000][dDifficulty-1];
-const prize=bet*mult;
-casinoBalance+=prize;updateBalance();
-document.getElementById('durakStatus').textContent='🎉 Ты выиграл! +'+prize.toLocaleString('ru')+' 🪙 (x'+mult+')';
-document.getElementById('durakStatus').className='durak-status win';
-document.getElementById('durakStartBtn').disabled=false;
-document.getElementById('durakDoneBtn').style.display='none';
-document.getElementById('durakTakeBtn').style.display='none';
-dPhase='init';dRender();
-}
-function dLose(){
-document.getElementById('durakStatus').textContent='💀 Ты проиграл — ты дурак!';
-document.getElementById('durakStatus').className='durak-status lose';
-document.getElementById('durakStartBtn').disabled=false;
-document.getElementById('durakDoneBtn').style.display='none';
-document.getElementById('durakTakeBtn').style.display='none';
-dPhase='init';dRender();
-}
-function dRender(){
-let aiHTML='';
-for(let i=0;i<dAiHand.length;i++)aiHTML+='<div class="durak-card-back"></div>';
-document.getElementById('durakAiHand').innerHTML=aiHTML;
-let tHTML='';
-dTable.forEach(p=>{
-tHTML+='<div class="durak-pair">';
-if(p.attack){const col=dCardColor(p.attack.suit);
-tHTML+='<div class="durak-card"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.attack.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span></div>';}
-if(p.defense){const col=dCardColor(p.defense.suit);
-tHTML+='<div class="durak-card defense"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.defense.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span></div>';}
-tHTML+='</div>';
-});
-document.getElementById('durakBattle').innerHTML=tHTML;
-let dInfo='';
-if(dDeck.length>0){const tc=dCardColor(dTrump);
-dInfo='<div class="durak-trump-badge">Козырь: <span class="durak-suit" style="color:'+tc+'">'+D_SUITS[dTrump]+'</span></div><div class="durak-info-item">🂠 Колода: '+dDeck.length+'</div>';}
-else{dInfo='<div class="durak-info-item">Колода пуста</div>';}
-dInfo+='<div class="durak-info-item">У АИ: '+dAiHand.length+' карт</div><div class="durak-info-item">Сброс: '+dDiscardPile+'</div>';
-document.getElementById('durakDeckInfo').innerHTML=dInfo;
-let pHTML='';
-const canClick=dPhase==='player_attack'||dPhase==='player_defend';
-dPlayerHand.forEach((c,i)=>{
-const col=dCardColor(c.suit);
-const cl=canClick?' clickable':'';
-const clk=canClick?'onclick="dPlayerClick('+i+')"':'';
-pHTML+='<div class="durak-card'+cl+'" '+clk+'><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[c.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span></div>';
-});
-document.getElementById('durakPlayerHand').innerHTML=pHTML;
-}
+function dStartGame(){let bet=parseInt(document.getElementById('durakBet').value)||1;if(bet<1)bet=1;if(casinoBalance<bet){document.getElementById('durakStatus').textContent='Недостаточно монет!';return;}casinoBalance-=bet;updateBalance();dDeck=dCreateDeck();dPlayerHand=[];dAiHand=[];dTable=[];dDiscardPile=0;dGameActive=true;dAttacker='player';dPhase='player_attack';for(let i=0;i<6;i++){dPlayerHand.push(dDeck.pop());dAiHand.push(dDeck.pop());}dTrump=dDeck[0].suit;document.getElementById('durakStartBtn').disabled=true;document.getElementById('durakDoneBtn').style.display='none';document.getElementById('durakTakeBtn').style.display='none';dRender();document.getElementById('durakStatus').textContent='Ты атакуешь. Кликни карту из руки.';document.getElementById('durakStatus').className='durak-status';}
+function dPlayerClick(idx){if(dPhase==='player_attack')dPlayerAttack(idx);else if(dPhase==='player_defend')dPlayerDefend(idx);}
+function dPlayerAttack(idx){if(dPhase!=='player_attack')return;const card=dPlayerHand[idx];if(dTable.length>0){const ranks=new Set();dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});if(!ranks.has(card.rank)){document.getElementById('durakStatus').textContent='Можно подкинуть только карты того же ранга!';return;}}if(dTable.length>=6)return;dPlayerHand.splice(idx,1);dTable.push({attack:card,defense:null});document.getElementById('durakDoneBtn').style.display='none';dRender();setTimeout(dAiDefend,400);}
+function dAiDefend(){const pair=dTable[dTable.length-1];if(!pair||pair.defense!==null)return;const beats=dGetBeats(dAiHand,pair.attack,dTrump);if(beats.length===0){dAiHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));dTable=[];dDrawHands();dCheckWin();if(dGameActive){dPhase='player_attack';document.getElementById('durakStatus').textContent='АИ забрал карты! Атакуй снова.';document.getElementById('durakDoneBtn').style.display='none';dRender();}return;}let dc;if(dDifficulty===1){dc=beats[Math.floor(Math.random()*beats.length)];}else{const nt=beats.filter(c=>c.suit!==dTrump);const pool=nt.length?nt:beats;pool.sort((a,b)=>a.rank-b.rank);dc=pool[0];}dAiHand.splice(dAiHand.indexOf(dc),1);pair.defense=dc;dRender();dCheckWin();if(dGameActive){dPhase='player_attack';document.getElementById('durakStatus').textContent='АИ отбился '+dCardName(dc)+'. Подкинь карту или нажми «Готово».';document.getElementById('durakDoneBtn').style.display='inline-block';}}
+function dPlayerDone(){if(dPhase!=='player_attack'||dTable.length===0)return;dDiscardPile+=dTable.length;dTable=[];dDrawHands();dCheckWin();if(dGameActive){dAttacker='ai';dPhase='ai_attack';document.getElementById('durakDoneBtn').style.display='none';document.getElementById('durakStatus').textContent='Ход переходит к АИ...';dRender();setTimeout(dAiAttack,600);}}
+function dAiAttack(){if(!dGameActive)return;if(dAiHand.length===0){dCheckWin();return;}let card;if(dDifficulty===1){card=dAiHand[Math.floor(Math.random()*dAiHand.length)];}else{const sorted=[...dAiHand].sort((a,b)=>{if(a.suit===dTrump&&b.suit!==dTrump)return 1;if(a.suit!==dTrump&&b.suit===dTrump)return -1;return a.rank-b.rank;});card=sorted[0];}dAiHand.splice(dAiHand.indexOf(card),1);dTable.push({attack:card,defense:null});const beats=dGetBeats(dPlayerHand,card,dTrump);if(beats.length===0){dPhase='player_take';document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Нечем отбиться — нажми «Взять».';document.getElementById('durakTakeBtn').style.display='inline-block';dRender();}else{dPhase='player_defend';document.getElementById('durakStatus').textContent='АИ атакует '+dCardName(card)+'! Отбейся — кликни карту.';document.getElementById('durakTakeBtn').style.display='inline-block';dRender();}}
+function dPlayerDefend(idx){if(dPhase!=='player_defend')return;const card=dPlayerHand[idx];const pair=dTable[dTable.length-1];if(!dBeats(card,pair.attack,dTrump)){document.getElementById('durakStatus').textContent=dCardName(card)+' не бьёт '+dCardName(pair.attack)+'!';return;}dPlayerHand.splice(idx,1);pair.defense=card;document.getElementById('durakTakeBtn').style.display='none';dCheckWin();if(dGameActive){const ranks=new Set();dTable.forEach(p=>{if(p.attack)ranks.add(p.attack.rank);if(p.defense)ranks.add(p.defense.rank);});const addable=dAiHand.filter(c=>ranks.has(c.rank));if(addable.length>0&&dTable.length<6&&(dDifficulty>=2||Math.random()<0.4)){let addCard=dDifficulty===3?addable.sort((a,b)=>a.rank-b.rank)[0]:addable[Math.floor(Math.random()*addable.length)];dAiHand.splice(dAiHand.indexOf(addCard),1);dTable.push({attack:addCard,defense:null});const beats2=dGetBeats(dPlayerHand,addCard,dTrump);if(beats2.length===0){dPhase='player_take';document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Нечем отбиться — «Взять».';document.getElementById('durakTakeBtn').style.display='inline-block';dRender();}else{dPhase='player_defend';document.getElementById('durakStatus').textContent='АИ подкидывает '+dCardName(addCard)+'! Отбейся.';document.getElementById('durakTakeBtn').style.display='inline-block';dRender();}}else{dDiscardPile+=dTable.length;dTable=[];dDrawHands();dCheckWin();if(dGameActive){dAttacker='player';dPhase='player_attack';document.getElementById('durakStatus').textContent='Ты отбился! Твоя атака.';dRender();}}}}
+function dPlayerTake(){if(dPhase!=='player_take'&&dPhase!=='player_defend')return;dPlayerHand.push(...dTable.flatMap(p=>[p.attack,p.defense].filter(c=>c)));dTable=[];document.getElementById('durakTakeBtn').style.display='none';dDrawHands();dCheckWin();if(dGameActive){dAttacker='ai';dPhase='ai_attack';document.getElementById('durakStatus').textContent='Ты взял карты. АИ атакует снова...';dRender();setTimeout(dAiAttack,600);}}
+function dCheckWin(){if(dDeck.length===0){if(dPlayerHand.length===0&&dAiHand.length===0){dGameActive=false;dWin();return;}if(dAiHand.length===0){dGameActive=false;dLose();return;}if(dPlayerHand.length===0){dGameActive=false;dWin();return;}}if(dPlayerHand.length===0&&dDeck.length===0){dGameActive=false;dWin();}if(dAiHand.length===0&&dDeck.length===0){dGameActive=false;dLose();}}
+function dWin(){const bet=parseInt(document.getElementById('durakBet').value)||1;const mult=[100,1000,10000][dDifficulty-1];const prize=bet*mult;casinoBalance+=prize;updateBalance();document.getElementById('durakStatus').textContent='🎉 Ты выиграл! +'+prize.toLocaleString('ru')+' 🪙 (x'+mult+')';document.getElementById('durakStatus').className='durak-status win';document.getElementById('durakStartBtn').disabled=false;document.getElementById('durakDoneBtn').style.display='none';document.getElementById('durakTakeBtn').style.display='none';dPhase='init';dRender();}
+function dLose(){document.getElementById('durakStatus').textContent='💀 Ты проиграл — ты дурак!';document.getElementById('durakStatus').className='durak-status lose';document.getElementById('durakStartBtn').disabled=false;document.getElementById('durakDoneBtn').style.display='none';document.getElementById('durakTakeBtn').style.display='none';dPhase='init';dRender();}
+function dRender(){let aiHTML='';for(let i=0;i<dAiHand.length;i++)aiHTML+='<div class="durak-card-back"></div>';document.getElementById('durakAiHand').innerHTML=aiHTML;let tHTML='';dTable.forEach(p=>{tHTML+='<div class="durak-pair">';if(p.attack){const col=dCardColor(p.attack.suit);tHTML+='<div class="durak-card"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.attack.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.attack.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.attack.suit]+'</span></span></div>';}if(p.defense){const col=dCardColor(p.defense.suit);tHTML+='<div class="durak-card defense"><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[p.defense.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[p.defense.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[p.defense.suit]+'</span></span></div>';}tHTML+='</div>';});document.getElementById('durakBattle').innerHTML=tHTML;let dInfo='';if(dDeck.length>0){const tc=dCardColor(dTrump);dInfo='<div class="durak-trump-badge">Козырь: <span class="durak-suit" style="color:'+tc+'">'+D_SUITS[dTrump]+'</span></div><div class="durak-info-item">🂠 Колода: '+dDeck.length+'</div>';}else{dInfo='<div class="durak-info-item">Колода пуста</div>';}dInfo+='<div class="durak-info-item">У АИ: '+dAiHand.length+' карт</div><div class="durak-info-item">Сброс: '+dDiscardPile+'</div>';document.getElementById('durakDeckInfo').innerHTML=dInfo;let pHTML='';const canClick=dPhase==='player_attack'||dPhase==='player_defend';dPlayerHand.forEach((c,i)=>{const col=dCardColor(c.suit);const cl=canClick?' clickable':'';const clk=canClick?'onclick="dPlayerClick('+i+')"':'';pHTML+='<div class="durak-card'+cl+'" '+clk+'><span class="durak-rank-top" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span><span class="durak-suit-mid" style="color:'+col+'">'+D_SUITS[c.suit]+'</span><span class="durak-rank-bot" style="color:'+col+'">'+D_RANKS[c.rank]+'<span class="durak-suit" style="font-size:.8rem">'+D_SUITS[c.suit]+'</span></span></div>';});document.getElementById('durakPlayerHand').innerHTML=pHTML;}
 </script>
 
 <script>
-// ===== КЕЙС НА МОНЕТЫ (GD ЛИЦА) =====
-const CASE_ITEMS = [
-  {name:'x0',mult:0,color:'#888888',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#888" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 48 Q40 56 56 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x0</text></svg>'},
-  {name:'x1',mult:1,color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#00cc44" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 48 Q40 56 56 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x1</text></svg>'},
-  {name:'x2',mult:2,color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#aaff00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 50 L56 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x2</text></svg>'},
-  {name:'x3',mult:3,color:'#ffcc00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ffcc00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 50 Q40 44 56 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x3</text></svg>'},
-  {name:'x5',mult:5,color:'#ff8800',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff8800" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M22 30 L32 34 M22 34 L32 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M48 30 L58 34 M48 34 L58 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M24 50 Q40 42 56 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x5</text></svg>'},
-  {name:'x10',mult:10,color:'#ff4400',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff4400" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M20 28 L32 32 M20 32 L32 28" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M48 28 L60 32 M48 32 L60 28" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="44" r="5" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M34 54 Q40 50 46 54" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="9" fill="#fff" font-family="sans-serif" font-weight="bold">x10</text></svg>'},
-  {name:'x25',mult:25,color:'#aa00ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#aa00ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M18 24 L28 34 L18 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M62 24 L52 34 L62 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="34" r="3" fill="#fff"/><circle cx="52" cy="34" r="3" fill="#fff"/><path d="M26 46 Q40 40 54 46 L50 52 L40 48 L30 52 Z" fill="#fff"/><text x="40" y="76" text-anchor="middle" font-size="9" fill="#fff" font-family="sans-serif" font-weight="bold">x25</text></svg>'},
-  {name:'x50',mult:50,color:'#8800ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#8800ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M16 22 L28 34 L16 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M64 22 L52 34 L64 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><circle cx="28" cy="34" r="3" fill="#fff"/><circle cx="52" cy="34" r="3" fill="#fff"/><path d="M24 44 L56 44 L52 54 L28 54 Z" fill="#fff"/><path d="M32 44 L32 54 M40 44 L40 54 M48 44 L48 54" stroke="#000" stroke-width="1.5"/><text x="40" y="76" text-anchor="middle" font-size="9" fill="#fff" font-family="sans-serif" font-weight="bold">x50</text></svg>'},
-  {name:'x100',mult:100,color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff00aa" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M14 20 L28 34 L14 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 20 L52 34 L66 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M20 24 L30 30 L20 36 L30 32" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 24 L50 30 L60 36 L50 32" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 42 L58 42 L54 56 L26 56 Z" fill="#fff"/><path d="M30 44 L30 56 M40 44 L40 56 M50 44 L50 56" stroke="#000" stroke-width="2"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x100</text></svg>'},
-  {name:'x500',mult:500,color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff0000" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M10 18 L28 34 L10 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M70 18 L52 34 L70 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M16 22 L28 28 L16 34 L28 30" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 22 L52 28 L64 34 L52 30" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 40 L60 40 L56 58 L24 58 Z" fill="#fff"/><path d="M29 42 L29 58 M40 42 L40 58 M51 42 L51 58" stroke="#000" stroke-width="2.5"/><path d="M26 60 L30 66 M40 60 L40 68 M54 60 L50 66" stroke="#fff" stroke-width="2" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x500</text></svg>'}
-];
-const CASE_WEIGHTS = [25, 25, 18, 12, 8, 5, 3, 2, 1.5, 0.5];
-let caseSpinning = false;
-function updateCaseBalance() {
-  const el = document.getElementById('caseBalanceNum');
-  if (el) el.textContent = casinoBalance;
-}
-function renderCaseList() {
-  const container = document.getElementById('caseItemsList');
-  if (!container) return;
-  let html = '';
-  CASE_ITEMS.forEach((d, i) => {
-    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid ' + d.color + '40;border-radius:8px;min-width:75px">' +
-      d.svg +
-      '<span style="font-size:.7rem;font-weight:700;color:' + d.color + '">' + d.name + '</span>' +
-      '<span style="font-size:.65rem;color:#666">шанс ' + CASE_WEIGHTS[i] + '%</span>' +
-      '</div>';
-  });
-  container.innerHTML = html;
-}
+// ===== КЕЙС НА МОНЕТЫ =====
+const CASE_ITEMS=[{name:'x0',mult:0,color:'#888888',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#888" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 48 Q40 56 56 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x0</text></svg>'},{name:'x1',mult:1,color:'#00ff66',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#00cc44" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 48 Q40 56 56 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x1</text></svg>'},{name:'x2',mult:2,color:'#aaff00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#aaff00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 50 L56 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x2</text></svg>'},{name:'x3',mult:3,color:'#ffcc00',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ffcc00" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><circle cx="28" cy="33" r="4" fill="#fff"/><circle cx="52" cy="33" r="4" fill="#fff"/><path d="M24 50 Q40 44 56 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x3</text></svg>'},{name:'x5',mult:5,color:'#ff8800',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff8800" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M22 30 L32 34 M22 34 L32 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M48 30 L58 34 M48 34 L58 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M24 50 Q40 42 56 50" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif" font-weight="bold">x5</text></svg>'},{name:'x10',mult:10,color:'#ff4400',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff4400" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M20 28 L32 32 M20 32 L32 28" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M48 28 L60 32 M48 32 L60 28" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="44" r="5" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M34 54 Q40 50 46 54" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="40" y="76" text-anchor="middle" font-size="9" fill="#fff" font-family="sans-serif" font-weight="bold">x10</text></svg>'},{name:'x25',mult:25,color:'#aa00ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#aa00ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M18 24 L28 34 L18 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M62 24 L52 34 L62 44" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="34" r="3" fill="#fff"/><circle cx="52" cy="34" r="3" fill="#fff"/><path d="M26 46 Q40 40 54 46 L50 52 L40 48 L30 52 Z" fill="#fff"/><text x="40" y="76" text-anchor="middle" font-size="9" fill="#fff" font-family="sans-serif" font-weight="bold">x25</text></svg>'},{name:'x50',mult:50,color:'#8800ff',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#8800ff" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M16 22 L28 34 L16 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M64 22 L52 34 L64 46" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><circle cx="28" cy="34" r="3" fill="#fff"/><circle cx="52" cy="34" r="3" fill="#fff"/><path d="M24 44 L56 44 L52 54 L28 54 Z" fill="#fff"/><path d="M32 44 L32 54 M40 44 L40 54 M48 44 L48 54" stroke="#000" stroke-width="1.5"/><text x="40" y="76" text-anchor="middle" font-size="9" fill="#fff" font-family="sans-serif" font-weight="bold">x50</text></svg>'},{name:'x100',mult:100,color:'#ff00aa',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff00aa" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M14 20 L28 34 L14 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M66 20 L52 34 L66 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M22 42 L58 42 L54 56 L26 56 Z" fill="#fff"/><path d="M30 44 L30 56 M40 44 L40 56 M50 44 L50 56" stroke="#000" stroke-width="2"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x100</text></svg>'},{name:'x500',mult:500,color:'#ff0000',svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ff0000" stroke="rgba(0,0,0,0.3)" stroke-width="2"/><path d="M10 18 L28 34 L10 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M70 18 L52 34 L70 50" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M20 40 L60 40 L56 58 L24 58 Z" fill="#fff"/><path d="M29 42 L29 58 M40 42 L40 58 M51 42 L51 58" stroke="#000" stroke-width="2.5"/><text x="40" y="76" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif" font-weight="bold">x500</text></svg>'}];
+const CASE_WEIGHTS=[25,25,18,12,8,5,3,2,1.5,0.5];
+let caseSpinning=false;
+function updateCaseBalance(){const el=document.getElementById('caseBalanceNum');if(el)el.textContent=casinoBalance;}
+function renderCaseList(){const container=document.getElementById('caseItemsList');if(!container)return;let html='';CASE_ITEMS.forEach((d,i)=>{html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:1px solid '+d.color+'40;border-radius:8px;min-width:75px">'+d.svg+'<span style="font-size:.7rem;font-weight:700;color:'+d.color+'">'+d.name+'</span><span style="font-size:.65rem;color:#666">шанс '+CASE_WEIGHTS[i]+'%</span></div>';});container.innerHTML=html;}
 renderCaseList();
-function weightedRandomCase() {
-  const total = CASE_WEIGHTS.reduce((a, b) => a + b, 0);
-  let r = Math.random() * total;
-  for (let i = 0; i < CASE_WEIGHTS.length; i++) {
-    r -= CASE_WEIGHTS[i];
-    if (r <= 0) return i;
-  }
-  return 0;
-}
-function buildCaseTrack(winningIdx) {
-  const total = 50;
-  const track = [];
-  for (let i = 0; i < total; i++) {
-    track.push(CASE_ITEMS[Math.floor(Math.random() * CASE_ITEMS.length)]);
-  }
-  track[45] = CASE_ITEMS[winningIdx];
-  return track;
-}
-function openCase() {
-  if (caseSpinning) return;
-  const betEl = document.getElementById('caseBet');
-  let bet = parseInt(betEl ? betEl.value : '50') || 50;
-  if (bet < 1) bet = 1;
-  if (typeof casinoBalance === 'undefined' || casinoBalance < bet) {
-    document.getElementById('caseResult').textContent = 'Недостаточно монет!';
-    return;
-  }
-  casinoBalance -= bet;
-  if (typeof updateBalance === 'function') updateBalance();
-  caseSpinning = true;
-  document.getElementById('caseOpenBtn').disabled = true;
-  document.getElementById('caseResult').textContent = 'Крутится...';
-  const winIdx = weightedRandomCase();
-  const winningItem = CASE_ITEMS[winIdx];
-  const track = buildCaseTrack(winIdx);
-  const trackEl = document.getElementById('caseTrack');
-  if (!trackEl) return;
-  let trackHTML = '';
-  track.forEach(d => {
-    trackHTML += '<div class="case-item" style="border-color:' + d.color + '40">' +
-      d.svg +
-      '<span class="case-item-name" style="color:' + d.color + '">' + d.name + '</span>' +
-      '</div>';
-  });
-  trackEl.innerHTML = trackHTML;
-  const speedEl = document.getElementById('caseSpeed');
-  const speed = parseInt(speedEl ? speedEl.value : '5') || 5;
-  const duration = Math.max(2000, 6000 - speed * 400);
-  const itemWidth = 84 + 12;
-  const winEl = document.querySelector('.case-window');
-  const winW = winEl ? winEl.offsetWidth : 300;
-  const targetOffset = -(45 * itemWidth) + (winW / 2 - itemWidth / 2);
-  trackEl.style.transition = 'none';
-  trackEl.style.transform = 'translateX(0)';
-  void trackEl.offsetWidth;
-  trackEl.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.15,0.9,0.2,1)';
-  trackEl.style.transform = 'translateX(' + targetOffset + 'px)';
-  clearTimeout(window._caseTimer);
-  window._caseTimer = setTimeout(() => {
-    caseSpinning = false;
-    document.getElementById('caseOpenBtn').disabled = false;
-    let prize = bet * winningItem.mult;
-    if (winningItem.mult > 0) {
-      casinoBalance += prize;
-      if (typeof updateBalance === 'function') updateBalance();
-      document.getElementById('caseResult').innerHTML = winningItem.svg +
-        ' <span style="color:' + winningItem.color + '">' + winningItem.name + '</span> — +' + prize.toLocaleString('ru') + ' 🪙!';
-    } else {
-      document.getElementById('caseResult').innerHTML = winningItem.svg +
-        ' <span style="color:' + winningItem.color + '">' + winningItem.name + '</span> — повезёт в другой раз!';
-    }
-  }, duration + 300);
-}
+function weightedRandomCase(){const total=CASE_WEIGHTS.reduce((a,b)=>a+b,0);let r=Math.random()*total;for(let i=0;i<CASE_WEIGHTS.length;i++){r-=CASE_WEIGHTS[i];if(r<=0)return i;}return 0;}
+function buildCaseTrack(winningIdx){const total=50;const track=[];for(let i=0;i<total;i++){track.push(CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)]);}track[45]=CASE_ITEMS[winningIdx];return track;}
+function openCase(){if(caseSpinning)return;const betEl=document.getElementById('caseBet');let bet=parseInt(betEl?betEl.value:'50')||50;if(bet<1)bet=1;if(typeof casinoBalance==='undefined'||casinoBalance<bet){document.getElementById('caseResult').textContent='Недостаточно монет!';return;}casinoBalance-=bet;if(typeof updateBalance==='function')updateBalance();caseSpinning=true;document.getElementById('caseOpenBtn').disabled=true;document.getElementById('caseResult').textContent='Крутится...';const winIdx=weightedRandomCase();const winningItem=CASE_ITEMS[winIdx];const track=buildCaseTrack(winIdx);const trackEl=document.getElementById('caseTrack');if(!trackEl)return;let trackHTML='';track.forEach(d=>{trackHTML+='<div class="case-item" style="border-color:'+d.color+'40">'+d.svg+'<span class="case-item-name" style="color:'+d.color+'">'+d.name+'</span></div>';});trackEl.innerHTML=trackHTML;const speedEl=document.getElementById('caseSpeed');const speed=parseInt(speedEl?speedEl.value:'5')||5;const duration=Math.max(2000,6000-speed*400);const itemWidth=84+12;const winEl=document.querySelector('.case-window');const winW=winEl?winEl.offsetWidth:300;const targetOffset=-(45*itemWidth)+(winW/2-itemWidth/2);trackEl.style.transition='none';trackEl.style.transform='translateX(0)';void trackEl.offsetWidth;trackEl.style.transition='transform '+duration+'ms cubic-bezier(0.15,0.9,0.2,1)';trackEl.style.transform='translateX('+targetOffset+'px)';clearTimeout(window._caseTimer);window._caseTimer=setTimeout(()=>{caseSpinning=false;document.getElementById('caseOpenBtn').disabled=false;let prize=bet*winningItem.mult;if(winningItem.mult>0){casinoBalance+=prize;if(typeof updateBalance==='function')updateBalance();document.getElementById('caseResult').innerHTML=winningItem.svg+' <span style="color:'+winningItem.color+'">'+winningItem.name+'</span> — +'+prize.toLocaleString('ru')+' 🪙!';}else{document.getElementById('caseResult').innerHTML=winningItem.svg+' <span style="color:'+winningItem.color+'">'+winningItem.name+'</span> — повезёт в другой раз!';}},duration+300);}
 </script>
 
 <script>
@@ -1074,112 +645,67 @@ for(let i=0;i<=30;i++){ROULETTE_NUMS.push({num:i,color:i===0?'green':(i%2===1?'r
 const ROULETTE_COLORS={green:'#00cc44',red:'#cc2200',black:'#1a1a1a'};
 let rouletteAngle=0,rouletteSpinning=false,rouletteBetType=null,rouletteBetNumber=0;
 function updateRouletteBalance(){const el=document.getElementById('rouletteBalanceNum');if(el)el.textContent=casinoBalance;}
-function drawRouletteWheel(angle){
-const canvas=document.getElementById('rouletteCanvas');
-if(!canvas)return;
-const ctx=canvas.getContext('2d');
-const cx=180,cy=180,r=170;
-const n=ROULETTE_NUMS.length;
-const sa=(Math.PI*2)/n;
-ctx.clearRect(0,0,360,360);
-for(let i=0;i<n;i++){
-const start=i*sa+angle-Math.PI/2;
-const end=start+sa;
-ctx.beginPath();
-ctx.moveTo(cx,cy);
-ctx.arc(cx,cy,r,start,end);
-ctx.closePath();
-ctx.fillStyle=ROULETTE_COLORS[ROULETTE_NUMS[i].color];
-ctx.fill();
-ctx.strokeStyle='rgba(255,255,255,0.25)';
-ctx.lineWidth=1;
-ctx.stroke();
-const mid=(start+end)/2;
-const tx=cx+Math.cos(mid)*r*0.72;
-const ty=cy+Math.sin(mid)*r*0.72;
-ctx.save();
-ctx.translate(tx,ty);
-ctx.rotate(mid+Math.PI/2);
-ctx.fillStyle='#fff';
-ctx.font='bold 11px Orbitron';
-ctx.textAlign='center';
-ctx.textBaseline='middle';
-ctx.fillText(ROULETTE_NUMS[i].num,0,0);
-ctx.restore();
-}
-ctx.beginPath();
-ctx.arc(cx,cy,40,0,Math.PI*2);
-ctx.fillStyle='#1a1a1a';
-ctx.fill();
-ctx.strokeStyle='#ff0033';
-ctx.lineWidth=3;
-ctx.stroke();
-}
-function rouletteSelectBet(type){
-if(rouletteSpinning)return;
-rouletteBetType=type;
-if(type==='number')rouletteBetNumber=parseInt(document.getElementById('rouletteNumber').value)||0;
-document.querySelectorAll('.roulette-bet-btn').forEach(b=>b.classList.remove('active'));
-const map={number:'rouletteBetNumber',red:'rouletteBetRed',black:'rouletteBetBlack',green:'rouletteBetGreen'};
-const el=document.getElementById(map[type]);
-if(el)el.classList.add('active');
-let desc='';
-if(type==='number')desc='На число '+rouletteBetNumber+' (×100)';
-else if(type==='red')desc='На красное (×5)';
-else if(type==='black')desc='На чёрное (×5)';
-else if(type==='green')desc='На зелёное (×100)';
-document.getElementById('rouletteCurrentBet').textContent='Ставка: '+desc;
-}
-function spinRoulette(){
-if(rouletteSpinning)return;
-if(!rouletteBetType){document.getElementById('rouletteResult').textContent='Выбери ставку!';return;}
-let bet=parseInt(document.getElementById('rouletteBet').value)||10;
-if(bet<1)bet=1;
-if(casinoBalance<bet){document.getElementById('rouletteResult').textContent='Недостаточно монет!';return;}
-casinoBalance-=bet;updateBalance();
-rouletteSpinning=true;
-document.getElementById('rouletteSpinBtn').disabled=true;
-document.getElementById('rouletteResult').textContent='Крутится...';
-document.getElementById('rouletteResult').className='roulette-result';
-const winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);
-const sa=(Math.PI*2)/ROULETTE_NUMS.length;
-const from=rouletteAngle;
-const stopAt=winIdx*sa+sa/2;
-let to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;
-while(to-from<Math.PI*2*5)to+=Math.PI*2;
-const duration=4000;
-const startTime=performance.now();
-function animate(now){
-const elapsed=now-startTime;
-const t=Math.min(elapsed/duration,1);
-const eased=1-Math.pow(1-t,3);
-rouletteAngle=from+(to-from)*eased;
-drawRouletteWheel(rouletteAngle);
-if(t<1){requestAnimationFrame(animate);}
-else{
-rouletteSpinning=false;
-document.getElementById('rouletteSpinBtn').disabled=false;
-const result=ROULETTE_NUMS[winIdx];
-let won=false,mult=0;
-if(rouletteBetType==='number'&&rouletteBetNumber===result.num){won=true;mult=100;}
-else if(rouletteBetType==='green'&&result.color==='green'){won=true;mult=100;}
-else if(rouletteBetType==='red'&&result.color==='red'){won=true;mult=5;}
-else if(rouletteBetType==='black'&&result.color==='black'){won=true;mult=5;}
-if(won){
-const prize=bet*mult;
-casinoBalance+=prize;updateBalance();
-document.getElementById('rouletteResult').innerHTML='🎉 Выпало '+result.num+' ('+result.color+')! ×'+mult+' = +'+prize.toLocaleString('ru')+' 🪙!';
-document.getElementById('rouletteResult').className='roulette-result win';
-}else{
-document.getElementById('rouletteResult').innerHTML='Выпало '+result.num+' ('+result.color+'). Повезёт в следующий раз!';
-document.getElementById('rouletteResult').className='roulette-result';
-}
-}
-}
-requestAnimationFrame(animate);
-}
+function drawRouletteWheel(angle){const canvas=document.getElementById('rouletteCanvas');if(!canvas)return;const ctx=canvas.getContext('2d');const cx=180,cy=180,r=170;const n=ROULETTE_NUMS.length;const sa=(Math.PI*2)/n;ctx.clearRect(0,0,360,360);for(let i=0;i<n;i++){const start=i*sa+angle-Math.PI/2;const end=start+sa;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();ctx.fillStyle=ROULETTE_COLORS[ROULETTE_NUMS[i].color];ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;ctx.stroke();const mid=(start+end)/2;const tx=cx+Math.cos(mid)*r*0.72;const ty=cy+Math.sin(mid)*r*0.72;ctx.save();ctx.translate(tx,ty);ctx.rotate(mid+Math.PI/2);ctx.fillStyle='#fff';ctx.font='bold 11px Orbitron';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ROULETTE_NUMS[i].num,0,0);ctx.restore();}ctx.beginPath();ctx.arc(cx,cy,40,0,Math.PI*2);ctx.fillStyle='#1a1a1a';ctx.fill();ctx.strokeStyle='#ff0033';ctx.lineWidth=3;ctx.stroke();}
+function rouletteSelectBet(type){if(rouletteSpinning)return;rouletteBetType=type;if(type==='number')rouletteBetNumber=parseInt(document.getElementById('rouletteNumber').value)||0;document.querySelectorAll('.roulette-bet-btn').forEach(b=>b.classList.remove('active'));const map={number:'rouletteBetNumber',red:'rouletteBetRed',black:'rouletteBetBlack',green:'rouletteBetGreen'};const el=document.getElementById(map[type]);if(el)el.classList.add('active');let desc='';if(type==='number')desc='На число '+rouletteBetNumber+' (×100)';else if(type==='red')desc='На красное (×5)';else if(type==='black')desc='На чёрное (×5)';else if(type==='green')desc='На зелёное (×100)';document.getElementById('rouletteCurrentBet').textContent='Ставка: '+desc;}
+function spinRoulette(){if(rouletteSpinning)return;if(!rouletteBetType){document.getElementById('rouletteResult').textContent='Выбери ставку!';return;}let bet=parseInt(document.getElementById('rouletteBet').value)||10;if(bet<1)bet=1;if(casinoBalance<bet){document.getElementById('rouletteResult').textContent='Недостаточно монет!';return;}casinoBalance-=bet;updateBalance();rouletteSpinning=true;document.getElementById('rouletteSpinBtn').disabled=true;document.getElementById('rouletteResult').textContent='Крутится...';document.getElementById('rouletteResult').className='roulette-result';const winIdx=Math.floor(Math.random()*ROULETTE_NUMS.length);const sa=(Math.PI*2)/ROULETTE_NUMS.length;const from=rouletteAngle;const stopAt=winIdx*sa+sa/2;let to=from-(from%(Math.PI*2))+Math.PI*2*6+stopAt;while(to-from<Math.PI*2*5)to+=Math.PI*2;const duration=4000;const startTime=performance.now();function animate(now){const elapsed=now-startTime;const t=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-t,3);rouletteAngle=from+(to-from)*eased;drawRouletteWheel(rouletteAngle);if(t<1){requestAnimationFrame(animate);}else{rouletteSpinning=false;document.getElementById('rouletteSpinBtn').disabled=false;const result=ROULETTE_NUMS[winIdx];let won=false,mult=0;if(rouletteBetType==='number'&&rouletteBetNumber===result.num){won=true;mult=100;}else if(rouletteBetType==='green'&&result.color==='green'){won=true;mult=100;}else if(rouletteBetType==='red'&&result.color==='red'){won=true;mult=5;}else if(rouletteBetType==='black'&&result.color==='black'){won=true;mult=5;}if(won){const prize=bet*mult;casinoBalance+=prize;updateBalance();document.getElementById('rouletteResult').innerHTML='🎉 Выпало '+result.num+' ('+result.color+')! ×'+mult+' = +'+prize.toLocaleString('ru')+' 🪙!';document.getElementById('rouletteResult').className='roulette-result win';}else{document.getElementById('rouletteResult').innerHTML='Выпало '+result.num+' ('+result.color+'). Повезёт в следующий раз!';document.getElementById('rouletteResult').className='roulette-result';}}}requestAnimationFrame(animate);}
 drawRouletteWheel(0);
-// ===== СИНХРОНИЗАЦИЯ БАЛАНСА С accounts.json =====
+</script>
+
+<script>
+// ===== БИРЖА =====
+let mktBalance=getUserBalance();
+let mktPortfolio=JSON.parse(localStorage.getItem('mkt_portfolio')||'{}');
+let mktBankDeposit=parseInt(localStorage.getItem('mkt_bank_deposit')||'0');
+const STOCKS=[
+ {ticker:'TECH',name:'Технологии',sector:'IT',price:850,vol:0.04,drift:0.001,color:'#00aaff'},
+ {ticker:'GOLD',name:'Золотодобыча',sector:'Сырьё',price:1200,vol:0.02,drift:0.0005,color:'#ffcc00'},
+ {ticker:'OIL',name:'Нефтегаз',sector:'Энергетика',price:420,vol:0.035,drift:-0.0003,color:'#555'},
+ {ticker:'FOOD',name:'Пищепром',sector:'Потреб',price:180,vol:0.015,drift:0.0008,color:'#00ff66'},
+ {ticker:'CARS',name:'Автопром',sector:'Промышл',price:670,vol:0.03,drift:0.0002,color:'#ff6600'},
+ {ticker:'PHARM',name:'Фармацевтика',sector:'Медицина',price:540,vol:0.025,drift:0.0015,color:'#ff00aa'},
+ {ticker:'BANK',name:'Финансы',sector:'Банки',price:910,vol:0.028,drift:0.0006,color:'#aaff00'},
+ {ticker:'RETAIL',name:'Ритейл',sector:'Потреб',price:320,vol:0.022,drift:0.001,color:'#ff44aa'},
+ {ticker:'ENERGY',name:'Энергетика',sector:'Энергетика',price:280,vol:0.038,drift:-0.0002,color:'#ff8800'},
+ {ticker:'METAL',name:'Металлургия',sector:'Промышл',price:760,vol:0.026,drift:0.0007,color:'#888'},
+ {ticker:'CHEME',name:'Химпром',sector:'Промышл',price:490,vol:0.029,drift:0.0004,color:'#aa00ff'},
+ {ticker:'TELECOM',name:'Телеком',sector:'Связь',price:210,vol:0.02,drift:0.0009,color:'#00ddff'},
+ {ticker:'TRANS',name:'Транспорт',sector:'Логистика',price:380,vol:0.024,drift:0.0003,color:'#ffcc44'},
+ {ticker:'CRYPT',name:'Крипто',sector:'IT',price:1450,vol:0.06,drift:0.002,color:'#ff00ff'},
+ {ticker:'AGRO',name:'Агропром',sector:'Потреб',price:260,vol:0.018,drift:0.0011,color:'#88ff00'},
+ {ticker:'BUILD',name:'Строительство',sector:'Промышл',price:440,vol:0.027,drift:0.0005,color:'#ff6644'},
+ {ticker:'MEDIA',name:'Медиа',sector:'IT',price:620,vol:0.032,drift:0.0008,color:'#ff44ff'},
+ {ticker:'TOURISM',name:'Туризм',sector:'Услуги',price:150,vol:0.045,drift:-0.0005,color:'#44ddff'},
+ {ticker:'SPACE',name:'Космос',sector:'IT',price:2200,vol:0.05,drift:0.0017,color:'#aa88ff'},
+ {ticker:'EDU',name:'Образование',sector:'Услуги',price:120,vol:0.016,drift:0.0006,color:'#44ff88'}
+];
+STOCKS.forEach(s=>{s.history=[s.price];for(let i=0;i<30;i++){const change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;s.price=Math.max(1,s.price+change);s.history.push(s.price);}s.prevPrice=s.history[s.history.length-2]||s.price;});
+let selectedStock=null;
+function updateMktBalance(){mktBalance=getUserBalance();const el=document.getElementById('mktBalance');if(el)el.textContent=mktBalance.toLocaleString('ru');}
+function mktToast(msg,cls){const t=document.getElementById('mktToast');t.textContent=msg;t.className='mkt-toast show '+(cls||'');setTimeout(()=>t.classList.remove('show'),2500);}
+function switchMktTab(name,el){document.querySelectorAll('.mkt-sub-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.mkt-sub-section').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById(name).classList.add('active');if(name==='mktportfolio')renderPortfolio();if(name==='mktbank')updateBankDisplay();}
+function drawSparkline(canvas,data,color){const ctx=canvas.getContext('2d');const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);if(data.length<2)return;const min=Math.min(...data),max=Math.max(...data);const range=max-min||1;ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.beginPath();data.forEach((v,i)=>{const x=(i/(data.length-1))*w;const y=h-((v-min)/range)*(h-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();}
+function renderStockGrid(){const grid=document.getElementById('stockGrid');if(!grid)return;grid.innerHTML=STOCKS.map(s=>{const change=s.price-s.prevPrice;const pct=(change/s.prevPrice*100).toFixed(2);const up=change>=0;return '<div class="stock-card" onclick="selectStock(\''+s.ticker+'\')"><div style="display:flex;justify-content:space-between;align-items:center"><span class="stock-ticker">'+s.ticker+'</span><span class="sector-badge">'+s.sector+'</span></div><div class="stock-name">'+s.name+'</div><div class="stock-price">'+s.price.toFixed(0)+' 🪙</div><div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pct)+'%</div><canvas class="stock-spark" width="180" height="30" id="spark-'+s.ticker+'"></canvas></div>';}).join('');STOCKS.forEach(s=>{const c=document.getElementById('spark-'+s.ticker);if(c)drawSparkline(c,s.history,s.color);});}
+function drawDetailChart(canvas,data,color){const ctx=canvas.getContext('2d');const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);if(data.length<2)return;const min=Math.min(...data),max=Math.max(...data);const range=max-min||1;const pad=10;ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;for(let i=0;i<4;i++){const y=pad+(h-pad*2)*i/3;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();data.forEach((v,i)=>{const x=pad+(i/(data.length-1))*(w-pad*2);const y=h-pad-((v-min)/range)*(h-pad*2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();ctx.lineTo(w-pad,h-pad);ctx.lineTo(pad,h-pad);ctx.closePath();ctx.fillStyle=color+'15';ctx.fill();ctx.fillStyle='#666';ctx.font='10px Montserrat';ctx.textAlign='left';ctx.fillText(max.toFixed(0),pad+2,12);ctx.fillText(min.toFixed(0),pad+2,h-4);}
+function selectStock(ticker){selectedStock=STOCKS.find(s=>s.ticker===ticker);if(!selectedStock)return;const s=selectedStock;const change=s.price-s.prevPrice;const pct=(change/s.prevPrice*100).toFixed(2);const up=change>=0;const owned=mktPortfolio[ticker]||0;const ownedVal=owned*s.price;document.getElementById('stockDetail').innerHTML='<div class="stock-detail"><div class="stock-detail-header"><div><div class="stock-detail-name" style="color:'+s.color+'">'+s.ticker+'</div><div style="color:#666;font-size:.85rem">'+s.name+' · '+s.sector+'</div>'+(owned>0?'<div style="margin-top:5px;font-size:.85rem;color:var(--green)">В портфеле: '+owned+' шт. = '+ownedVal.toFixed(0)+' 🪙</div>':'')+'</div><div style="text-align:right"><div class="stock-detail-price">'+s.price.toFixed(0)+' 🪙</div><div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pct)+'%</div></div></div><canvas class="detail-chart" width="800" height="200" id="detailChart"></canvas><div class="trade-box"><input type="number" id="tradeQty" value="1" min="1" max="9999"><button class="trade-btn buy" onclick="buyStock()">📥 Купить</button><button class="trade-btn sell" onclick="sellStock()" '+(owned>0?'':'disabled')+'>📤 Продать</button></div><div style="margin-top:10px;font-size:.8rem;color:#666">Стоимость покупки: <span id="tradeCost">'+s.price.toFixed(0)+' 🪙</span></div></div>';const c=document.getElementById('detailChart');if(c)drawDetailChart(c,s.history,s.color);document.getElementById('tradeQty').addEventListener('input',updateTradeCost);document.getElementById('stockDetail').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function updateTradeCost(){if(!selectedStock)return;const qty=parseInt(document.getElementById('tradeQty').value)||1;document.getElementById('tradeCost').textContent=(qty*selectedStock.price).toFixed(0)+' 🪙';}
+function buyStock(){if(!selectedStock)return;const qty=parseInt(document.getElementById('tradeQty').value)||1;if(qty<1){mktToast('Введите количество','err');return;}const cost=qty*selectedStock.price;if(mktBalance<cost){mktToast('Недостаточно монет!','err');return;}mktBalance-=cost;setUserBalance(mktBalance);mktPortfolio[selectedStock.ticker]=(mktPortfolio[selectedStock.ticker]||0)+qty;localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));updateMktBalance();mktToast('Куплено '+qty+' '+selectedStock.ticker+' за '+cost.toFixed(0)+' 🪙','ok');selectStock(selectedStock.ticker);}
+function sellStock(){if(!selectedStock)return;const qty=parseInt(document.getElementById('tradeQty').value)||1;if(qty<1){mktToast('Введите количество','err');return;}const owned=mktPortfolio[selectedStock.ticker]||0;if(owned<qty){mktToast('Недостаточно акций!','err');return;}const revenue=qty*selectedStock.price;mktBalance+=revenue;setUserBalance(mktBalance);mktPortfolio[selectedStock.ticker]=owned-qty;if(mktPortfolio[selectedStock.ticker]<=0)delete mktPortfolio[selectedStock.ticker];localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));updateMktBalance();mktToast('Продано '+qty+' '+selectedStock.ticker+' за '+revenue.toFixed(0)+' 🪙','ok');selectStock(selectedStock.ticker);}
+function renderPortfolio(){const list=document.getElementById('portfolioList');if(!list)return;const tickers=Object.keys(mktPortfolio).filter(t=>mktPortfolio[t]>0);if(tickers.length===0){list.innerHTML='<div class="portfolio-empty">Портфель пуст. Купите акции на вкладке «Акции».</div>';return;}let totalCost=0,totalVal=0;list.innerHTML=tickers.map(t=>{const s=STOCKS.find(st=>st.ticker===t);if(!s)return'';const qty=mktPortfolio[t];const costBasis=s.history[0]*qty;const curVal=s.price*qty;totalCost+=costBasis;totalVal+=curVal;const pnl=curVal-costBasis;const pnlPct=(pnl/costBasis*100).toFixed(1);const up=pnl>=0;return '<div class="portfolio-item"><div><div style="font-family:Orbitron,sans-serif;font-weight:900;color:'+s.color+'">'+s.ticker+'</div><div style="font-size:.8rem;color:#666">'+qty+' шт. · '+s.name+'</div></div><div style="text-align:right"><div style="font-weight:700">'+curVal.toFixed(0)+' 🪙</div><div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pnlPct)+'% ('+(pnl>0?'+':'')+pnl.toFixed(0)+')</div></div></div>';}).join('');list.innerHTML+='<div class="stock-detail" style="margin-top:15px"><div style="display:flex;justify-content:space-between"><div style="font-weight:700">Общая стоимость</div><div style="font-family:Orbitron,sans-serif;font-weight:900;color:var(--primary)">'+totalVal.toFixed(0)+' 🪙</div></div><div style="display:flex;justify-content:space-between;margin-top:8px"><div style="font-size:.85rem;color:#666">Прибыль/убыток</div><div class="stock-change '+(totalVal-totalCost>=0?'up':'down')+'">'+(totalVal-totalCost>=0?'+':'')+(totalVal-totalCost).toFixed(0)+' 🪙 ('+((totalVal-totalCost)/totalCost*100).toFixed(1)+'%)</div></div></div>';}
+function updateBankDisplay(){const el=document.getElementById('bankDeposit');if(el)el.textContent=mktBankDeposit.toLocaleString('ru')+' 🪙';}
+function bankDepositAction(){const amt=parseInt(document.getElementById('bankAmount').value)||0;if(amt<1){mktToast('Введите сумму','err');return;}if(mktBalance<amt){mktToast('Недостаточно монет!','err');return;}mktBalance-=amt;setUserBalance(mktBalance);mktBankDeposit+=amt;localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));updateMktBalance();updateBankDisplay();mktToast('Внесено '+amt+' 🪙 в банк','ok');}
+function bankWithdrawAction(){const amt=parseInt(document.getElementById('bankAmount').value)||0;if(amt<1){mktToast('Введите сумму','err');return;}if(mktBankDeposit<amt){mktToast('В банке недостаточно средств!','err');return;}mktBankDeposit-=amt;mktBalance+=amt;setUserBalance(mktBalance);localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));updateMktBalance();updateBankDisplay();mktToast('Снято '+amt+' 🪙 из банка','ok');}
+function bankInterest(){if(mktBankDeposit>0){const rate=0.05/(24*60*6);const interest=Math.max(1,Math.round(mktBankDeposit*rate));mktBankDeposit+=interest;localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));updateBankDisplay();}}
+function marketTick(){STOCKS.forEach(s=>{s.prevPrice=s.price;const change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;s.price=Math.max(1,s.price+change);s.history.push(s.price);if(s.history.length>60)s.history.shift();});renderStockGrid();if(selectedStock){const c=document.getElementById('detailChart');if(c)drawDetailChart(c,selectedStock.history,selectedStock.color);const header=document.querySelector('.stock-detail-price');if(header){const s=selectedStock;const change=s.price-s.prevPrice;const pct=(change/s.prevPrice*100).toFixed(2);header.textContent=s.price.toFixed(0)+' 🪙';const chgEl=document.querySelector('.stock-change');if(chgEl){chgEl.className='stock-change '+(change>=0?'up':'down');chgEl.textContent=(change>=0?'▲':'▼')+' '+Math.abs(pct)+'%';}}updateTradeCost();}}
+updateMktBalance();
+renderStockGrid();
+updateBankDisplay();
+setInterval(()=>{marketTick();bankInterest();},3000);
+setInterval(()=>{setUserBalance(mktBalance);if(typeof syncBalanceToServer==='function')syncBalanceToServer();},30000);
+window.addEventListener('beforeunload',()=>{setUserBalance(mktBalance);localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));});
+</script>
+
+<script>
+// ===== СИНХРОНИЗАЦИЯ БАЛАНСА =====
 const SYNC_REPO='6m-class/6m-class';
 const SYNC_API=`https://api.github.com/repos/${SYNC_REPO}`;
 const _sk='6m-class';const _se=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];
@@ -1208,11 +734,7 @@ let sha=null;
 try{const meta=await fetch(`${SYNC_API}/contents/accounts.json`,{cache:'no-store',headers:SYNC_HEADERS});const d=await meta.json();sha=d.sha;}catch(e){}
 const body={message:`Sync balance for ${_syncUser.login}: ${balance}`,content:newDataB64};
 if(sha)body.sha=sha;
-await fetch(`${SYNC_API}/contents/accounts.json`,{
-method:'PUT',
-headers:{...SYNC_HEADERS,'Content-Type':'application/json'},
-body:JSON.stringify(body)
-});
+await fetch(`${SYNC_API}/contents/accounts.json`,{method:'PUT',headers:{...SYNC_HEADERS,'Content-Type':'application/json'},body:JSON.stringify(body)});
 }catch(e){console.log('Sync error:',e.message);}
 finally{_syncLock=false;}
 }
