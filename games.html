@@ -1253,8 +1253,11 @@ function updateBalance(){
   var cbn=document.getElementById('caseBalanceNum'); if(cbn) cbn.textContent=casinoBalance;
   var rbn=document.getElementById('rouletteBalanceNum'); if(rbn) rbn.textContent=casinoBalance;
   if(_syncTimer) clearTimeout(_syncTimer);
-  _syncTimer=setTimeout(syncBalanceToServer,3000);
+  _syncTimer=setTimeout(function(){
+    if(typeof syncBalanceToServer==='function') syncBalanceToServer();
+  },3000);
 }
+
 
 function resetBalance(){
   casinoBalance=100;updateBalance();
