@@ -147,9 +147,9 @@
     "ticker": "SPACE",
     "name": "Космос",
     "sector": "IT",
-    "price": 5518,
-    "vol": 0.05,
-    "drift": 0.0017
+    "price": 558888818,
+    "vol": 0.5,
+    "drift": 0.17
   },
   {
     "ticker": "EDU",
