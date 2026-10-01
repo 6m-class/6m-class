@@ -102,7 +102,8 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
 .test-result-item .ok{color:#00ff66}
 .test-result-item .err{color:#ff5555}
 .test-result-item .info{color:#aaa}
-@media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}}
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.topbar{padding:12px 15px}.tabs{gap:3px}.tab{padding:8px 12px;font-size:.75rem}.stats{grid-template-columns:1fr 1fr}.mkt-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -139,6 +140,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="stat-card"><div class="stat-num" id="statStudents">0</div><div class="stat-label">Учеников</div></div>
             <div class="stat-card"><div class="stat-num" id="statSupport">0</div><div class="stat-label">Поддержка</div></div>
             <div class="stat-card"><div class="stat-num" id="statAccounts">0</div><div class="stat-label">Аккаунтов</div></div>
+            <div class="stat-card"><div class="stat-num" id="statStocks">0</div><div class="stat-label">Акций</div></div>
             <div class="stat-card"><div class="stat-num" id="statTheme">🔴</div><div class="stat-label">Тема</div></div>
         </div>
 
@@ -152,6 +154,7 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             <div class="tab" onclick="switchTab('teacher',this)">🧑‍🏫 Учитель</div>
             <div class="tab" onclick="switchTab('support',this)">💬 Поддержка</div>
             <div class="tab" onclick="switchTab('accounts',this)">🔑 Аккаунты</div>
+            <div class="tab" onclick="switchTab('market',this)">📊 Биржа</div>
             <div class="tab" onclick="switchTab('theme',this)">🎨 Тема</div>
             <div class="tab" onclick="switchTab('test',this)">🧪 Тест</div>
             <div class="tab" onclick="switchTab('settings',this)">⚙️ Настройки</div>
@@ -307,6 +310,56 @@ body{background:var(--bg);color:#fff;font-family:'Montserrat',sans-serif;min-hei
             </div>
         </div>
 
+        <!-- ===== БИРЖА ===== -->
+        <div class="section" id="sec-market">
+            <div class="card">
+                <div class="card-header"><div class="card-title">Управление биржей</div><div class="card-badge" id="mktStocksBadge">0</div></div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px">
+                    <button class="btn btn-primary" onclick="mktBoom()">🚀 БУМ (+20%)</button>
+                    <button class="btn btn-danger" onclick="mktCrash()">💥 КРАХ (−30%)</button>
+                    <button class="btn btn-outline" onclick="mktReset()">🔄 Сброс цен</button>
+                </div>
+                <div class="msg" id="msgMktGlobal"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Настроить акцию</div></div>
+                <div class="field"><label>Тикер</label>
+                    <select id="mktStockSelect" onchange="mktLoadStock()">
+                        <option>Загрузка...</option>
+                    </select></div>
+                <div id="mktStockControls" style="display:none">
+                    <div class="mkt-grid">
+                        <div class="field"><label>Цена (🪙)</label><input type="number" id="mktSetPrice"></div>
+                        <div class="field"><label>Волатильность (0–1)</label><input type="number" id="mktSetVol" step="0.01" min="0" max="1"></div>
+                        <div class="field"><label>Дрейф (тренд)</label><input type="number" id="mktSetDrift" step="0.0001"></div>
+                        <div class="field"><label>Сектор</label><input type="text" id="mktSetSector"></div>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap">
+                        <button class="btn btn-primary" onclick="mktApplyStock()">💾 Применить</button>
+                        <button class="btn btn-outline" onclick="mktDeleteStock()">🗑 Удалить акцию</button>
+                    </div>
+                    <div class="msg" id="msgMktStock"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Добавить новую акцию</div></div>
+                <div class="mkt-grid">
+                    <div class="field"><label>Тикер (ENG)</label><input type="text" id="mktNewTicker" placeholder="CRYPTO"></div>
+                    <div class="field"><label>Название</label><input type="text" id="mktNewName" placeholder="Криптовалюта"></div>
+                    <div class="field"><label>Цена</label><input type="number" id="mktNewPrice" value="100" min="1"></div>
+                    <div class="field"><label>Сектор</label><input type="text" id="mktNewSector" placeholder="IT"></div>
+                    <div class="field"><label>Волатильность</label><input type="number" id="mktNewVol" value="0.03" step="0.01" min="0" max="1"></div>
+                    <div class="field"><label>Дрейф</label><input type="number" id="mktNewDrift" value="0.001" step="0.0001"></div>
+                </div>
+                <button class="btn btn-primary" onclick="mktAddStock()">➕ Добавить акцию</button>
+                <div class="msg" id="msgMktAdd"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Все акции</div></div>
+                <div class="item-list" id="mktStocksList"></div>
+            </div>
+        </div>
+
         <!-- ===== ТЕМА ===== -->
         <div class="section" id="sec-theme">
             <div class="card">
@@ -364,6 +417,31 @@ let dataSha = '';
 let accountsData = [];
 let accountsSha = '';
 let actCardsDraft = [];
+let mktStocksCache = [];
+let mktStocksSha = '';
+
+const MKT_DEFAULTS = [
+    {ticker:'TECH',name:'Технологии',sector:'IT',price:850,vol:0.04,drift:0.001},
+    {ticker:'GOLD',name:'Золотодобыча',sector:'Сырьё',price:1200,vol:0.02,drift:0.0005},
+    {ticker:'OIL',name:'Нефтегаз',sector:'Энергетика',price:420,vol:0.035,drift:-0.0003},
+    {ticker:'FOOD',name:'Пищепром',sector:'Потреб',price:180,vol:0.015,drift:0.0008},
+    {ticker:'CARS',name:'Автопром',sector:'Промышл',price:670,vol:0.03,drift:0.0002},
+    {ticker:'PHARM',name:'Фармацевтика',sector:'Медицина',price:540,vol:0.025,drift:0.0015},
+    {ticker:'BANK',name:'Финансы',sector:'Банки',price:910,vol:0.028,drift:0.0006},
+    {ticker:'RETAIL',name:'Ритейл',sector:'Потреб',price:320,vol:0.022,drift:0.001},
+    {ticker:'ENERGY',name:'Энергетика',sector:'Энергетика',price:280,vol:0.038,drift:-0.0002},
+    {ticker:'METAL',name:'Металлургия',sector:'Промышл',price:760,vol:0.026,drift:0.0007},
+    {ticker:'CHEME',name:'Химпром',sector:'Промышл',price:490,vol:0.029,drift:0.0004},
+    {ticker:'TELECOM',name:'Телеком',sector:'Связь',price:210,vol:0.02,drift:0.0009},
+    {ticker:'TRANS',name:'Транспорт',sector:'Логистика',price:380,vol:0.024,drift:0.0003},
+    {ticker:'CRYPT',name:'Крипто',sector:'IT',price:1450,vol:0.06,drift:0.002},
+    {ticker:'AGRO',name:'Агропром',sector:'Потреб',price:260,vol:0.018,drift:0.0011},
+    {ticker:'BUILD',name:'Строительство',sector:'Промышл',price:440,vol:0.027,drift:0.0005},
+    {ticker:'MEDIA',name:'Медиа',sector:'IT',price:620,vol:0.032,drift:0.0008},
+    {ticker:'TOURISM',name:'Туризм',sector:'Услуги',price:150,vol:0.045,drift:-0.0005},
+    {ticker:'SPACE',name:'Космос',sector:'IT',price:2200,vol:0.05,drift:0.0017},
+    {ticker:'EDU',name:'Образование',sector:'Услуги',price:120,vol:0.016,drift:0.0006}
+];
 
 async function api(path, opts = {}) {
     const sep = path.includes('?') ? '&' : '?';
@@ -420,6 +498,7 @@ async function showPanel() {
     try {
         await detectBranch();
         await loadAll();
+        await mktLoadStocks();
         st.textContent = '☁️ GitHub подключён: ' + USER;
         setTimeout(() => st.style.display = 'none', 3000);
     } catch (e) {
@@ -939,7 +1018,7 @@ async function deleteComment(commentId, issueNum) {
     }
 }
 
-// ===== АККАУНТЫ (accounts.json) =====
+// ===== АККАУНТЫ =====
 function loadAccountsPanel(){
     document.getElementById('accountsBadge').textContent=accountsData.length;
     document.getElementById('statAccounts').textContent=accountsData.length;
@@ -959,7 +1038,7 @@ async function addAccount(){
         if(accountsData.find(a=>a.login===login)){
             showMsg('msgAccount','❌ Логин уже занят','#ff5555');return;
         }
-        accountsData.push({login,password,name,role,avatar:''});
+        accountsData.push({login,password,name,role,avatar:'',coins:100});
         await pushAccounts('Добавлен аккаунт: '+login);
         document.getElementById('accLogin').value='';
         document.getElementById('accPassword').value='';
@@ -999,33 +1078,157 @@ async function deleteAccount(i){
     }
 }
 
-// ===== ТЕСТ — генератор случайных аккаунтов =====
+// ===== БИРЖА =====
+async function mktLoadStocks() {
+    try {
+        const file = await api(`/repos/${REPO}/contents/market_stocks.json?ref=${BRANCH}`);
+        mktStocksSha = file.sha;
+        mktStocksCache = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
+        if (!Array.isArray(mktStocksCache)) mktStocksCache = [];
+    } catch (e) {
+        mktStocksCache = MKT_DEFAULTS.map(function(s) { return {ticker:s.ticker,name:s.name,sector:s.sector,price:s.price,vol:s.vol,drift:s.drift}; });
+        mktStocksSha = '';
+    }
+    mktRenderStocksList();
+    mktFillSelect();
+    document.getElementById('mktStocksBadge').textContent = mktStocksCache.length;
+    document.getElementById('statStocks').textContent = mktStocksCache.length;
+}
+
+async function mktSaveStocks(msg) {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(mktStocksCache, null, 2))));
+    try {
+        const r = await api(`/repos/${REPO}/contents/market_stocks.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ message: msg + ' (админ: ' + USER + ')', content, ...(mktStocksSha ? { sha: mktStocksSha } : {}) })
+        });
+        mktStocksSha = r.content.sha;
+    } catch (e) {
+        if (e.status === 409 || (e.message && e.message.includes('409'))) {
+            try {
+                const file = await api(`/repos/${REPO}/contents/market_stocks.json?ref=${BRANCH}`);
+                mktStocksSha = file.sha;
+                const content2 = btoa(unescape(encodeURIComponent(JSON.stringify(mktStocksCache, null, 2))));
+                const r = await api(`/repos/${REPO}/contents/market_stocks.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ message: msg + ' (админ: ' + USER + ')', content: content2, sha: mktStocksSha })
+                });
+                mktStocksSha = r.content.sha;
+            } catch (e2) { throw e2; }
+        } else { throw e; }
+    }
+}
+
+function mktRenderStocksList() {
+    var list = document.getElementById('mktStocksList');
+    if (!list) return;
+    list.innerHTML = mktStocksCache.length ? mktStocksCache.map(function(s) {
+        return '<div class="item"><div class="item-content"><div class="item-title">' + esc(s.ticker) + ' — ' + esc(s.name) + '</div><div class="item-sub">Цена: ' + s.price + '🪙 · Сектор: ' + esc(s.sector) + ' · Вол: ' + s.vol + ' · Дрейф: ' + s.drift + '</div></div></div>';
+    }).join('') : '<p style="color:#555;padding:10px">Акций нет</p>';
+}
+
+function mktFillSelect() {
+    var sel = document.getElementById('mktStockSelect');
+    if (!sel) return;
+    sel.innerHTML = '';
+    mktStocksCache.forEach(function(s) {
+        var opt = document.createElement('option');
+        opt.value = s.ticker;
+        opt.textContent = s.ticker + ' — ' + s.name + ' (' + s.price + '🪙)';
+        sel.appendChild(opt);
+    });
+    mktLoadStock();
+}
+
+function mktLoadStock() {
+    var sel = document.getElementById('mktStockSelect');
+    if (!sel || !sel.value) return;
+    var stock = mktStocksCache.find(function(s) { return s.ticker === sel.value; });
+    if (!stock) return;
+    document.getElementById('mktStockControls').style.display = 'block';
+    document.getElementById('mktSetPrice').value = stock.price;
+    document.getElementById('mktSetVol').value = stock.vol;
+    document.getElementById('mktSetDrift').value = stock.drift;
+    document.getElementById('mktSetSector').value = stock.sector;
+}
+
+async function mktApplyStock() {
+    var sel = document.getElementById('mktStockSelect');
+    var ticker = sel.value;
+    var stock = mktStocksCache.find(function(s) { return s.ticker === ticker; });
+    if (!stock) return;
+    stock.price = parseFloat(document.getElementById('mktSetPrice').value) || stock.price;
+    stock.vol = parseFloat(document.getElementById('mktSetVol').value) || stock.vol;
+    stock.drift = parseFloat(document.getElementById('mktSetDrift').value) || 0;
+    stock.sector = document.getElementById('mktSetSector').value || stock.sector;
+    try {
+        await mktSaveStocks('Обновлена акция: ' + ticker);
+        showMsg('msgMktStock', '✅ ' + ticker + ' обновлён!', '#00ff66');
+        mktRenderStocksList(); mktFillSelect();
+    } catch (e) { showMsg('msgMktStock', '❌ ' + e.message, '#ff5555'); }
+}
+
+async function mktAddStock() {
+    var ticker = document.getElementById('mktNewTicker').value.trim().toUpperCase();
+    var name = document.getElementById('mktNewName').value.trim();
+    var price = parseFloat(document.getElementById('mktNewPrice').value) || 100;
+    var sector = document.getElementById('mktNewSector').value.trim() || 'IT';
+    var vol = parseFloat(document.getElementById('mktNewVol').value) || 0.03;
+    var drift = parseFloat(document.getElementById('mktNewDrift').value) || 0.001;
+    if (!ticker || !name) { showMsg('msgMktAdd', '❌ Тикер и название обязательны', '#ff5555'); return; }
+    if (mktStocksCache.find(function(s) { return s.ticker === ticker; })) { showMsg('msgMktAdd', '❌ Тикер уже существует', '#ff5555'); return; }
+    mktStocksCache.push({ ticker: ticker, name: name, price: price, sector: sector, vol: vol, drift: drift });
+    try {
+        await mktSaveStocks('Добавлена акция: ' + ticker);
+        showMsg('msgMktAdd', '✅ ' + ticker + ' добавлен!', '#00ff66');
+        document.getElementById('mktNewTicker').value = '';
+        document.getElementById('mktNewName').value = '';
+        mktRenderStocksList(); mktFillSelect();
+        document.getElementById('mktStocksBadge').textContent = mktStocksCache.length;
+        document.getElementById('statStocks').textContent = mktStocksCache.length;
+    } catch (e) { showMsg('msgMktAdd', '❌ ' + e.message, '#ff5555'); }
+}
+
+async function mktDeleteStock() {
+    var sel = document.getElementById('mktStockSelect');
+    if (!sel || !sel.value) return;
+    var ticker = sel.value;
+    if (!confirm('Удалить акцию ' + ticker + '?')) return;
+    mktStocksCache = mktStocksCache.filter(function(s) { return s.ticker !== ticker; });
+    try {
+        await mktSaveStocks('Удалена акция: ' + ticker);
+        showMsg('msgMktStock', '✅ ' + ticker + ' удалён!', '#00ff66');
+        mktRenderStocksList(); mktFillSelect();
+        document.getElementById('mktStocksBadge').textContent = mktStocksCache.length;
+        document.getElementById('statStocks').textContent = mktStocksCache.length;
+    } catch (e) { showMsg('msgMktStock', '❌ ' + e.message, '#ff5555'); }
+}
+
+async function mktBoom() {
+    mktStocksCache.forEach(function(s) { s.price = Math.round(s.price * 1.2); });
+    try { await mktSaveStocks('БУМ: все акции +20%'); showMsg('msgMktGlobal', '🚀 БУМ! Все акции +20%', '#00ff66'); mktRenderStocksList(); mktFillSelect(); } catch (e) { showMsg('msgMktGlobal', '❌ ' + e.message, '#ff5555'); }
+}
+
+async function mktCrash() {
+    mktStocksCache.forEach(function(s) { s.price = Math.round(s.price * 0.7); });
+    try { await mktSaveStocks('КРАХ: все акции -30%'); showMsg('msgMktGlobal', '💥 КРАХ! Все акции -30%', '#00ff66'); mktRenderStocksList(); mktFillSelect(); } catch (e) { showMsg('msgMktGlobal', '❌ ' + e.message, '#ff5555'); }
+}
+
+async function mktReset() {
+    mktStocksCache = MKT_DEFAULTS.map(function(s) { return { ticker: s.ticker, name: s.name, sector: s.sector, price: s.price, vol: s.vol, drift: s.drift }; });
+    try { await mktSaveStocks('Сброс цен акций'); showMsg('msgMktGlobal', '🔄 Цены сброшены', '#00ff66'); mktRenderStocksList(); mktFillSelect(); document.getElementById('mktStocksBadge').textContent = mktStocksCache.length; } catch (e) { showMsg('msgMktGlobal', '❌ ' + e.message, '#ff5555'); }
+}
+
+// ===== ТЕСТ =====
 const randNames=['Алексей','Мария','Дмитрий','Анна','Иван','Елена','Сергей','Ольга','Павел','Наталья','Андрей','Юлия','Максим','Екатерина','Роман','Дарья','Никита','Виктория','Артём','София','Кирилл','Полина','Егор','Алиса','Денис','Ксения','Григорий','Ульяна','Тимур','Варвара'];
 const randSurnames=['Иванов','Петров','Сидоров','Кузнецов','Соколов','Попов','Лебедев','Козлов','Новиков','Морозов','Волков','Орлов','Смирнов','Фёдоров','Зайцев','Павлов','Семёнов','Голубев','Виноградов','Богданов'];
 const randLetters='abcdefghijklmnopqrstuvwxyz';
 
-function randStr(len){
-    let s='';
-    for(let i=0;i<len;i++)s+=randLetters[Math.floor(Math.random()*randLetters.length)];
-    return s;
-}
-
+function randStr(len){let s='';for(let i=0;i<len;i++)s+=randLetters[Math.floor(Math.random()*randLetters.length)];return s;}
 function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
-
-function genRandomName(){
-    return randNames[randInt(0,randNames.length-1)]+' '+randSurnames[randInt(0,randSurnames.length-1)];
-}
-
-function genRandomLogin(){
-    return randStr(randInt(5,12));
-}
-
-function genRandomPassword(){
-    const chars='abcdefghijklmnopqrstuvwxyz0123456789';
-    let s='';
-    for(let i=0;i<randInt(6,14);i++)s+=chars[Math.floor(Math.random()*chars.length)];
-    return s;
-}
+function genRandomName(){return randNames[randInt(0,randNames.length-1)]+' '+randSurnames[randInt(0,randSurnames.length-1)];}
+function genRandomLogin(){return randStr(randInt(5,12));}
+function genRandomPassword(){const chars='abcdefghijklmnopqrstuvwxyz0123456789';let s='';for(let i=0;i<randInt(6,14);i++)s+=chars[Math.floor(Math.random()*chars.length)];return s;}
 
 function addTestLog(text,cls){
     const log=document.getElementById('testResult');
@@ -1062,7 +1265,7 @@ async function generateTestAccounts(){
             }
             const password=genRandomPassword();
             const role=Math.random()<0.15?'admin':'student';
-            accountsData.push({login,password,name,role,avatar:''});
+            accountsData.push({login,password,name,role,avatar:'',coins:100});
             created.push({login,name});
             addTestLog(`✅ [${i+1}/${count}] ${name} | ${login} | ${password} | ${role}`,'ok');
         }
