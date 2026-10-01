@@ -462,6 +462,18 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 </div>
 <script>
+  function fmtNum(n){
+  if(n===undefined||n===null||isNaN(n)) return '0';
+  n=Math.floor(n);
+  if(n<1000) return String(n);
+  var units=['','тыс','млн','млрд','трлн','квдр','квнт','скст','сптд','октл'];
+  var tier=Math.floor(Math.log10(n)/3);
+  if(tier>=units.length) tier=units.length-1;
+  var scaled=n/Math.pow(1000,tier);
+  var str=scaled>=100?scaled.toFixed(0):scaled>=10?scaled.toFixed(1):scaled.toFixed(2);
+  return str.replace(/\.?0+$/,'')+' '+units[tier];
+}
+
 // ===== ОСНОВНЫЕ ФУНКЦИИ =====
 function applyStoredTheme(){
   var t=localStorage.getItem('site_theme')||'red';
@@ -1266,7 +1278,7 @@ var _syncTimer=null;
 function updateBalance(){
   if(isNaN(casinoBalance)||casinoBalance<0) casinoBalance=100;
   setUserBalance(casinoBalance);
-  document.getElementById('balanceNum').textContent=casinoBalance;
+  document.getElementById('balanceNum').textContent=fmtNum(casinoBalance);
   var cbn=document.getElementById('caseBalanceNum'); if(cbn) cbn.textContent=casinoBalance;
   var rbn=document.getElementById('rouletteBalanceNum'); if(rbn) rbn.textContent=casinoBalance;
   if(_syncTimer) clearTimeout(_syncTimer);
@@ -1836,7 +1848,7 @@ var caseSpinning=false;
 
 function updateCaseBalance(){
   var el=document.getElementById('caseBalanceNum');
-  if(el) el.textContent=casinoBalance;
+  if(el) el.textContent=fmtNum(casinoBalance);
 }
 
 function renderCaseList(){
