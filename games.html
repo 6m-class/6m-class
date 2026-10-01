@@ -2349,13 +2349,13 @@ function bankWithdrawAction(){
 
 function bankInterest(){
   if(mktBankDeposit>0){
-    var rate=bankGetRate()/100/(24*60*6);
-    var interest=Math.max(1,Math.round(mktBankDeposit*rate));
+    var interest=Math.round(mktBankDeposit*bankGetRate()/100);
     mktBankDeposit+=interest;
     localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
     updateBankDisplay();
   }
 }
+
 
 
 function marketTick(){
