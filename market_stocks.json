@@ -158,5 +158,13 @@
     "price": 208,
     "vol": 0.016,
     "drift": 0.0006
+  },
+  {
+    "ticker": "SITE",
+    "name": "Развитие сайта",
+    "price": 1000,
+    "sector": "IT",
+    "vol": 0.6,
+    "drift": 0.1
   }
 ]
