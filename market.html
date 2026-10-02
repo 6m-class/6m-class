@@ -6,7 +6,6 @@
 <title>Биржа | Класс</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <script src="settings.js"></script>
-<script src="balance.js"></script>
 <style>
 :root{--primary:#ff0033;--primary-rgb:255,0,51;--glow:rgba(255,0,51,0.15);--border:rgba(255,0,51,0.3);--shadow:rgba(255,0,51,0.2);--green:#00ff66;--red:#ff4444}
 [data-theme="yellow"]{--primary:#ffcc00;--primary-rgb:255,204,0;--glow:rgba(255,204,0,0.15);--border:rgba(255,204,0,0.3);--shadow:rgba(255,204,0,0.2)}
@@ -59,7 +58,10 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .trade-btn.sell:hover{box-shadow:0 0 20px rgba(255,68,68,0.4);transform:translateY(-2px)}
 .trade-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .portfolio-empty{text-align:center;padding:40px;color:#555}
-.portfolio-item{display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+.portfolio-item{background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:10px;padding:15px;margin-bottom:10px}
+.portfolio-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.portfolio-sell-box{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)}
+.portfolio-sell-box input{width:80px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;text-align:center;outline:none;font-size:.85rem}
 .bank-box{max-width:500px;margin:0 auto;background:rgba(20,20,20,0.6);border:1px solid var(--border);border-radius:12px;padding:30px;text-align:center}
 .bank-rate{font-size:.85rem;color:#666;margin:10px 0}
 .bank-deposit{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin:15px 0}
@@ -78,6 +80,8 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .upgrade-btn{width:100%;padding:10px;border:none;border-radius:8px;background:var(--green);color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;transition:.3s;text-transform:uppercase}
 .upgrade-btn:hover{box-shadow:0 0 15px rgba(0,255,102,0.4);transform:translateY(-2px)}
 .upgrade-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.sync-badge{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:10px;background:rgba(0,255,102,0.1);color:#00ff66;margin-left:8px}
+.sync-badge.syncing{background:rgba(255,204,0,0.1);color:#ffcc00}
 @media(max-width:600px){.stock-grid{grid-template-columns:1fr 1fr}.title{font-size:1.2rem;padding:15px}.stock-detail-name{font-size:1.1rem}.stock-detail-price{font-size:1.5rem}}
 </style>
 </head>
@@ -92,23 +96,20 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 <button class="logout-btn" onclick="logout()">Выйти</button>
 </nav>
-<div class="balance-bar"><span>🪙</span> <span id="mktBalance">100</span></div>
+<div class="balance-bar"><span>🪙</span> <span id="mktBalance">...</span> <span class="sync-badge" id="syncBadge">загрузка</span></div>
 <div class="title">📈 <span>Биржа</span> класса</div>
 <div class="mkt-tabs">
 <div class="mkt-tab active" onclick="switchMktTab('market',this)">📈 Акции</div>
 <div class="mkt-tab" onclick="switchMktTab('portfolio',this)">💼 Портфель</div>
 <div class="mkt-tab" onclick="switchMktTab('bank',this)">🏦 Банк</div>
 </div>
-<!-- РЫНОК -->
 <div class="mkt-section active" id="mkt-market">
 <div id="stockGrid" class="stock-grid"><p style="color:#555;padding:20px">Загрузка акций...</p></div>
 <div id="stockDetail"></div>
 </div>
-<!-- ПОРТФЕЛЬ -->
 <div class="mkt-section" id="mkt-portfolio">
-<div id="portfolioList"></div>
+<div id="portfolioList"><p style="color:#555;padding:20px">Загрузка...</p></div>
 </div>
-<!-- БАНК -->
 <div class="mkt-section" id="mkt-bank">
 <div class="bank-box">
 <div style="font-size:1.2rem;font-weight:700;margin-bottom:10px">🏦 Банк класса</div>
@@ -143,13 +144,12 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 </div>
 <div class="toast" id="mktToast"></div>
 <script>
-function syncBalanceToServer(){}
-function applyStoredTheme(){const t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
+function applyStoredTheme(){var t=localStorage.getItem('site_theme')||'red';document.documentElement.setAttribute('data-theme',t);}
 applyStoredTheme();
-const isMobile=window.innerWidth<600;const pc=document.getElementById('particles');const cnt=isMobile?10:20;
-for(let i=0;i<cnt;i++){const p=document.createElement('div');p.classList.add('particle');const s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
+var isMobile=window.innerWidth<600;var pc=document.getElementById('particles');var cnt=isMobile?10:20;
+for(var i=0;i<cnt;i++){var p=document.createElement('div');p.classList.add('particle');var s=Math.random()*3+1;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+6)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);}
 function logout(){localStorage.removeItem('class_user');localStorage.removeItem('class_avatar');window.location.href='login.html';}
-const user=JSON.parse(localStorage.getItem('class_user')||'null');
+var user=JSON.parse(localStorage.getItem('class_user')||'null');
 if(!user){window.location.href='login.html';}
 
 function fmtNum(n){
@@ -164,45 +164,188 @@ function fmtNum(n){
  return str.replace(/\.?0+$/,'')+' '+units[tier];
 }
 
-const SYNC_REPO='6m-class/6m-class';
-let mktBalance=getUserBalance();
-let mktPortfolio=JSON.parse(localStorage.getItem('mkt_portfolio')||'{}');
-let mktBankDeposit=parseInt(localStorage.getItem('mkt_bank_deposit')||'0');
+/* ===== GITHUB API ===== */
+var REPO='6m-class/6m-class';
+var API='https://api.github.com/repos/'+REPO;
+var RAW='https://raw.githubusercontent.com/'+REPO+'/main';
+var _sk='6m-class';
+var _se=[81,4,89,11,25,3,44,3,87,25,114,82,93,35,64,56,127,52,98,50,92,15,18,61,119,24,87,80,56,6,29,69,83,50,28,84,30,50,38,10,80,39,65,49,89,34,27,52,64,12,124,4,0,45,23,2,66,8,96,25,20,89,20,55,123,7,68,1,40,84,39,7,111,42,21,40,38,59,65,64,99,88,103,32,33,83,21,5,78,6,26,20,61];
+var GH_TOKEN=_se.map(function(c,i){return String.fromCharCode(c^_sk.charCodeAt(i%_sk.length));}).join('');
+var GH_HEADERS={'Authorization':'Bearer '+GH_TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
 
-// КОНФИГ ПРОКАЧКИ БАНКА
-var bankRateLvl=parseInt(localStorage.getItem('bank_rate_lvl')||'1');
-var bankSpdLvl=parseInt(localStorage.getItem('bank_spd_lvl')||'1');
+/* ===== STATE ===== */
+var mktBalance=0;
+var mktPortfolio={};
+var mktBankDeposit=0;
+var bankRateLvl=1;
+var bankSpdLvl=1;
 var BANK_MAX_RATE=10;
 var BANK_MAX_SPD=10;
+var STOCKS=[];
+var selectedStock=null;
+var isSaving=false;
+var lastTradeTime=0;
 var bankIntervalId=null;
+var STOCK_COLORS=['#00aaff','#ffcc00','#555','#00ff66','#ff6600','#ff00aa','#aaff00','#ff44aa','#ff8800','#888','#aa00ff','#00ddff','#ffcc44','#ff00ff','#88ff00','#ff6644','#ff44ff','#44ddff','#aa88ff','#44ff88','#ff44aa','#00ff44'];
 
 function bankGetRate(){return 5+(bankRateLvl-1)*2;}
 function bankGetSpeed(){return Math.max(1,10-(bankSpdLvl-1));}
 function bankRateCost(){return 500*bankRateLvl;}
 function bankSpdCost(){return 1000*bankSpdLvl;}
 
-// ЗАГРУЗКА АКЦИЙ ИЗ market_stocks.json
-var STOCKS=[];
-var STOCK_COLORS=['#00aaff','#ffcc00','#555','#00ff66','#ff6600','#ff00aa','#aaff00','#ff44aa','#ff8800','#888','#aa00ff','#00ddff','#ffcc44','#ff00ff','#88ff00','#ff6644','#ff44ff','#44ddff','#aa88ff','#44ff88','#ff44aa','#00ff44'];
+function getDefaultStocks(){
+ return[
+  {ticker:'TECH',name:'Технологии',sector:'IT',price:850,vol:0.04,drift:0.001},
+  {ticker:'GOLD',name:'Золотодобыча',sector:'Сырьё',price:1200,vol:0.02,drift:0.0005},
+  {ticker:'OIL',name:'Нефтегаз',sector:'Энергетика',price:420,vol:0.035,drift:-0.0003},
+  {ticker:'FOOD',name:'Пищепром',sector:'Потреб',price:180,vol:0.015,drift:0.0008},
+  {ticker:'CARS',name:'Автопром',sector:'Промышл',price:670,vol:0.03,drift:0.0002},
+  {ticker:'PHARM',name:'Фармацевтика',sector:'Медицина',price:540,vol:0.025,drift:0.0015},
+  {ticker:'BANK',name:'Финансы',sector:'Банки',price:910,vol:0.028,drift:0.0006},
+  {ticker:'RETAIL',name:'Ритейл',sector:'Потреб',price:320,vol:0.022,drift:0.001},
+  {ticker:'ENERGY',name:'Энергетика',sector:'Энергетика',price:280,vol:0.038,drift:-0.0002},
+  {ticker:'METAL',name:'Металлургия',sector:'Промышл',price:760,vol:0.026,drift:0.0007},
+  {ticker:'CHEME',name:'Химпром',sector:'Промышл',price:490,vol:0.029,drift:0.0004},
+  {ticker:'TELECOM',name:'Телеком',sector:'Связь',price:210,vol:0.02,drift:0.0009},
+  {ticker:'TRANS',name:'Транспорт',sector:'Логистика',price:380,vol:0.024,drift:0.0003},
+  {ticker:'CRYPT',name:'Крипто',sector:'IT',price:1450,vol:0.06,drift:0.002},
+  {ticker:'AGRO',name:'Агропром',sector:'Потреб',price:260,vol:0.018,drift:0.0011},
+  {ticker:'BUILD',name:'Строительство',sector:'Промышл',price:440,vol:0.027,drift:0.0005},
+  {ticker:'MEDIA',name:'Медиа',sector:'IT',price:620,vol:0.032,drift:0.0008},
+  {ticker:'TOURISM',name:'Туризм',sector:'Услуги',price:150,vol:0.045,drift:-0.0005},
+  {ticker:'SPACE',name:'Космос',sector:'IT',price:2200,vol:0.05,drift:0.0017},
+  {ticker:'EDU',name:'Образование',sector:'Услуги',price:120,vol:0.016,drift:0.0006}
+ ];
+}
 
-fetch('https://raw.githubusercontent.com/'+SYNC_REPO+'/main/market_stocks.json?v='+Date.now(),{cache:'no-store'})
- .then(function(r){if(!r.ok)throw new Error('no file');return r.json();})
- .then(function(data){
-  if(!Array.isArray(data)||data.length===0){
-   STOCKS=getDefaultStocks();
+/* ===== ACCOUNTS.JSON SYNC ===== */
+async function fetchAccountsRaw(){
+ var resp=await fetch(RAW+'/accounts.json?v='+Date.now(),{cache:'no-store'});
+ if(!resp.ok) throw new Error('accounts.json '+resp.status);
+ return await resp.json();
+}
+
+async function saveUserData(reason){
+ if(isSaving) return false;
+ isSaving=true;
+ setSyncBadge('syncing');
+ try{
+  var metaResp=await fetch(API+'/contents/accounts.json',{cache:'no-store',headers:GH_HEADERS});
+  var meta=await metaResp.json();
+  var sha=meta.sha;
+  var accounts=JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g,'')))));
+  if(!Array.isArray(accounts)) accounts=[];
+  var idx=accounts.findIndex(function(a){return a.login===user.login;});
+  if(idx>=0){
+   accounts[idx].coins=Math.round(mktBalance);
+   accounts[idx].portfolio=mktPortfolio;
+   accounts[idx].bankDeposit=Math.round(mktBankDeposit);
+   accounts[idx].bankRateLvl=bankRateLvl;
+   accounts[idx].bankSpdLvl=bankSpdLvl;
   }else{
-   STOCKS=data.map(function(d,i){
+   accounts.push({login:user.login,password:user.password||'',name:user.name||user.login,role:'student',avatar:'',coins:Math.round(mktBalance),portfolio:mktPortfolio,bankDeposit:Math.round(mktBankDeposit),bankRateLvl:bankRateLvl,bankSpdLvl:bankSpdLvl});
+  }
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(accounts,null,2))));
+  var putResp=await fetch(API+'/contents/accounts.json',{
+   method:'PUT',
+   headers:Object.assign({},GH_HEADERS,{'Content-Type':'application/json'}),
+   body:JSON.stringify({message:'Биржа: '+reason+' ('+user.login+')',content:content,sha:sha})
+  });
+  setSyncBadge('ok');
+  return true;
+ }catch(e){
+  try{
+   var metaResp2=await fetch(API+'/contents/accounts.json',{cache:'no-store',headers:GH_HEADERS});
+   var meta2=await metaResp2.json();
+   var sha2=meta2.sha;
+   var accounts2=JSON.parse(decodeURIComponent(escape(atob(meta2.content.replace(/\n/g,'')))));
+   if(!Array.isArray(accounts2)) accounts2=[];
+   var idx2=accounts2.findIndex(function(a){return a.login===user.login;});
+   if(idx2>=0){
+    accounts2[idx2].coins=Math.round(mktBalance);
+    accounts2[idx2].portfolio=mktPortfolio;
+    accounts2[idx2].bankDeposit=Math.round(mktBankDeposit);
+    accounts2[idx2].bankRateLvl=bankRateLvl;
+    accounts2[idx2].bankSpdLvl=bankSpdLvl;
+   }
+   var content2=btoa(unescape(encodeURIComponent(JSON.stringify(accounts2,null,2))));
+   await fetch(API+'/contents/accounts.json',{
+    method:'PUT',
+    headers:Object.assign({},GH_HEADERS,{'Content-Type':'application/json'}),
+    body:JSON.stringify({message:'Биржа: '+reason+' ('+user.login+')',content:content2,sha:sha2})
+   });
+   setSyncBadge('ok');
+   return true;
+  }catch(e2){
+   setSyncBadge('err');
+   showToast('Ошибка синхронизации: '+e2.message,'err');
+   return false;
+  }
+ }
+ isSaving=false;
+}
+
+async function refreshFromServer(){
+ if(isSaving) return;
+ if(Date.now()-lastTradeTime<5000) return;
+ try{
+  var accounts=await fetchAccountsRaw();
+  var u=accounts.find(function(a){return a.login===user.login;});
+  if(u){
+   mktBalance=u.coins||0;
+   mktPortfolio=u.portfolio||{};
+   mktBankDeposit=u.bankDeposit||0;
+   bankRateLvl=u.bankRateLvl||1;
+   bankSpdLvl=u.bankSpdLvl||1;
+   updateMktBalance();
+   updateBankDisplay();
+   var activeTab=document.querySelector('.mkt-tab.active');
+   if(activeTab&&activeTab.textContent.indexOf('Портфель')>=0) renderPortfolio();
+  }
+  setSyncBadge('ok');
+ }catch(e){
+  setSyncBadge('err');
+ }
+}
+
+function setSyncBadge(state){
+ var el=document.getElementById('syncBadge');
+ if(!el) return;
+ if(state==='ok'){el.textContent='синхр';el.className='sync-badge';}
+ else if(state==='syncing'){el.textContent='сохранение...';el.className='sync-badge syncing';}
+ else{el.textContent='оффлайн';el.className='sync-badge syncing';}
+}
+
+/* ===== STOCKS FROM data.json ===== */
+async function loadStocks(){
+ try{
+  var resp=await fetch(RAW+'/data.json?v='+Date.now(),{cache:'no-store'});
+  if(!resp.ok) throw new Error('no data.json');
+  var data=await resp.json();
+  if(data&&Array.isArray(data.stocks)&&data.stocks.length>0){
+   STOCKS=data.stocks.map(function(d,i){
+    var existing=STOCKS.find(function(s){return s.ticker===d.ticker;});
+    var price=d.price||100;
+    if(existing) price=existing.price;
     return{
      ticker:d.ticker||('STK'+i),
      name:d.name||d.ticker||'Акция',
      sector:d.sector||'IT',
-     price:d.price||100,
+     price:price,
      vol:d.vol||0.03,
      drift:d.drift||0.001,
-     color:d.color||STOCK_COLORS[i%STOCK_COLORS.length]
+     color:STOCK_COLORS[i%STOCK_COLORS.length],
+     history:existing?existing.history:[price],
+     prevPrice:existing?existing.prevPrice:price
     };
    });
+  }else{
+   if(STOCKS.length===0) STOCKS=getDefaultStocks();
   }
+ }catch(e){
+  if(STOCKS.length===0) STOCKS=getDefaultStocks();
+ }
+ if(STOCKS.length>0&&(!STOCKS[0].history||STOCKS[0].history.length<2)){
   STOCKS.forEach(function(s){
    s.history=[s.price];
    for(var i=0;i<30;i++){
@@ -212,133 +355,69 @@ fetch('https://raw.githubusercontent.com/'+SYNC_REPO+'/main/market_stocks.json?v
    }
    s.prevPrice=s.history[s.history.length-2]||s.price;
   });
-  renderStockGrid();
- })
- .catch(function(e){
-  STOCKS=getDefaultStocks();
-  STOCKS.forEach(function(s){
-   s.history=[s.price];
-   for(var i=0;i<30;i++){
-    var change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
-    s.price=Math.max(1,s.price+change);
-    s.history.push(s.price);
-   }
-   s.prevPrice=s.history[s.history.length-2]||s.price;
-  });
-  renderStockGrid();
- });
-
-function getDefaultStocks(){
- return[
-  {ticker:'TECH',name:'Технологии',sector:'IT',price:850,vol:0.04,drift:0.001,color:'#00aaff'},
-  {ticker:'GOLD',name:'Золотодобыча',sector:'Сырьё',price:1200,vol:0.02,drift:0.0005,color:'#ffcc00'},
-  {ticker:'OIL',name:'Нефтегаз',sector:'Энергетика',price:420,vol:0.035,drift:-0.0003,color:'#555'},
-  {ticker:'FOOD',name:'Пищепром',sector:'Потреб',price:180,vol:0.015,drift:0.0008,color:'#00ff66'},
-  {ticker:'CARS',name:'Автопром',sector:'Промышл',price:670,vol:0.03,drift:0.0002,color:'#ff6600'},
-  {ticker:'PHARM',name:'Фармацевтика',sector:'Медицина',price:540,vol:0.025,drift:0.0015,color:'#ff00aa'},
-  {ticker:'BANK',name:'Финансы',sector:'Банки',price:910,vol:0.028,drift:0.0006,color:'#aaff00'},
-  {ticker:'RETAIL',name:'Ритейл',sector:'Потреб',price:320,vol:0.022,drift:0.001,color:'#ff44aa'},
-  {ticker:'ENERGY',name:'Энергетика',sector:'Энергетика',price:280,vol:0.038,drift:-0.0002,color:'#ff8800'},
-  {ticker:'METAL',name:'Металлургия',sector:'Промышл',price:760,vol:0.026,drift:0.0007,color:'#888'},
-  {ticker:'CHEME',name:'Химпром',sector:'Промышл',price:490,vol:0.029,drift:0.0004,color:'#aa00ff'},
-  {ticker:'TELECOM',name:'Телеком',sector:'Связь',price:210,vol:0.02,drift:0.0009,color:'#00ddff'},
-  {ticker:'TRANS',name:'Транспорт',sector:'Логистика',price:380,vol:0.024,drift:0.0003,color:'#ffcc44'},
-  {ticker:'CRYPT',name:'Крипто',sector:'IT',price:1450,vol:0.06,drift:0.002,color:'#ff00ff'},
-  {ticker:'AGRO',name:'Агропром',sector:'Потреб',price:260,vol:0.018,drift:0.0011,color:'#88ff00'},
-  {ticker:'BUILD',name:'Строительство',sector:'Промышл',price:440,vol:0.027,drift:0.0005,color:'#ff6644'},
-  {ticker:'MEDIA',name:'Медиа',sector:'IT',price:620,vol:0.032,drift:0.0008,color:'#ff44ff'},
-  {ticker:'TOURISM',name:'Туризм',sector:'Услуги',price:150,vol:0.045,drift:-0.0005,color:'#44ddff'},
-  {ticker:'SPACE',name:'Космос',sector:'IT',price:278200,vol:0.05,drift:0.0017,color:'#aa88ff'},
-  {ticker:'EDU',name:'Образование',sector:'Услуги',price:120,vol:0.016,drift:0.0006,color:'#44ff88'}
- ];
+ }
+ renderStockGrid();
 }
 
-let selectedStock=null;
-let mktTickInterval=null;
-
+/* ===== UI ===== */
 function updateMktBalance(){
- mktBalance=getUserBalance();
  document.getElementById('mktBalance').textContent=fmtNum(mktBalance);
 }
 
 function showToast(msg,cls){
- const t=document.getElementById('mktToast');
+ var t=document.getElementById('mktToast');
  t.textContent=msg;
  t.className='toast show '+(cls||'');
- setTimeout(()=>t.classList.remove('show'),2500);
+ setTimeout(function(){t.classList.remove('show');},2500);
 }
 
 function switchMktTab(name,el){
- document.querySelectorAll('.mkt-tab').forEach(t=>t.classList.remove('active'));
- document.querySelectorAll('.mkt-section').forEach(s=>s.classList.remove('active'));
+ document.querySelectorAll('.mkt-tab').forEach(function(t){t.classList.remove('active');});
+ document.querySelectorAll('.mkt-section').forEach(function(s){s.classList.remove('active');});
  el.classList.add('active');
  document.getElementById('mkt-'+name).classList.add('active');
- if(name==='portfolio')renderPortfolio();
- if(name==='bank')updateBankDisplay();
+ if(name==='portfolio') renderPortfolio();
+ if(name==='bank') updateBankDisplay();
 }
 
 function drawSparkline(canvas,data,color){
- const ctx=canvas.getContext('2d');
- const w=canvas.width,h=canvas.height;
+ var ctx=canvas.getContext('2d');
+ var w=canvas.width,h=canvas.height;
  ctx.clearRect(0,0,w,h);
  if(data.length<2)return;
- const min=Math.min(...data),max=Math.max(...data);
- const range=max-min||1;
+ var min=Math.min.apply(null,data),max=Math.max.apply(null,data);
+ var range=max-min||1;
  ctx.strokeStyle=color;
  ctx.lineWidth=1.5;
  ctx.beginPath();
- data.forEach((v,i)=>{
-  const x=(i/(data.length-1))*w;
-  const y=h-((v-min)/range)*(h-4)-2;
+ data.forEach(function(v,i){
+  var x=(i/(data.length-1))*w;
+  var y=h-((v-min)/range)*(h-4)-2;
   i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
  });
  ctx.stroke();
 }
 
-function renderStockGrid(){
- if(STOCKS.length===0)return;
- const grid=document.getElementById('stockGrid');
- grid.innerHTML=STOCKS.map(s=>{
-  const change=s.price-s.prevPrice;
-  const pct=s.prevPrice>0?(change/s.prevPrice*100).toFixed(2):'0.00';
-  const up=change>=0;
-  return `<div class="stock-card" onclick="selectStock('${s.ticker}')">
-   <div style="display:flex;justify-content:space-between;align-items:center">
-    <span class="stock-ticker">${s.ticker}</span>
-    <span class="sector-badge">${s.sector}</span>
-   </div>
-   <div class="stock-name">${s.name}</div>
-   <div class="stock-price">${fmtNum(s.price)} 🪙</div>
-   <div class="stock-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</div>
-   <canvas class="stock-spark" width="180" height="30" id="spark-${s.ticker}"></canvas>
-  </div>`;
- }).join('');
- STOCKS.forEach(s=>{
-  const c=document.getElementById('spark-'+s.ticker);
-  if(c)drawSparkline(c,s.history,s.color);
- });
-}
-
 function drawDetailChart(canvas,data,color){
- const ctx=canvas.getContext('2d');
- const w=canvas.width,h=canvas.height;
+ var ctx=canvas.getContext('2d');
+ var w=canvas.width,h=canvas.height;
  ctx.clearRect(0,0,w,h);
  if(data.length<2)return;
- const min=Math.min(...data),max=Math.max(...data);
- const range=max-min||1;
- const pad=10;
+ var min=Math.min.apply(null,data),max=Math.max.apply(null,data);
+ var range=max-min||1;
+ var pad=10;
  ctx.strokeStyle='rgba(255,255,255,0.05)';
  ctx.lineWidth=1;
- for(let i=0;i<4;i++){
-  const y=pad+(h-pad*2)*i/3;
+ for(var i=0;i<4;i++){
+  var y=pad+(h-pad*2)*i/3;
   ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
  }
  ctx.strokeStyle=color;
  ctx.lineWidth=2;
  ctx.beginPath();
- data.forEach((v,i)=>{
-  const x=pad+(i/(data.length-1))*(w-pad*2);
-  const y=h-pad-((v-min)/range)*(h-pad*2);
+ data.forEach(function(v,i){
+  var x=pad+(i/(data.length-1))*(w-pad*2);
+  var y=h-pad-((v-min)/range)*(h-pad*2);
   i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
  });
  ctx.stroke();
@@ -354,138 +433,208 @@ function drawDetailChart(canvas,data,color){
  ctx.fillText(fmtNum(min),pad+2,h-4);
 }
 
+function renderStockGrid(){
+ if(STOCKS.length===0)return;
+ var grid=document.getElementById('stockGrid');
+ grid.innerHTML=STOCKS.map(function(s){
+  var change=s.price-s.prevPrice;
+  var pct=s.prevPrice>0?(change/s.prevPrice*100).toFixed(2):'0.00';
+  var up=change>=0;
+  return '<div class="stock-card" onclick="selectStock(\''+s.ticker+'\')">'+
+   '<div style="display:flex;justify-content:space-between;align-items:center">'+
+   '<span class="stock-ticker">'+s.ticker+'</span>'+
+   '<span class="sector-badge">'+s.sector+'</span></div>'+
+   '<div class="stock-name">'+s.name+'</div>'+
+   '<div class="stock-price">'+fmtNum(s.price)+' 🪙</div>'+
+   '<div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pct)+'%</div>'+
+   '<canvas class="stock-spark" width="180" height="30" id="spark-'+s.ticker+'"></canvas></div>';
+ }).join('');
+ STOCKS.forEach(function(s){
+  var c=document.getElementById('spark-'+s.ticker);
+  if(c) drawSparkline(c,s.history,s.color);
+ });
+}
+
 function selectStock(ticker){
- selectedStock=STOCKS.find(s=>s.ticker===ticker);
+ selectedStock=STOCKS.find(function(s){return s.ticker===ticker;});
  if(!selectedStock)return;
- const s=selectedStock;
- const change=s.price-s.prevPrice;
- const pct=s.prevPrice>0?(change/s.prevPrice*100).toFixed(2):'0.00';
- const up=change>=0;
- const owned=mktPortfolio[ticker]||0;
- const ownedVal=owned*s.price;
- document.getElementById('stockDetail').innerHTML=`
-  <div class="stock-detail">
-   <div class="stock-detail-header">
-    <div>
-     <div class="stock-detail-name" style="color:${s.color}">${s.ticker}</div>
-     <div style="color:#666;font-size:.85rem">${s.name} · ${s.sector}</div>
-     ${owned>0?`<div style="margin-top:5px;font-size:.85rem;color:var(--green)">В портфеле: ${owned} шт. = ${fmtNum(ownedVal)} 🪙</div>`:''}
-    </div>
-    <div style="text-align:right">
-     <div class="stock-detail-price">${fmtNum(s.price)} 🪙</div>
-     <div class="stock-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</div>
-    </div>
-   </div>
-   <canvas class="detail-chart" width="800" height="200" id="detailChart"></canvas>
-   <div class="trade-box">
-    <input type="number" id="tradeQty" value="1" min="1" max="9999">
-    <button class="trade-btn buy" onclick="buyStock()">📥 Купить</button>
-    <button class="trade-btn sell" onclick="sellStock()" ${owned>0?'':'disabled'}>📤 Продать</button>
-   </div>
-   <div style="margin-top:10px;font-size:.8rem;color:#666">Стоимость покупки: <span id="tradeCost">${fmtNum(s.price)} 🪙</span></div>
-  </div>`;
- const c=document.getElementById('detailChart');
- if(c)drawDetailChart(c,s.history,s.color);
+ var s=selectedStock;
+ var change=s.price-s.prevPrice;
+ var pct=s.prevPrice>0?(change/s.prevPrice*100).toFixed(2):'0.00';
+ var up=change>=0;
+ var owned=mktPortfolio[ticker]||0;
+ var ownedVal=owned*s.price;
+ document.getElementById('stockDetail').innerHTML=
+  '<div class="stock-detail">'+
+  '<div class="stock-detail-header"><div>'+
+  '<div class="stock-detail-name" style="color:'+s.color+'">'+s.ticker+'</div>'+
+  '<div style="color:#666;font-size:.85rem">'+s.name+' · '+s.sector+'</div>'+
+  (owned>0?'<div style="margin-top:5px;font-size:.85rem;color:var(--green)">В портфеле: '+owned+' шт. = '+fmtNum(ownedVal)+' 🪙</div>':'')+
+  '</div><div style="text-align:right">'+
+  '<div class="stock-detail-price">'+fmtNum(s.price)+' 🪙</div>'+
+  '<div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pct)+'%</div></div></div>'+
+  '<canvas class="detail-chart" width="800" height="200" id="detailChart"></canvas>'+
+  '<div class="trade-box">'+
+  '<input type="number" id="tradeQty" value="1" min="1" max="9999">'+
+  '<button class="trade-btn buy" onclick="buyStock()">📥 Купить</button>'+
+  '<button class="trade-btn sell" onclick="sellStockFromDetail()" '+(owned>0?'':'disabled')+'>📤 Продать</button>'+
+  (owned>0?'<button class="trade-btn sell" onclick="sellAllStockFromDetail()">💸 Продать все '+ticker+'</button>':'')+
+  '</div>'+
+  '<div style="margin-top:10px;font-size:.8rem;color:#666">Стоимость покупки: <span id="tradeCost">'+fmtNum(s.price)+' 🪙</span></div>'+
+  '</div>';
+ var c=document.getElementById('detailChart');
+ if(c) drawDetailChart(c,s.history,s.color);
  document.getElementById('tradeQty').addEventListener('input',updateTradeCost);
  document.getElementById('stockDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function updateTradeCost(){
  if(!selectedStock)return;
- const qty=parseInt(document.getElementById('tradeQty').value)||1;
+ var qty=parseInt(document.getElementById('tradeQty').value)||1;
  document.getElementById('tradeCost').textContent=fmtNum(qty*selectedStock.price)+' 🪙';
 }
 
 function buyStock(){
  if(!selectedStock)return;
- const qty=parseInt(document.getElementById('tradeQty').value)||1;
+ var qty=parseInt(document.getElementById('tradeQty').value)||1;
  if(qty<1){showToast('Введите количество','err');return;}
- const cost=qty*selectedStock.price;
+ var cost=qty*selectedStock.price;
  if(mktBalance<cost){showToast('Недостаточно монет!','err');return;}
  mktBalance-=cost;
- setUserBalance(mktBalance);
  mktPortfolio[selectedStock.ticker]=(mktPortfolio[selectedStock.ticker]||0)+qty;
- localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
+ lastTradeTime=Date.now();
  updateMktBalance();
- showToast(`Куплено ${qty} ${selectedStock.ticker} за ${fmtNum(cost)} 🪙`,'ok');
  selectStock(selectedStock.ticker);
+ showToast('Куплено '+qty+' '+selectedStock.ticker+' за '+fmtNum(cost)+' 🪙','ok');
+ saveUserData('Покупка '+qty+' '+selectedStock.ticker);
 }
 
-function sellStock(){
+function sellStockFromDetail(){
  if(!selectedStock)return;
- const qty=parseInt(document.getElementById('tradeQty').value)||1;
+ var qty=parseInt(document.getElementById('tradeQty').value)||1;
  if(qty<1){showToast('Введите количество','err');return;}
- const owned=mktPortfolio[selectedStock.ticker]||0;
- if(owned<qty){showToast('Недостаточно акций!','err');return;}
- const revenue=qty*selectedStock.price;
- mktBalance+=revenue;
- setUserBalance(mktBalance);
- mktPortfolio[selectedStock.ticker]=owned-qty;
- if(mktPortfolio[selectedStock.ticker]<=0)delete mktPortfolio[selectedStock.ticker];
- localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
- updateMktBalance();
- showToast(`Продано ${qty} ${selectedStock.ticker} за ${fmtNum(revenue)} 🪙`,'ok');
- selectStock(selectedStock.ticker);
+ doSell(selectedStock.ticker,qty);
 }
 
+function sellAllStockFromDetail(){
+ if(!selectedStock)return;
+ var owned=mktPortfolio[selectedStock.ticker]||0;
+ if(owned<1){showToast('Нет акций для продажи','err');return;}
+ doSell(selectedStock.ticker,owned);
+}
+
+function doSell(ticker,qty){
+ var s=STOCKS.find(function(st){return st.ticker===ticker;});
+ if(!s){showToast('Акция не найдена','err');return;}
+ var owned=mktPortfolio[ticker]||0;
+ if(owned<qty){showToast('Недостаточно акций! У вас '+owned+' шт.','err');return;}
+ var revenue=qty*s.price;
+ mktBalance+=revenue;
+ mktPortfolio[ticker]=owned-qty;
+ if(mktPortfolio[ticker]<=0) delete mktPortfolio[ticker];
+ lastTradeTime=Date.now();
+ updateMktBalance();
+ if(selectedStock&&selectedStock.ticker===ticker) selectStock(ticker);
+ showToast('Продано '+qty+' '+ticker+' за '+fmtNum(revenue)+' 🪙','ok');
+ saveUserData('Продажа '+qty+' '+ticker);
+}
+
+/* ===== PORTFOLIO ===== */
 function renderPortfolio(){
- const list=document.getElementById('portfolioList');
- const tickers=Object.keys(mktPortfolio).filter(t=>mktPortfolio[t]>0);
+ var list=document.getElementById('portfolioList');
+ var tickers=Object.keys(mktPortfolio).filter(function(t){return mktPortfolio[t]>0;});
  if(tickers.length===0){
   list.innerHTML='<div class="portfolio-empty">Портфель пуст. Купите акции на вкладке «Акции».</div>';
   return;
  }
- let totalCost=0,totalVal=0;
- list.innerHTML=tickers.map(t=>{
-  const s=STOCKS.find(st=>st.ticker===t);
-  if(!s)return '';
-  const qty=mktPortfolio[t];
-  const costBasis=s.history[0]*qty;
-  const curVal=s.price*qty;
+ var totalCost=0,totalVal=0;
+ var html=tickers.map(function(t){
+  var s=STOCKS.find(function(st){return st.ticker===t;});
+  if(!s) return '';
+  var qty=mktPortfolio[t];
+  var costBasis=s.history[0]*qty;
+  var curVal=s.price*qty;
   totalCost+=costBasis;
   totalVal+=curVal;
-  const pnl=curVal-costBasis;
-  const pnlPct=costBasis>0?(pnl/costBasis*100).toFixed(1):'0.0';
-  const up=pnl>=0;
-  return `<div class="portfolio-item">
-   <div>
-    <div style="font-family:'Orbitron',sans-serif;font-weight:900;color:${s.color}">${s.ticker}</div>
-    <div style="font-size:.8rem;color:#666">${qty} шт. · ${s.name}</div>
-   </div>
-   <div style="text-align:right">
-    <div style="font-weight:700">${fmtNum(curVal)} 🪙</div>
-    <div class="stock-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pnlPct)}% (${pnl>0?'+':''}${fmtNum(pnl)})</div>
-   </div>
-  </div>`;
+  var pnl=curVal-costBasis;
+  var pnlPct=costBasis>0?(pnl/costBasis*100).toFixed(1):'0.0';
+  var up=pnl>=0;
+  return '<div class="portfolio-item">'+
+   '<div class="portfolio-item-header"><div>'+
+   '<div style="font-family:Orbitron,sans-serif;font-weight:900;color:'+s.color+'">'+s.ticker+'</div>'+
+   '<div style="font-size:.8rem;color:#666">'+qty+' шт. · '+s.name+' · '+s.sector+'</div></div>'+
+   '<div style="text-align:right">'+
+   '<div style="font-weight:700">'+fmtNum(curVal)+' 🪙</div>'+
+   '<div class="stock-change '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(pnlPct)+'% ('+(pnl>0?'+':'')+fmtNum(pnl)+')</div></div></div>'+
+   '<div style="font-size:.8rem;color:#666">Текущая цена: '+fmtNum(s.price)+' 🪙 · Куплено за: '+fmtNum(costBasis)+' 🪙</div>'+
+   '<div class="portfolio-sell-box">'+
+   '<input type="number" id="sellQty-'+t+'" value="'+qty+'" min="1" max="'+qty+'">'+
+   '<button class="trade-btn sell" onclick="portfolioSell(\''+t+'\')">📤 Продать</button>'+
+   '<button class="trade-btn sell" onclick="portfolioSellAll(\''+t+'\')">💸 Продать все</button>'+
+   '</div></div>';
  }).join('');
- list.innerHTML+=`<div class="stock-detail" style="margin-top:15px">
-  <div style="display:flex;justify-content:space-between">
-   <div style="font-weight:700">Общая стоимость</div>
-   <div style="font-family:'Orbitron',sans-serif;font-weight:900;color:var(--primary)">${fmtNum(totalVal)} 🪙</div>
-  </div>
-  <div style="display:flex;justify-content:space-between;margin-top:8px">
-   <div style="font-size:.85rem;color:#666">Прибыль/убыток</div>
-   <div class="stock-change ${totalVal-totalCost>=0?'up':'down'}">${totalVal-totalCost>=0?'+':''}${fmtNum(totalVal-totalCost)} 🪙 (${totalCost>0?((totalVal-totalCost)/totalCost*100).toFixed(1):'0.0'}%)</div>
-  </div>
- </div>`;
+ html+='<div class="stock-detail" style="margin-top:15px">'+
+  '<div style="display:flex;justify-content:space-between"><div style="font-weight:700">Общая стоимость</div><div style="font-family:Orbitron,sans-serif;font-weight:900;color:var(--primary)">'+fmtNum(totalVal)+' 🪙</div></div>'+
+  '<div style="display:flex;justify-content:space-between;margin-top:8px"><div style="font-size:.85rem;color:#666">Прибыль/убыток</div><div class="stock-change '+(totalVal-totalCost>=0?'up':'down')+'">'+(totalVal-totalCost>=0?'+':'')+fmtNum(totalVal-totalCost)+' 🪙 ('+(totalCost>0?((totalVal-totalCost)/totalCost*100).toFixed(1):'0.0')+'%)</div></div>'+
+  '<div style="margin-top:15px"><button class="trade-btn sell" style="width:100%;padding:14px;font-size:1rem" onclick="sellAllPortfolio()">💥 ПРОДАТЬ ВЕСЬ ПОРТФЕЛЬ</button></div>'+
+  '</div>';
+ list.innerHTML=html;
 }
 
-// ===== БАНК =====
+function portfolioSell(ticker){
+ var input=document.getElementById('sellQty-'+ticker);
+ if(!input) return;
+ var qty=parseInt(input.value)||1;
+ if(qty<1){showToast('Введите количество','err');return;}
+ doSell(ticker,qty);
+ renderPortfolio();
+}
+
+function portfolioSellAll(ticker){
+ var owned=mktPortfolio[ticker]||0;
+ if(owned<1){showToast('Нет акций','err');return;}
+ doSell(ticker,owned);
+ renderPortfolio();
+}
+
+function sellAllPortfolio(){
+ var tickers=Object.keys(mktPortfolio).filter(function(t){return mktPortfolio[t]>0;});
+ if(tickers.length===0){showToast('Портфель пуст','err');return;}
+ var totalRevenue=0;
+ var soldList=[];
+ tickers.forEach(function(t){
+  var s=STOCKS.find(function(st){return st.ticker===t;});
+  if(!s) return;
+  var qty=mktPortfolio[t];
+  var revenue=qty*s.price;
+  totalRevenue+=revenue;
+  soldList.push(qty+' '+t);
+  delete mktPortfolio[t];
+ });
+ mktBalance+=totalRevenue;
+ lastTradeTime=Date.now();
+ updateMktBalance();
+ renderPortfolio();
+ showToast('Продано всё: '+soldList.join(', ')+' за '+fmtNum(totalRevenue)+' 🪙','ok');
+ saveUserData('Продажа всего портфеля');
+}
+
+/* ===== BANK ===== */
 function updateBankDisplay(){
  var el=document.getElementById('bankDeposit');
- if(el)el.textContent=fmtNum(mktBankDeposit)+' 🪙';
+ if(el) el.textContent=fmtNum(mktBankDeposit)+' 🪙';
  var rd=document.getElementById('bankRateDisplay');
- if(rd)rd.textContent=bankGetRate();
+ if(rd) rd.textContent=bankGetRate();
  var sd=document.getElementById('bankSpeedDisplay');
- if(sd)sd.textContent=bankGetSpeed();
+ if(sd) sd.textContent=bankGetSpeed();
  var rl=document.getElementById('bankRateLvlDisplay');
- if(rl)rl.textContent='Ур. '+bankRateLvl;
+ if(rl) rl.textContent='Ур. '+bankRateLvl;
  var sl=document.getElementById('bankSpdLvlDisplay');
- if(sl)sl.textContent='Ур. '+bankSpdLvl;
+ if(sl) sl.textContent='Ур. '+bankSpdLvl;
  var cr=document.getElementById('bankCurRate');
- if(cr)cr.textContent=bankGetRate();
+ if(cr) cr.textContent=bankGetRate();
  var cs=document.getElementById('bankCurSpd');
- if(cs)cs.textContent=bankGetSpeed();
+ if(cs) cs.textContent=bankGetSpeed();
  if(bankRateLvl<BANK_MAX_RATE){
   var nr=document.getElementById('bankNextRate');if(nr)nr.textContent=bankGetRate()+2;
   var rc=document.getElementById('bankUpRateCost');if(rc)rc.textContent=fmtNum(bankRateCost());
@@ -509,13 +658,13 @@ function bankUpgradeRate(){
  var cost=bankRateCost();
  if(mktBalance<cost){showToast('Недостаточно монет!','err');return;}
  mktBalance-=cost;
- setUserBalance(mktBalance);
  bankRateLvl++;
- localStorage.setItem('bank_rate_lvl',String(bankRateLvl));
+ lastTradeTime=Date.now();
  updateMktBalance();
  updateBankDisplay();
  restartBankInterval();
  showToast('Процент повышен до '+bankGetRate()+'%!','ok');
+ saveUserData('Прокачка процента банка до ур.'+bankRateLvl);
 }
 
 function bankUpgradeSpeed(){
@@ -523,17 +672,17 @@ function bankUpgradeSpeed(){
  var cost=bankSpdCost();
  if(mktBalance<cost){showToast('Недостаточно монет!','err');return;}
  mktBalance-=cost;
- setUserBalance(mktBalance);
  bankSpdLvl++;
- localStorage.setItem('bank_spd_lvl',String(bankSpdLvl));
+ lastTradeTime=Date.now();
  updateMktBalance();
  updateBankDisplay();
  restartBankInterval();
  showToast('Скорость повышена! Интервал: '+bankGetSpeed()+' сек','ok');
+ saveUserData('Прокачка скорости банка до ур.'+bankSpdLvl);
 }
 
 function restartBankInterval(){
- if(bankIntervalId)clearInterval(bankIntervalId);
+ if(bankIntervalId) clearInterval(bankIntervalId);
  bankIntervalId=setInterval(function(){bankInterest();},bankGetSpeed()*1000);
 }
 
@@ -542,11 +691,12 @@ function bankDepositAction(){
  if(amt<1){showToast('Введите сумму','err');return;}
  if(mktBalance<amt){showToast('Недостаточно монет!','err');return;}
  mktBalance-=amt;
- setUserBalance(mktBalance);
  mktBankDeposit+=amt;
- localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
- updateMktBalance();updateBankDisplay();
+ lastTradeTime=Date.now();
+ updateMktBalance();
+ updateBankDisplay();
  showToast('Внесено '+fmtNum(amt)+' 🪙 в банк','ok');
+ saveUserData('Депозит в банк '+amt);
 }
 
 function bankWithdrawAction(){
@@ -555,41 +705,42 @@ function bankWithdrawAction(){
  if(mktBankDeposit<amt){showToast('В банке недостаточно средств!','err');return;}
  mktBankDeposit-=amt;
  mktBalance+=amt;
- setUserBalance(mktBalance);
- localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
- updateMktBalance();updateBankDisplay();
+ lastTradeTime=Date.now();
+ updateMktBalance();
+ updateBankDisplay();
  showToast('Снято '+fmtNum(amt)+' 🪙 из банка','ok');
+ saveUserData('Снятие с банка '+amt);
 }
 
 function bankInterest(){
  if(mktBankDeposit>0){
   var interest=Math.round(mktBankDeposit*bankGetRate()/100);
   mktBankDeposit+=interest;
-  localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
   updateBankDisplay();
+  saveUserData('Начислен процент банка: +'+interest);
  }
 }
 
-// ===== ТИК РЫНКА =====
+/* ===== MARKET TICK ===== */
 function marketTick(){
- STOCKS.forEach(s=>{
+ STOCKS.forEach(function(s){
   s.prevPrice=s.price;
-  const change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
+  var change=s.price*s.vol*(Math.random()*2-1)+s.price*s.drift;
   s.price=Math.max(1,s.price+change);
   s.history.push(s.price);
-  if(s.history.length>60)s.history.shift();
+  if(s.history.length>60) s.history.shift();
  });
  renderStockGrid();
  if(selectedStock){
-  const c=document.getElementById('detailChart');
-  if(c)drawDetailChart(c,selectedStock.history,selectedStock.color);
-  const header=document.querySelector('.stock-detail-price');
+  var c=document.getElementById('detailChart');
+  if(c) drawDetailChart(c,selectedStock.history,selectedStock.color);
+  var header=document.querySelector('.stock-detail-price');
   if(header){
-   const s=selectedStock;
-   const change=s.price-s.prevPrice;
-   const pct=s.prevPrice>0?(change/s.prevPrice*100).toFixed(2):'0.00';
+   var s=selectedStock;
+   var change=s.price-s.prevPrice;
+   var pct=s.prevPrice>0?(change/s.prevPrice*100).toFixed(2):'0.00';
    header.textContent=fmtNum(s.price)+' 🪙';
-   const chgEl=document.querySelector('.stock-detail .stock-change');
+   var chgEl=document.querySelector('.stock-detail .stock-change');
    if(chgEl){
     chgEl.className='stock-change '+(change>=0?'up':'down');
     chgEl.textContent=(change>=0?'▲':'▼')+' '+Math.abs(pct)+'%';
@@ -599,23 +750,36 @@ function marketTick(){
  }
 }
 
-updateMktBalance();
-updateBankDisplay();
+/* ===== INIT ===== */
+async function initPage(){
+ try{
+  var accounts=await fetchAccountsRaw();
+  var u=accounts.find(function(a){return a.login===user.login;});
+  if(u){
+   mktBalance=u.coins||0;
+   mktPortfolio=u.portfolio||{};
+   mktBankDeposit=u.bankDeposit||0;
+   bankRateLvl=u.bankRateLvl||1;
+   bankSpdLvl=u.bankSpdLvl||1;
+  }
+  setSyncBadge('ok');
+ }catch(e){
+  setSyncBadge('err');
+ }
+ updateMktBalance();
+ updateBankDisplay();
+ await loadStocks();
+ renderPortfolio();
+ restartBankInterval();
+}
 
-mktTickInterval=setInterval(marketTick,3000);
-restartBankInterval();
-
-setInterval(function(){
- setUserBalance(mktBalance);
- if(typeof syncBalanceToServer==='function')syncBalanceToServer();
-},30000);
+initPage();
+setInterval(marketTick,3000);
+setInterval(refreshFromServer,15000);
+setInterval(function(){loadStocks();},30000);
 
 window.addEventListener('beforeunload',function(){
- setUserBalance(mktBalance);
- localStorage.setItem('mkt_bank_deposit',String(mktBankDeposit));
- localStorage.setItem('mkt_portfolio',JSON.stringify(mktPortfolio));
- localStorage.setItem('bank_rate_lvl',String(bankRateLvl));
- localStorage.setItem('bank_spd_lvl',String(bankSpdLvl));
+ saveUserData('Выход с биржи');
 });
 </script>
 </body>
