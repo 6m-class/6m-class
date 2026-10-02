@@ -1,13 +1,5 @@
 [
   {
-    "ticker": "TECH",
-    "name": "Технологии",
-    "sector": "IT",
-    "price": 3683,
-    "vol": 0.04,
-    "drift": 0.001
-  },
-  {
     "ticker": "GOLD",
     "name": "Золотодобыча",
     "sector": "Сырьё",
