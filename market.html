@@ -82,6 +82,7 @@ nav{padding:12px 20px;display:flex;justify-content:space-between;align-items:cen
 .upgrade-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .sync-badge{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:10px;background:rgba(0,255,102,0.1);color:#00ff66;margin-left:8px}
 .sync-badge.syncing{background:rgba(255,204,0,0.1);color:#ffcc00}
+.sync-badge.err{background:rgba(255,0,51,0.1);color:#ff0033}
 @media(max-width:600px){.stock-grid{grid-template-columns:1fr 1fr}.title{font-size:1.2rem;padding:15px}.stock-detail-name{font-size:1.1rem}.stock-detail-price{font-size:1.5rem}}
 </style>
 </head>
@@ -286,10 +287,9 @@ async function saveUserData(reason){
  }
 }
 
-
 async function refreshFromServer(){
  if(isSaving) return;
- if(Date.now()-lastTradeTime<5000) return;
+ if(Date.now()-lastTradeTime<10000) return;
  try{
   var accounts=await fetchAccountsRaw();
   var u=accounts.find(function(a){return a.login===user.login;});
@@ -301,8 +301,7 @@ async function refreshFromServer(){
    bankSpdLvl=u.bankSpdLvl||1;
    updateMktBalance();
    updateBankDisplay();
-   var activeTab=document.querySelector('.mkt-tab.active');
-   if(activeTab&&activeTab.textContent.indexOf('Портфель')>=0) renderPortfolio();
+   renderPortfolio();
   }
   setSyncBadge('ok');
  }catch(e){
@@ -315,7 +314,7 @@ function setSyncBadge(state){
  if(!el) return;
  if(state==='ok'){el.textContent='синхр';el.className='sync-badge';}
  else if(state==='syncing'){el.textContent='сохранение...';el.className='sync-badge syncing';}
- else{el.textContent='оффлайн';el.className='sync-badge syncing';}
+ else{el.textContent='оффлайн';el.className='sync-badge err';}
 }
 
 /* ===== STOCKS FROM data.json ===== */
@@ -507,6 +506,7 @@ function buyStock(){
  lastTradeTime=Date.now();
  updateMktBalance();
  selectStock(selectedStock.ticker);
+ renderPortfolio();
  showToast('Куплено '+qty+' '+selectedStock.ticker+' за '+fmtNum(cost)+' 🪙','ok');
  saveUserData('Покупка '+qty+' '+selectedStock.ticker);
 }
@@ -537,6 +537,7 @@ function doSell(ticker,qty){
  lastTradeTime=Date.now();
  updateMktBalance();
  if(selectedStock&&selectedStock.ticker===ticker) selectStock(ticker);
+ renderPortfolio();
  showToast('Продано '+qty+' '+ticker+' за '+fmtNum(revenue)+' 🪙','ok');
  saveUserData('Продажа '+qty+' '+ticker);
 }
@@ -544,6 +545,7 @@ function doSell(ticker,qty){
 /* ===== PORTFOLIO ===== */
 function renderPortfolio(){
  var list=document.getElementById('portfolioList');
+ if(!list) return;
  var tickers=Object.keys(mktPortfolio).filter(function(t){return mktPortfolio[t]>0;});
  if(tickers.length===0){
   list.innerHTML='<div class="portfolio-empty">Портфель пуст. Купите акции на вкладке «Акции».</div>';
@@ -767,6 +769,7 @@ async function initPage(){
   setSyncBadge('ok');
  }catch(e){
   setSyncBadge('err');
+  showToast('Не удалось загрузить данные','err');
  }
  updateMktBalance();
  updateBankDisplay();
