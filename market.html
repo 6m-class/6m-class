@@ -246,12 +246,13 @@ async function saveUserData(reason){
    accounts.push({login:user.login,password:user.password||'',name:user.name||user.login,role:'student',avatar:'',coins:Math.round(mktBalance),portfolio:mktPortfolio,bankDeposit:Math.round(mktBankDeposit),bankRateLvl:bankRateLvl,bankSpdLvl:bankSpdLvl});
   }
   var content=btoa(unescape(encodeURIComponent(JSON.stringify(accounts,null,2))));
-  var putResp=await fetch(API+'/contents/accounts.json',{
+  await fetch(API+'/contents/accounts.json',{
    method:'PUT',
    headers:Object.assign({},GH_HEADERS,{'Content-Type':'application/json'}),
    body:JSON.stringify({message:'Биржа: '+reason+' ('+user.login+')',content:content,sha:sha})
   });
   setSyncBadge('ok');
+  isSaving=false;
   return true;
  }catch(e){
   try{
@@ -275,15 +276,16 @@ async function saveUserData(reason){
     body:JSON.stringify({message:'Биржа: '+reason+' ('+user.login+')',content:content2,sha:sha2})
    });
    setSyncBadge('ok');
+   isSaving=false;
    return true;
   }catch(e2){
    setSyncBadge('err');
-   showToast('Ошибка синхронизации: '+e2.message,'err');
+   isSaving=false;
    return false;
   }
  }
- isSaving=false;
 }
+
 
 async function refreshFromServer(){
  if(isSaving) return;
