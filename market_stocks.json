@@ -136,14 +136,6 @@
     "drift": -0.0005
   },
   {
-    "ticker": "SPACE",
-    "name": "Космос",
-    "sector": "IT",
-    "price": 558888818,
-    "vol": 0.5,
-    "drift": 0.17
-  },
-  {
     "ticker": "EDU",
     "name": "Образование",
     "sector": "Услуги",
