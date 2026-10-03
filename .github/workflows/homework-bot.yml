@@ -1,0 +1,19 @@
+name: Бот ДЗ МЭШ
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+jobs:
+  bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python homework_bot.py
+        env:
+          MESH_LOGIN: ${{ secrets.MESH_LOGIN }}
+          MESH_PASSWORD: ${{ secrets.MESH_PASSWORD }}
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
