@@ -5,13 +5,13 @@
     "name": "Субботин Максим",
     "role": "admin",
     "avatar": "https://raw.githubusercontent.com/6m-class/6m-class/main/avatars/Maksyta_1790580246259.png",
-    "coins": 617824094382794,
+    "coins": 620213939338200,
     "portfolio": {
-      "SPACE": 900000002
+      "SPACE": 1
     },
     "bankDeposit": 0,
-    "bankRateLvl": 1,
-    "bankSpdLvl": 1
+    "bankRateLvl": 3,
+    "bankSpdLvl": 3
   },
   {
     "name": "Максим Харламов",
