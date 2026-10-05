@@ -3,7 +3,7 @@
     "ticker": "GOLD",
     "name": "Золотодобыча",
     "sector": "Сырьё",
-    "price": 3035,
+    "price": 3642,
     "vol": 0.02,
     "drift": 0.0005
   },
@@ -11,7 +11,7 @@
     "ticker": "OIL",
     "name": "Нефтегаз",
     "sector": "Энергетика",
-    "price": 1063,
+    "price": 1276,
     "vol": 0.035,
     "drift": -0.0003
   },
@@ -19,7 +19,7 @@
     "ticker": "FOOD",
     "name": "Пищепром",
     "sector": "Потреб",
-    "price": 455,
+    "price": 546,
     "vol": 0.015,
     "drift": 0.0008
   },
@@ -27,7 +27,7 @@
     "ticker": "CARS",
     "name": "Автопром",
     "sector": "Промышл",
-    "price": 1694,
+    "price": 2033,
     "vol": 0.03,
     "drift": 0.0002
   },
@@ -35,7 +35,7 @@
     "ticker": "PHARM",
     "name": "Фармацевтика",
     "sector": "Медицина",
-    "price": 1367421214001112,
+    "price": 1640905456801334,
     "vol": 0.025,
     "drift": 0.0015
   },
@@ -43,7 +43,7 @@
     "ticker": "BANK",
     "name": "Финансы",
     "sector": "Банки",
-    "price": 2299,
+    "price": 2759,
     "vol": 0.028,
     "drift": 0.0006
   },
@@ -51,7 +51,7 @@
     "ticker": "RETAIL",
     "name": "Ритейл",
     "sector": "Потреб",
-    "price": 810,
+    "price": 972,
     "vol": 0.022,
     "drift": 0.001
   },
@@ -59,7 +59,7 @@
     "ticker": "ENERGY",
     "name": "Энергетика",
     "sector": "Энергетика",
-    "price": 707,
+    "price": 848,
     "vol": 0.038,
     "drift": -0.0002
   },
@@ -67,7 +67,7 @@
     "ticker": "METAL",
     "name": "Металлургия",
     "sector": "Промышл",
-    "price": 1921,
+    "price": 2305,
     "vol": 0.026,
     "drift": 0.0007
   },
@@ -75,7 +75,7 @@
     "ticker": "CHEME",
     "name": "Химпром",
     "sector": "Промышл",
-    "price": 1239,
+    "price": 1487,
     "vol": 0.029,
     "drift": 0.0004
   },
@@ -83,7 +83,7 @@
     "ticker": "TELECOM",
     "name": "Телеком",
     "sector": "Связь",
-    "price": 529,
+    "price": 635,
     "vol": 0.02,
     "drift": 0.0009
   },
@@ -91,7 +91,7 @@
     "ticker": "TRANS",
     "name": "Транспорт",
     "sector": "Логистика",
-    "price": 959,
+    "price": 1151,
     "vol": 0.024,
     "drift": 0.0003
   },
@@ -99,7 +99,7 @@
     "ticker": "CRYPT",
     "name": "Крипто",
     "sector": "IT",
-    "price": 3666,
+    "price": 4399,
     "vol": 0.06,
     "drift": 0.002
   },
@@ -107,7 +107,7 @@
     "ticker": "AGRO",
     "name": "Агропром",
     "sector": "Потреб",
-    "price": 657,
+    "price": 788,
     "vol": 0.018,
     "drift": 0.0011
   },
@@ -115,7 +115,7 @@
     "ticker": "BUILD",
     "name": "Строительство",
     "sector": "Промышл",
-    "price": 1114,
+    "price": 1337,
     "vol": 0.027,
     "drift": 0.0005
   },
@@ -123,7 +123,7 @@
     "ticker": "MEDIA",
     "name": "Медиа",
     "sector": "IT",
-    "price": 1567,
+    "price": 1880,
     "vol": 0.032,
     "drift": 0.0008
   },
@@ -131,7 +131,7 @@
     "ticker": "TOURISM",
     "name": "Туризм",
     "sector": "Услуги",
-    "price": 379,
+    "price": 455,
     "vol": 0.045,
     "drift": -0.0005
   },
@@ -139,14 +139,14 @@
     "ticker": "EDU",
     "name": "Образование",
     "sector": "Услуги",
-    "price": 304,
+    "price": 365,
     "vol": 0.016,
     "drift": 0.0006
   },
   {
     "ticker": "67",
     "name": "67",
-    "price": 100,
+    "price": 120,
     "sector": "Мем",
     "vol": 0.03,
     "drift": 0.001
