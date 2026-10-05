@@ -405,5 +405,45 @@
     "name": "Никита Семёнов",
     "role": "student",
     "avatar": ""
+  },
+  {
+    "login": "rnfxed",
+    "password": "nsukpnxh",
+    "name": "София Орлов",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "ronyyj",
+    "password": "ubhexsp",
+    "name": "Кирилл Сидоров",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "ljpenpr",
+    "password": "erv7fxvx3",
+    "name": "Варвара Волков",
+    "role": "admin",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "cywzcypwk",
+    "password": "02s70dqpb",
+    "name": "Ксения Новиков",
+    "role": "admin",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "zaaao",
+    "password": "xz6dd55",
+    "name": "Анна Петров",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
   }
 ]
