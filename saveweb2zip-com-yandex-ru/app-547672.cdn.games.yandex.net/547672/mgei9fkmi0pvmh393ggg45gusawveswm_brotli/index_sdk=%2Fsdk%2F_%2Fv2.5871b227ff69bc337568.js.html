@@ -1,0 +1,1349 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../../sdk.js" defer=""></script>
+<title>JetUpgrade — бесплатный симулятор апгрейда скинов</title>
+<style>
+  :root{
+    --bg:#000; --panel:rgba(255,255,255,.035); --card:rgba(255,255,255,.055); --card2:rgba(255,255,255,.10);
+    --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.18);
+    --txt:#eef2fb; --muted:#8e99b3;
+    --accent:#fbbf24; --accent2:#f97316; --teal:#22d3ee; --green:#34d399; --red:#fb5c6e;
+    --grad:linear-gradient(135deg,var(--accent),var(--accent2));
+    --r0:#9aa7b8; --r1:#5e98d9; --r2:#4b69ff; --r3:#8847ff; --r4:#d32ce6; --r5:#eb4b4b; --r6:#ffcf40;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%; overflow:hidden; overscroll-behavior:none;}
+  body{
+    background:#000;
+    color:var(--txt); font-family:'Manrope',"Segoe UI",Roboto,sans-serif;
+    position:fixed; inset:0; overflow:hidden;
+  }
+  button{font-family:inherit; cursor:pointer; border:none;}
+  input,select{font-family:inherit;}
+  ::-webkit-scrollbar{width:8px;height:8px;} ::-webkit-scrollbar-thumb{background:#28324f; border-radius:8px;}
+  #bgfx{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+  #bgfx b{position:absolute; width:46vmax; height:46vmax; border-radius:50%; opacity:.55; will-change:transform;}
+  #bgfx .a1{background:radial-gradient(circle,rgba(160,107,255,.55),rgba(91,31,158,.30) 45%,transparent 72%); top:-16vmax; left:-12vmax; animation:orb1 13s ease-in-out infinite alternate;}
+  #bgfx .a2{background:radial-gradient(circle,rgba(255,179,26,.5),rgba(249,115,22,.28) 42%,transparent 72%); bottom:-18vmax; right:-12vmax; animation:orb2 16s ease-in-out infinite alternate;}
+  @keyframes orb1{to{transform:translate(30vmax,28vh) scale(1.18);}}
+  @keyframes orb2{to{transform:translate(-32vmax,-26vh) scale(1.12);}}
+  #gameApp{position:relative; z-index:1; width:100%; height:100vh; height:100dvh;
+    display:flex; flex-direction:column; overflow:hidden;}
+  #gameApp.scaled{position:fixed; top:0; left:0; transform-origin:top left;}
+  #gameApp.lock{pointer-events:none;}
+
+  header{
+    display:flex; align-items:center; gap:10px; padding:9px 18px; flex:none; flex-wrap:wrap;
+    background:rgba(0,0,0,.35); border-bottom:1px solid var(--line); -webkit-
+  }
+  .logo{display:flex; align-items:center; gap:9px; user-select:none;}
+  .logo svg{filter:drop-shadow(0 0 10px rgba(251,191,36,.5));}
+  .logo b{font-size:19px; font-weight:800; letter-spacing:.4px;}
+  .logo b i{font-style:normal; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .hstat{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted); font-weight:600;}
+  .hstat b{color:var(--txt); font-size:14px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 2.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.45;}}
+  .spacer{flex:1;}
+  .balance{
+    display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line2);
+    border-radius:999px; padding:8px 15px; font-weight:800; font-size:15px; box-shadow:inset 0 1px 0 rgba(255,255,255,.06); transition:border-color .3s;
+  }
+  .balance.up{animation:balUp .55s;} .balance.down{animation:balDown .55s;}
+  @keyframes balUp{50%{box-shadow:0 0 18px rgba(52,211,153,.7); border-color:#34d399;}}
+  @keyframes balDown{50%{box-shadow:0 0 18px rgba(251,92,110,.7); border-color:#fb5c6e;}}
+  .coin{width:18px;height:18px;border-radius:50%;flex:0 0 auto;
+    background:radial-gradient(circle at 35% 30%,#ffe08a,var(--accent) 55%,#b06a00);
+    display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#5b3a00;font-weight:900;
+    box-shadow:0 0 8px rgba(251,191,36,.5);}
+  .btn-bonus{
+    background:linear-gradient(135deg,var(--teal),#0e97c0); color:#032530; font-weight:800; font-size:13px;
+    border-radius:999px; padding:9px 17px; transition:.2s; box-shadow:0 4px 16px rgba(34,211,238,.25);
+  }
+  .btn-bonus:hover{filter:brightness(1.12); transform:translateY(-1px);}
+  .btn-bonus:disabled{background:var(--card2); color:var(--muted); box-shadow:none; cursor:not-allowed; transform:none;}
+  .btn-bonus.pulse{animation:pulse 1.2s infinite;}
+  .btn-bonus.wide{min-width:150px; text-align:center; font-size:12.5px; padding:9px 14px;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,211,238,.55);}50%{box-shadow:0 0 0 10px rgba(34,211,238,0);}}
+  .icon-btn{background:var(--panel); border:1px solid var(--line); color:var(--muted); border-radius:12px;
+    width:38px;height:38px; font-size:16px; transition:.2s;}
+  .icon-btn:hover{color:var(--txt); border-color:var(--line2); transform:translateY(-1px);}
+
+  .ticker{display:flex; gap:12px; padding:7px 18px; overflow:hidden; border-bottom:1px solid var(--line);
+    background:transparent; flex:none; height:48px; align-items:center;}
+  .tick-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;
+    text-transform:uppercase;letter-spacing:.8px;flex:0 0 auto;
+    background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .tick-items{display:flex; gap:9px; overflow:hidden; mask-image:linear-gradient(90deg,#000 82%,transparent);}
+  .tick-card{
+    display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:4px 11px 4px 5px; flex:0 0 auto;
+    font-size:11px; color:var(--muted); animation:slideIn .45s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .tick-card .timg{width:42px;height:30px;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 45%, color-mix(in srgb,var(--rar,#4b69ff) 28%, transparent), transparent 72%);
+    border-radius:8px;}
+  .tick-card img,.tick-card svg{max-width:42px; max-height:30px; object-fit:contain;}
+  .tick-card b{color:var(--txt); display:block; font-size:11px; font-weight:700; white-space:nowrap;}
+  @keyframes slideIn{from{transform:translateX(-18px) scale(.94);opacity:0;}to{transform:none;opacity:1;}}
+
+  main{flex:1; min-height:0; display:flex; flex-direction:column; gap:10px; padding:10px 16px; overflow:hidden;}
+  .wheel-zone{flex:none; display:flex; flex-direction:column; align-items:center; gap:7px; padding:2px;}
+  h1{font-size:20px; font-weight:800; letter-spacing:2px;}
+  h1 span{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .subtitle{display:none;}
+  #multQ{font-size:12px !important;}
+  #multHint{text-align:center; min-height:14px !important; font-size:11px !important;}
+  .mults{display:flex; gap:7px; flex-wrap:wrap; justify-content:center;}
+  .mult{background:var(--panel); border:1px solid var(--line); color:var(--muted); font-weight:800;
+    border-radius:999px; padding:7px 15px; font-size:12.5px; transition:.18s;}
+  .mult:hover{color:var(--txt); border-color:var(--line2); transform:translateY(-1px);}
+  .mult.on{background:var(--grad); color:#2b1400; border-color:transparent;
+    box-shadow:0 6px 22px rgba(249,145,22,.38);}
+
+  .wheel-wrap{position:relative; width:min(24vh,250px); aspect-ratio:1; flex:none;}
+  .wheel-wrap svg{width:100%; height:100%; display:block;}
+  .wheel-wrap::before{content:""; position:absolute; inset:-11px; border-radius:50%;
+    border:1px dashed rgba(251,191,36,.22); animation:spin360 60s linear infinite reverse;}
+  .wheel-wrap::after{content:""; position:absolute; inset:6%; border-radius:50%;
+    box-shadow:0 0 80px 10px rgba(249,145,22,.15); pointer-events:none;}
+  #innerRing{animation:spin360 40s linear infinite; transform-origin:160px 160px;}
+  @keyframes spin360{to{transform:rotate(360deg);}}
+  .wheel-center{position:absolute; inset:0; padding:0 19%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; pointer-events:none; text-align:center;}
+  .chance-val{font-size:clamp(22px,4vh,36px); font-weight:800; letter-spacing:-.5px;
+    background:linear-gradient(180deg,#fff,#ffd88a); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 18px rgba(251,191,36,.35)); transition:transform .25s;}
+  .chance-val.pop{transform:scale(1.12);}
+  .chance-lbl{font-size:9.5px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; font-weight:700;}
+  .stake-line{font-size:clamp(9px,1.5vh,11px); line-height:1.25; color:var(--muted); font-weight:600; max-width:100%; overflow:hidden;}
+  .stake-line b{color:var(--accent);}
+
+  .btn-go{
+    position:relative; overflow:hidden; width:min(380px,82%); flex:none;
+    background:var(--grad); color:#2b1400;
+    font-size:16px; font-weight:800; letter-spacing:1px; border-radius:999px; padding:13px 0;
+    box-shadow:0 8px 32px rgba(249,145,22,.42); transition:.2s; text-transform:uppercase;
+  }
+  .btn-go::after{content:""; position:absolute; top:0; left:0; width:50%; height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+    transform:translateX(-130%) skewX(-20deg); animation:shine 3.2s infinite; will-change:transform;}
+  @keyframes shine{0%{transform:translateX(-130%) skewX(-20deg);}55%,100%{transform:translateX(330%) skewX(-20deg);}}
+  .btn-go:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 12px 40px rgba(249,145,22,.55);}
+  .btn-go:disabled{background:var(--card2); color:var(--muted); box-shadow:none; cursor:not-allowed;}
+  .btn-go:disabled::after{display:none;}
+  #speedBtn{width:min(380px,82%); padding:7px 15px; font-size:12px;}
+
+  .panels{display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; flex:1; min-height:0;}
+  .panel{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column; min-height:0;}
+  .panel::after{content:""; position:absolute; inset:-1px; border-radius:20px; padding:1px; pointer-events:none;
+    background:linear-gradient(120deg, transparent 20%, rgba(251,191,36,.35), transparent 80%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:0; transition:.4s;}
+  .panel:hover::after{opacity:1;}
+  .panel-head{padding:11px 15px 8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:none;}
+  .panel-head h2{font-size:13.5px; font-weight:800; text-transform:uppercase; letter-spacing:.8px;}
+  .panel-head .arrow{width:25px;height:25px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .arrow.up{background:rgba(251,191,36,.15); color:var(--accent);}
+  .arrow.down{background:rgba(34,211,238,.13); color:var(--teal);}
+  .panel-head .sub{font-size:11px; color:var(--muted); width:100%; font-weight:500;}
+  .stepnum{width:20px;height:20px;border-radius:50%;background:var(--grad);color:#2b1400;font-size:11px;font-weight:900;
+    display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(251,191,36,.4);flex:0 0 auto;}
+  .tabs{display:flex; gap:6px; margin-left:auto;}
+  .tab{background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--muted); font-weight:800;
+    border-radius:999px; padding:7px 15px; font-size:12px; transition:.15s;}
+  .tab:hover{color:var(--txt);}
+  .tab.on{background:var(--grad); color:#2b1400; border-color:transparent;}
+  .panel-tools{display:flex; gap:8px; padding:0 13px 9px; flex-wrap:wrap; align-items:center; flex:none;}
+  .panel-tools input[type=text], .panel-tools input[type=number], .panel-tools select{
+    background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--txt); border-radius:12px;
+    padding:8px 12px; font-size:13px; outline:none; min-width:0; font-weight:600; transition:.2s;
+  }
+  .panel-tools input:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(251,191,36,.12);}
+  .panel-tools select:focus{border-color:var(--accent);}
+  .chip{background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--muted); font-weight:800;
+    border-radius:12px; padding:8px 13px; font-size:12px; transition:.15s;}
+  .chip:hover{color:var(--txt); border-color:var(--line2);}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(128px,1fr)); gap:8px; padding:2px 13px 12px;
+    overflow-y:auto; flex:1; min-height:0; align-content:start;}
+
+  .skin{
+    min-height:148px; position:relative; background:var(--card);
+    border:1px solid var(--line); border-radius:15px; padding:8px 8px 9px; cursor:pointer;
+    transition:transform .18s, border-color .18s, box-shadow .18s; overflow:hidden; user-select:none;
+    animation:cardIn .3s ease backwards;
+  }
+  .grid .skin:nth-child(1){animation-delay:.02s}.grid .skin:nth-child(2){animation-delay:.04s}.grid .skin:nth-child(3){animation-delay:.06s}.grid .skin:nth-child(4){animation-delay:.08s}.grid .skin:nth-child(5){animation-delay:.10s}.grid .skin:nth-child(6){animation-delay:.12s}.grid .skin:nth-child(7){animation-delay:.14s}.grid .skin:nth-child(8){animation-delay:.16s}
+  @keyframes cardIn{from{opacity:0; transform:translateY(9px) scale(.97);}}
+  .skin::before{content:""; position:absolute; inset:0;
+    background:radial-gradient(115px 72px at 50% 37%, color-mix(in srgb, var(--rar) 22%, transparent), transparent 75%);
+    pointer-events:none;}
+  .skin:hover{transform:translateY(-3px); border-color:color-mix(in srgb,var(--rar) 55%, transparent);
+    box-shadow:0 10px 26px rgba(0,0,0,.35), 0 0 18px color-mix(in srgb,var(--rar) 22%, transparent);}
+  .skin:hover .img img{transform:scale(1.09) rotate(-2deg);}
+  .skin.sel{border-color:var(--accent); box-shadow:0 0 0 1.5px var(--accent), 0 0 24px rgba(251,191,36,.28);}
+  .skin.sel::after{content:"✓"; position:absolute; top:7px; right:8px; width:19px; height:19px; border-radius:50%;
+    background:var(--grad); color:#2b1400; font-size:12px; font-weight:900; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 8px rgba(249,145,22,.5);}
+  .skin .price{display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; position:relative;}
+  .skin .wear{position:absolute; top:8px; right:8px; font-size:9.5px; color:var(--muted); font-weight:800;
+    background:rgba(0,0,0,.5); border-radius:6px; padding:2px 6px;}
+  .skin.sel .wear{display:none;}
+  .skin .img{height:66px; display:flex; align-items:center; justify-content:center; margin:4px 0 6px; position:relative;}
+  .skin .img::before{content:""; position:absolute; inset:4% 14%; background:var(--rar); opacity:.32; filter:blur(17px); border-radius:50%;}
+  .skin .img img{position:relative; z-index:1; width:100%; height:100%; object-fit:contain; transition:transform .25s; display:block;
+}
+  .skin .rarline{height:3px; border-radius:99px; background:linear-gradient(90deg,var(--rar),transparent); margin:0 0 5px; opacity:.85;}
+  .skin .nm{font-size:11px; color:var(--muted); line-height:1.3; min-height:28px; position:relative; font-weight:600;}
+  .skin .nm b{display:block; color:var(--txt); font-size:11.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .skin .buy{position:absolute; left:0; right:0; bottom:0; padding:6px; text-align:center; font-size:11.5px; font-weight:800;
+    background:var(--grad); color:#2b1400; opacity:0; transform:translateY(100%); transition:.18s; z-index:2;}
+  .skin:hover .buy{opacity:1; transform:none;}
+  .skin.cant .buy{background:#1a1a1e; color:var(--muted);}
+  .star{color:var(--r6);}
+  .empty{grid-column:1/-1; text-align:center; color:var(--muted); font-size:13px; padding:30px 10px; line-height:1.7; font-weight:600;}
+  .panel-foot{padding:9px 13px; border-top:1px solid var(--line); display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    font-size:12px; color:var(--muted); font-weight:600; flex:none;}
+  .link-btn{background:none; color:var(--muted); font-size:12px; font-weight:700; text-decoration:underline; padding:4px;}
+  .link-btn:hover{color:var(--red);}
+  .pages{display:none;}
+  .pages button{background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--txt); border-radius:10px; width:29px; height:29px; transition:.15s;}
+  .pages button:hover:not(:disabled){border-color:var(--accent);}
+  .pages button:disabled{opacity:.3; cursor:default;}
+
+  .overlay{position:fixed; inset:0; background:rgba(4,6,11,.78);
+    display:flex; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:.25s;}
+  .overlay.show{opacity:1; pointer-events:auto;}
+  .modal{position:relative; overflow:hidden; background:linear-gradient(180deg,#111113,#09090b);
+    border:1px solid var(--line2); border-radius:26px; padding:28px 30px;
+    width:min(400px,92vw); text-align:center; transform:scale(.9) translateY(12px); transition:.28s cubic-bezier(.2,.9,.3,1.2);
+    box-shadow:0 30px 80px rgba(0,0,0,.5);}
+  .overlay.show .modal{transform:none;}
+  .modal h3{font-size:25px; font-weight:800; margin-bottom:4px; letter-spacing:.5px;}
+  .modal h3.win{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 22px rgba(251,191,36,.45));}
+  .modal h3.lose{color:var(--red);}
+  .modal p{color:var(--muted); font-size:13px; margin-bottom:12px; font-weight:600;}
+  .modal .mimg{height:112px; display:flex; align-items:center; justify-content:center; margin:8px 0;}
+  .modal .mimg img{max-height:112px; max-width:86%; object-fit:contain; animation:popIn .45s cubic-bezier(.2,.9,.3,1.4);
+}
+  @keyframes popIn{from{transform:scale(.4) rotate(-8deg); opacity:0;}}
+  .modal .mname{font-size:15px; font-weight:800; margin-bottom:2px;}
+  .modal .mprice{display:flex; justify-content:center; align-items:center; gap:6px; font-weight:800; margin:6px 0 16px;}
+  .modal-btns{display:flex; gap:10px; justify-content:center;}
+  .btn2{border-radius:999px; padding:12px 24px; font-weight:800; font-size:14px; transition:.2s;}
+  .btn2.gold{background:var(--grad); color:#2b1400; box-shadow:0 6px 20px rgba(249,145,22,.35);}
+  .btn2.dark{background:var(--card2); color:var(--txt); border:1px solid var(--line);}
+  .btn2:hover{filter:brightness(1.12); transform:translateY(-1px);}
+  .cf{position:absolute; top:34%; left:50%; width:8px; height:13px; border-radius:2px; background:var(--c);
+    animation:cf var(--d) cubic-bezier(.2,.6,.4,1) forwards; pointer-events:none;}
+  @keyframes cf{from{transform:translate(0,0) rotate(0); opacity:1;} to{transform:translate(var(--x),260px) rotate(var(--r)); opacity:0;}}
+
+  .panel-head .mults{margin-left:auto; gap:4px; justify-content:flex-end; flex-wrap:wrap;}
+  .panel-head .mult{padding:4px 9px; font-size:10.5px; border-radius:8px;}
+  .frozen main, .frozen header, .frozen .ticker{filter:blur(14px); pointer-events:none;}
+  .frozen *, .frozen *::before, .frozen *::after{animation-play-state:paused !important; transition:none !important;}
+  #loader{position:fixed; inset:0; z-index:600; background:#000; display:flex; flex-direction:column; gap:22px; align-items:center; justify-content:center; transition:opacity .45s;}
+  #loader .ldr{width:64px; height:64px; border-radius:50%; border:5px solid rgba(251,191,36,.15); border-top-color:var(--accent); animation:ldrspin .9s linear infinite;}
+  @keyframes ldrspin{to{transform:rotate(360deg);}}
+  *{-webkit-user-select:none; user-select:none; -webkit-touch-callout:none;}
+  input, textarea{-webkit-user-select:text !important; user-select:text !important;}
+  #gameApp.narrow header{gap:6px; padding:6px 10px;}
+  #gameApp.narrow .logo b{font-size:15px;}
+  #gameApp.narrow .logo svg{width:22px; height:22px;}
+  #gameApp.narrow .spacer{display:none;}
+  #gameApp.narrow .balance{margin-left:auto; padding:7px 10px; font-size:13px;}
+  #gameApp.narrow .btn-bonus.wide{order:10; flex:1 1 44%; min-width:130px; font-size:11.5px; padding:9px 4px;}
+  #gameApp.narrow #incomeChip{order:11;}
+  #gameApp.narrow .icon-btn{width:34px; height:34px; font-size:14px;}
+  #gameApp.narrow .hstat.hide-m{display:none;}
+</style>
+</head>
+<body>
+<div id="loader">
+<svg width="72" height="72" viewBox="0 0 32 32"><defs><linearGradient id="ldg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbbf24"></stop><stop offset="1" stop-color="#f97316"></stop></linearGradient></defs><path d="M16 1 L21 12 L31 16 L21 20 L16 31 L11 20 L1 16 L11 12 Z" fill="url(#ldg)"></path><path d="M16 7 L19 13.5 L25 16 L19 18.5 L16 25 L13 18.5 L7 16 L13 13.5 Z" fill="#080b12"></path><path d="M16 10 L18 14.5 L22 16 L18 17.5 L16 22 L14 17.5 L10 16 L14 14.5 Z" fill="url(#ldg)"></path></svg>
+<div class="ldr"></div>
+</div>
+<div id="bgfx"><b class="a1"></b><b class="a2"></b></div>
+<div id="gameApp" class="lock">
+<header>
+<button class="icon-btn" id="profileBtn" title="Профиль" style="font-size:17px">👤</button>
+<div class="logo">
+<svg width="30" height="30" viewBox="0 0 32 32">
+<defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#fde68a"></stop><stop offset=".55" stop-color="#fbbf24"></stop><stop offset="1" stop-color="#f97316"></stop></linearGradient> <radialGradient id="discG" cx=".5" cy=".42" r=".8">
+<stop offset="0" stop-color="#131316"></stop><stop offset="1" stop-color="#060607"></stop>
+</radialGradient>
+</defs>
+<path d="M16 1 L21 12 L31 16 L21 20 L16 31 L11 20 L1 16 L11 12 Z" fill="url(#lg)"></path>
+<path d="M16 7 L19 13.5 L25 16 L19 18.5 L16 25 L13 18.5 L7 16 L13 13.5 Z" fill="#080b12"></path>
+<path d="M16 10 L18 14.5 L22 16 L18 17.5 L16 22 L14 17.5 L10 16 L14 14.5 Z" fill="url(#lg)"></path>
+</svg>
+<b>JET<i>UPGRADE</i></b>
+</div>
+<div class="hstat"><span class="dot"></span> <span id="onlineLbl">Онлайн</span> <b id="online">33</b></div>
+<div class="hstat hide-m">⚡ <span id="upsLbl">Апгрейдов</span> <b id="totalUps">6 700</b></div>
+<div class="spacer"></div>
+<div class="balance"><span class="coin">₽</span><span id="balance">0</span></div>
+<button class="btn-bonus wide" id="bonusBtn"></button>
+<div class="btn-bonus wide" id="incomeChip" style="cursor:default; background:var(--panel); color:var(--txt); border:1px solid var(--line2); box-shadow:none;"></div>
+<button class="icon-btn" id="muteBtn" title="Звук">🔊</button>
+</header>
+<div id="profilePop" style="display:none; position:fixed; top:64px; left:16px; z-index:99; background:linear-gradient(180deg,#111113,#09090b); border:1px solid var(--line2); border-radius:16px; padding:16px 18px; width:290px; box-shadow:0 20px 50px rgba(0,0,0,.5); font-size:13px; line-height:1.6;">
+<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+<img id="profAva" style="display:none; width:44px; height:44px; border-radius:50%; border:1px solid var(--line2);" alt="">
+<div><b id="profName"></b><b id="profT">👤 Вы не зарегистрированы</b></div>
+</div>
+<span style="color:var(--muted)" id="profD">Вы играете в офлайн-режиме.</span>
+<button class="btn-bonus" id="profLogin" style="margin-top:10px; width:100%;">Войти в профиль</button>
+<div id="profStats" style="margin-top:10px; font-size:12.5px; line-height:1.9;"></div>
+<div style="border-top:1px solid #26262c; margin-top:12px; padding-top:12px"><div id="switchBars" style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+<button class="tab on" data-lang="ru">RU</button><button class="tab" data-lang="en">EN</button><button class="tab" data-lang="tr">TR</button>
+<span style="width:16px"></span>
+<button class="tab on" data-cur="RUB">₽</button><button class="tab" data-cur="USD">$</button><button class="tab" data-cur="EUR">€</button>
+</div></div>
+<div style="color:#6a6a74;font-size:11px;margin-top:10px;line-height:1.5"><span id="footTxt"><b>JetUpgrade</b> — бесплатная игра-симулятор апгрейда скинов. Цены предметов соответствуют реальному рынку (курс 78 ₽/$).<br>
+  Все предметы и рубли в игре виртуальные, не имеют реальной ценности. Пополнение и вывод отсутствуют. Играйте в удовольствие!</span></div>
+</div>
+<div class="ticker">
+<div class="tick-label" id="tickLbl">🔥 Лучшие апгрейды</div>
+<div class="tick-items" id="ticker"></div>
+</div>
+<main>
+<div class="wheel-zone">
+<div class="subtitle">Выберите свои предметы или рубли слева, цель — справа и нажмите «Прокачать»</div>
+<div class="wheel-wrap">
+<svg viewBox="0 0 320 320" id="wheelSvg">
+<defs>
+<linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#fbbf24"></stop><stop offset="1" stop-color="#f97316"></stop>
+</linearGradient>
+<filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+<feGaussianBlur stdDeviation="5" result="b"></feGaussianBlur>
+<feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+</filter>
+</defs>
+<circle cx="160" cy="160" r="154" fill="rgba(0,0,0,.55)" stroke="rgba(255,255,255,.08)" stroke-width="1.5"></circle>
+<circle cx="160" cy="160" r="146" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"></circle>
+<g id="ticks"></g>
+<circle cx="160" cy="160" r="128" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="22"></circle>
+<circle id="arc" cx="160" cy="160" r="128" fill="none" stroke="url(#arcGrad)" stroke-width="22" stroke-linecap="round" stroke-dasharray="0 792" transform="rotate(-90 160 160)" filter="url(#glow)"></circle>
+<g id="innerRing">
+<circle cx="160" cy="160" r="106" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="1.5" stroke-dasharray="4 10"></circle>
+</g>
+<g id="needle" style="transform-origin:160px 160px;">
+<path d="M160 6 L173 44 L147 44 Z" fill="#fff" filter="url(#glow)"></path>
+<path d="M160 13 L168.5 41 L151.5 41 Z" fill="#fbbf24"></path>
+</g>
+<circle cx="160" cy="160" r="96" fill="url(#discG)" stroke="rgba(255,255,255,.09)" stroke-width="1.5"></circle>
+</svg>
+<div class="wheel-center">
+<div class="chance-val" id="chanceVal">—</div>
+<div class="chance-lbl">шанс успеха</div>
+<div class="stake-line" id="stakeLine"></div>
+</div>
+</div>
+<button class="btn-go" id="goBtn" disabled="">⚡ Прокачать</button>
+<button class="mult" id="speedBtn">🚀 Турбо-стрелка: выкл</button>
+</div>
+<div class="panels">
+<!-- LEFT: inventory / shop -->
+<section class="panel">
+<div class="panel-head">
+<span class="stepnum">1</span><span class="arrow down">⬇</span><h2 id="leftTitle">Ваши предметы</h2>
+<div class="tabs">
+<button class="tab on" id="tabInv">Инвентарь</button>
+<button class="tab" id="tabShop">Магазин</button>
+</div>
+<div class="sub" id="leftSub">Выберите предметы и/или добавьте рубли со счёта</div>
+</div>
+<div class="panel-tools" id="invTools">
+<span class="coin">₽</span>
+<input type="number" id="coinStake" min="0" step="10" placeholder="Средства со счёта" style="width:150px">
+<button class="chip" id="allInBtn">Всё</button>
+</div>
+<div class="panel-tools" id="shopTools" style="display:none">
+<input type="text" id="shopSearch" placeholder="Поиск в магазине..." style="flex:1; min-width:110px">
+</div>
+<div class="grid" id="invGrid"></div>
+<div class="panel-foot">
+<span id="invInfo"></span>
+<span class="spacer"></span>
+<button class="link-btn" id="sellSelBtn">Продать выбранные</button>
+</div>
+</section>
+<!-- RIGHT: targets -->
+<section class="panel">
+<div class="panel-head">
+<span class="stepnum">2</span><span class="arrow up">⬆</span><h2 id="rTitle">Цель апгрейда</h2>
+<div class="mults" id="mults"></div>
+<div class="sub" id="rSub">Чем дороже цель относительно ставки — тем ниже шанс</div>
+</div>
+<div class="panel-tools">
+<input type="text" id="search" placeholder="Поиск скина..." style="flex:1; min-width:110px">
+<select id="sort">
+<option value="asc">Цена ↑</option>
+<option value="desc">Цена ↓</option>
+</select>
+</div>
+<div class="grid" id="catGrid"></div>
+<div class="panel-foot">
+<span id="catInfo"></span>
+<div class="pages">
+<button id="prevPg">‹</button><span id="pgLbl" style="font-size:12px"></span><button id="nextPg">›</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<div class="overlay" id="overlay">
+<div class="modal" id="modalBox">
+<h3 id="mTitle"></h3>
+<p id="mSub"></p>
+<div class="mimg" id="mImg"></div>
+<div class="mname" id="mName"></div>
+<div class="mprice" id="mPrice"></div>
+<div class="modal-btns">
+<button class="btn2 dark" id="mSell" style="display:none">Продать</button>
+<button class="btn2 gold" id="mOk">Забрать</button>
+</div>
+</div>
+</div>
+<div id="toast" style="display:none; position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:120; background:linear-gradient(180deg,#111113,#09090b); border:1px solid var(--line2); border-radius:14px; padding:12px 20px; font-size:13px; font-weight:700; box-shadow:0 16px 40px rgba(0,0,0,.5);"></div>
+<script>
+"use strict";
+/* ================= DATA ================= */
+const RAR = ["#9aa7b8","#5e98d9","#4b69ff","#8847ff","#d32ce6","#eb4b4b","#ffcf40"];
+const CURS={RUB:{r:1,s:"₽"},USD:{r:1/78,s:"$"},EUR:{r:0.8783/78,s:"€"}};
+const LANGS={
+ru:{loc:"ru-RU",online:"Онлайн",ups:"Апгрейдов",bonus:"+ Бонус",bonusIn:"Бонус через ",sec:"с",subtitle:"Выберите свои предметы или средства слева, цель — справа и нажмите «Прокачать»",multQ:"Во сколько раз дороже хотите получить скин?",hintAll:"Показаны все цели. Выберите множитель, чтобы отфильтровать по цене",hintNoStake:"Сначала соберите ставку — покажем подходящие цели",targets:"Цели",chanceWord:"шанс",chanceLbl:"шанс успеха",stake:"Ставка",goal:"цель",collect:"Соберите ставку",go:"⚡ Прокачать",turboOn:"🚀 Турбо-стрелка: вкл",turboOff:"🚀 Турбо-стрелка: выкл",inv:"Инвентарь",shop:"Магазин",yourItems:"Ваши предметы",invSub:"Выберите предметы и/или добавьте средства со счёта",shopSub:"Покупайте скины по реальным ценам рынка",coinPh:"Средства со счёта",all:"Всё",shopPh:"Поиск в магазине...",searchPh:"Поиск скина...",asc:"Цена ↑",desc:"Цена ↓",rTitle:"Цель апгрейда",rSub:"Чем дороже цель относительно ставки — тем ниже шанс",sellSel:"Продать выбранные",itemsFor:"предм. на",inShop:"скинов в магазине • баланс",skins:"скинов",buy:"Купить",noFunds:"Не хватает средств",emptyInv:"Инвентарь пуст.<br>Купите скин во вкладке <b>Магазин</b>, используйте средства со счёта или возьмите <b>+ Бонус</b>.",emptyCat:"Ничего не найдено под этот множитель.<br>Измените ставку или выберите другой множитель.",notFound:"Ничего не найдено",win:"УСПЕХ!",lose:"Не повезло...",winSub:"Предмет добавлен в ваш инвентарь",loseSub:"Ставка сгорела. Попробуйте ещё раз!",take:"Забрать",sellFor:"Продать за ",you:"Вы",ticker:"🔥 Лучшие апгрейды",private:"🔒 Приватный аккаунт — профиль игрока скрыт",profT:"👤 Вы не зарегистрированы",profD:"Вы играете в офлайн-режиме. Прогресс сохраняется только на этом устройстве. Регистрация появится в следующих версиях игры.",footer:"<b>JetUpgrade</b> — бесплатная игра-симулятор апгрейда скинов. Цены соответствуют реальному рынку.<br>Все предметы и средства в игре виртуальные и не имеют реальной ценности. Пополнение и вывод отсутствуют. Играйте в удовольствие!",resetQ:"Сбросить весь прогресс?",anyPrice:"Любая цена",ok:"Ок",pickL:"Выберите предметы ниже",pickR:"Выберите цель ниже",login:"Войти в профиль",profCloud:"Прогресс сохраняется в облаке",stUps:"Апгрейдов",stWins:"Успешных",stBest:"Лучший дроп",adFail:"Реклама недоступна",adTest:"Тест: +3 000 (здесь будет реклама)",onlyYa:"Доступно только на площадке",adFor:" за рекламу",title:"JetUpgrade — симулятор апгрейда скинов",tipProfile:"Профиль",tipSound:"Звук"},
+en:{loc:"en-US",online:"Online",ups:"Upgrades",bonus:"+ Bonus",bonusIn:"Bonus in ",sec:"s",subtitle:"Pick your items or funds on the left, a target on the right, then press “Upgrade”",multQ:"How many times more expensive should the new skin be?",hintAll:"Showing all targets. Pick a multiplier to filter by price",hintNoStake:"Build your stake first — we will show matching targets",targets:"Targets",chanceWord:"chance",chanceLbl:"success chance",stake:"Stake",goal:"target",collect:"Build your stake",go:"⚡ Upgrade",turboOn:"🚀 Turbo needle: on",turboOff:"🚀 Turbo needle: off",inv:"Inventory",shop:"Shop",yourItems:"Your items",invSub:"Select items and/or add funds from your balance",shopSub:"Buy skins at real market prices",coinPh:"Funds from balance",all:"All",shopPh:"Search the shop...",searchPh:"Search skins...",asc:"Price ↑",desc:"Price ↓",rTitle:"Upgrade target",rSub:"The pricier the target vs your stake, the lower the chance",sellSel:"Sell selected",itemsFor:"items worth",inShop:"skins in shop • balance",skins:"skins",buy:"Buy",noFunds:"Not enough funds",emptyInv:"Inventory is empty.<br>Buy a skin in the <b>Shop</b> tab, use funds or claim <b>+ Bonus</b>.",emptyCat:"Nothing found for this multiplier.<br>Change your stake or pick another multiplier.",notFound:"Nothing found",win:"SUCCESS!",lose:"Unlucky...",winSub:"The item was added to your inventory",loseSub:"Your stake is gone. Try again!",take:"Claim",sellFor:"Sell for ",you:"You",ticker:"🔥 Best upgrades",private:"🔒 Private account — player profile is hidden",profT:"👤 You are not signed in",profD:"You are playing offline. Progress is saved on this device only. Sign-up is coming in future versions.",footer:"<b>JetUpgrade</b> — a free skin upgrade simulator. Prices follow the real market.<br>All items and funds are virtual and have no real value. No deposits, no withdrawals. Have fun!",resetQ:"Reset all progress?",anyPrice:"Any price",ok:"OK",pickL:"Select items below",pickR:"Choose a target below",login:"Sign in to profile",profCloud:"Progress is saved to the cloud",stUps:"Upgrades",stWins:"Wins",stBest:"Best drop",adFail:"Ad unavailable",adTest:"Test: +3,000 (a real ad goes here)",onlyYa:"Available on the platform only",adFor:" for watching an ad",title:"JetUpgrade — skin upgrade simulator",tipProfile:"Profile",tipSound:"Sound"},
+tr:{loc:"tr-TR",online:"Çevrimiçi",ups:"Yükseltme",bonus:"+ Bonus",bonusIn:"Bonus: ",sec:"sn",subtitle:"Solda eşyalarınızı veya bakiyenizi, sağda hedefi seçin ve «Yükselt»e basın",multQ:"Yeni skin kaç kat daha pahalı olsun?",hintAll:"Tüm hedefler gösteriliyor. Fiyata göre filtrelemek için çarpan seçin",hintNoStake:"Önce bahis oluşturun — uygun hedefleri göstereceğiz",targets:"Hedefler",chanceWord:"şans",chanceLbl:"başarı şansı",stake:"Bahis",goal:"hedef",collect:"Bahis oluşturun",go:"⚡ Yükselt",turboOn:"🚀 Turbo ibre: açık",turboOff:"🚀 Turbo ibre: kapalı",inv:"Envanter",shop:"Mağaza",yourItems:"Eşyalarınız",invSub:"Eşya seçin ve/veya bakiyeden para ekleyin",shopSub:"Gerçek piyasa fiyatlarıyla skin satın alın",coinPh:"Bakiyeden tutar",all:"Tümü",shopPh:"Mağazada ara...",searchPh:"Skin ara...",asc:"Fiyat ↑",desc:"Fiyat ↓",rTitle:"Yükseltme hedefi",rSub:"Hedef bahsinize göre ne kadar pahalıysa şans o kadar düşük",sellSel:"Seçilenleri sat",itemsFor:"eşya, değeri",inShop:"skin mağazada • bakiye",skins:"skin",buy:"Satın al",noFunds:"Yetersiz bakiye",emptyInv:"Envanter boş.<br><b>Mağaza</b> sekmesinden skin alın, bakiye kullanın veya <b>+ Bonus</b> alın.",emptyCat:"Bu çarpan için sonuç yok.<br>Bahsinizi değiştirin veya başka çarpan seçin.",notFound:"Sonuç yok",win:"BAŞARILI!",lose:"Şanssız...",winSub:"Eşya envanterinize eklendi",loseSub:"Bahis kaybedildi. Tekrar deneyin!",take:"Al",sellFor:"Sat: ",you:"Siz",ticker:"🔥 En iyi yükseltmeler",private:"🔒 Gizli hesap — oyuncu profili gizli",profT:"👤 Kayıtlı değilsiniz",profD:"Çevrimdışı moddasınız. İlerleme yalnızca bu cihazda saklanır. Kayıt gelecek sürümlerde.",footer:"<b>JetUpgrade</b> — ücretsiz skin yükseltme simülatörü. Fiyatlar gerçek piyasayı takip eder.<br>Tüm eşyalar ve bakiye sanaldır, gerçek değeri yoktur. Para yatırma ve çekme yok. İyi eğlenceler!",resetQ:"Tüm ilerleme sıfırlansın mı?",anyPrice:"Her fiyat",ok:"Tamam",pickL:"Aşağıdan eşya seçin",pickR:"Aşağıdan hedef seçin",login:"Profile giriş yap",profCloud:"İlerleme bulutta saklanıyor",stUps:"Yükseltme",stWins:"Kazanç",stBest:"En iyi drop",adFail:"Reklam kullanılamıyor",adTest:"Test: +3.000 (burada reklam olacak)",onlyYa:"Sadece platformda",adFor:" reklam izleyerek",title:"JetUpgrade — skin yükseltme simülatörü",tipProfile:"Profil",tipSound:"Ses"}};
+
+/* локализованные названия скинов */
+const SNAMES = {
+ru:{"Crane Flight":"Полёт журавля","Inheritance":"Наследство","Aphrodite":"Афродита","Bloodsport":"Кровавый спорт","Vulcan":"Вулкан","B the Monster":"Будь монстром","Redline":"Красная линия","Case Hardened":"Поверхностная закалка","Slate":"Сланец","Wild Lotus":"Дикий лотос","Dragon Lore":"Драконье предание","Queen's Gambit":"Ход королевы","Printstream":"Принтстрим","Desert Hydra":"Пустынная гидра","Gungnir":"Гунгнир","Asiimov":"Азимов","LongDog":"Лонгдог","The End":"Конец","Ice Coaled":"Ледяной уголь","Temukau":"Темукау","Full Throttle":"Полный газ","Howl":"Вой","Hellish":"Адская","The Emperor":"Император","Desolate Space":"Пустынный космос","Neo-Noir":"Нео-Нуар","Fade":"Градиент","Blue Phosphor":"Синий фосфор","Vaporwave":"Вейпорвейв","Electrum":"Электрум","Black Lotus":"Чёрный лотос","Hot Rod":"Хот-род","Integrale":"Интеграл","Colony IV":"Колония IV","Dragon Tech":"Драконья техника","Akihabara Accept":"Акихабара","Carved Jade":"Резной нефрит","Eye of Zapems":"Око Запемса","Bad Trip":"Бэд-трип","Mecha Industries":"Мех-индустрия","Yeti Camo":"Камуфляж йети","Galigator":"Галигатор","Rainbow Spoon":"Радужная ложка","Eco":"Эко","Chromatic Aberration":"Хромат. аберрация","Firebreathing":"Огнедышащий","Mulberry":"Шелковица","Heat Treated":"Термообработка","Fennec Fox":"Фенек","Starcade":"Старкейд","Fully Tuned":"Полный тюнинг","Shinobu":"Шинобу","Mirror Mosaic":"Зеркальная мозаика","AXIA":"АКСИЯ","Green Line":"Зелёная линия","Silent Shot":"Тихий выстрел","Sleeping Potion":"Сонное зелье","Jawbreaker":"Челюсти","Royal Guard":"Королевская гвардия","Lore":"Предание","Doppler":"Доплер","Tiger Tooth":"Тигриный клык","Doppler Ruby":"Доплер Рубин","Vice":"Вайс","Nocts":"Ноктс","Ultra Violent":"Ультражестокость","Occult":"Оккульт","Amphibious":"Амфибия","Pandora's Box":"Ящик Пандоры","Violet Beadwork":"Фиолетовый бисер","Omega":"Омега","Slingshot":"Рогатка","Hedge Maze":"Лабиринт","Frosty":"Морозные","Scarlet Shamagh":"Алый шемаг","Big Game":"Крупная дичь","Creme Pinstripe":"Кремовая полоска","Blaze":"Пламя","Red Racer":"Красный гонщик","Superconductor":"Сверхпроводник","Bronze Morph":"Бронзовый морф","Arid":"Засуха","Ultraviolet":"Ультрафиолет","Marble Fade":"Мраморный градиент","Autotronic":"Автотроника","Spearmint":"Спирминт","Doppler Phase 2":"Доплер Фаза 2","Doppler Phase 4":"Доплер Фаза 4","Crimson Web":"Кровавая паутина","Gamma Doppler Emerald":"Гамма-доплер Изумруд","Gamma Doppler":"Гамма-доплер","Black Laminate":"Чёрный ламинат","Kintsugi":"Кинцуги","See Ya Later":"До скорого","Constructivist":"Конструктивист","Visions":"Видения","Fraise Crane":"Клубничный журавль","Dark Polymer":"Тёмный полимер"},
+tr:{"Dragon Lore":"Ejderha Efsanesi","Redline":"Kırmızı Çizgi","Howl":"Uluma","Case Hardened":"Sertleştirilmiş","Crimson Web":"Kızıl Ağ","Blaze":"Alev","Green Line":"Yeşil Çizgi","The Emperor":"İmparator","Queen's Gambit":"Vezir Gambiti","The End":"Son","Fennec Fox":"Fenek Tilkisi","Mulberry":"Dut","Yeti Camo":"Yeti Kamuflajı","Marble Fade":"Mermer Geçiş"}
+};
+const WNAMES = {
+ru:{"Karambit":"Керамбит","M9 Bayonet":"Штык-нож M9","Butterfly Knife":"Нож-бабочка","Falchion Knife":"Фальшион","Sport Gloves":"Спорт. перчатки","Moto Gloves":"Мотоперчатки"},
+tr:{"Butterfly Knife":"Kelebek Bıçak","Sport Gloves":"Spor Eldiven","Moto Gloves":"Moto Eldiven","Falchion Knife":"Pala Bıçak"}
+};
+function locS(sk){ const d = SNAMES[S.lang]; return (d && d[sk.s]) || sk.s; }
+function locN(n){ const d = WNAMES[S.lang]; return (d && d[n]) || n; }
+
+/* Цены: реальные минимальные с csgoskins.gg × 78 ₽/$ (июль 2026).
+   w: pistol | smg | rifle | awp | knife | gloves (для SVG-фолбэка) */
+const SKINS = [
+  {n:"AK-47", s:"Crane Flight",      w:"rifle", p:633.32,    r:4, wear:"BS"},
+  {n:"AK-47", s:"Inheritance",         w:"rifle", p:2494.90,   r:5, wear:"BS"},
+  {n:"AK-47", s:"Aphrodite",           w:"rifle", p:969.24,    r:5, wear:"WW"},
+  {n:"AK-47", s:"Bloodsport",     w:"rifle", p:9323.75,   r:5, wear:"WW"},
+  {n:"AK-47", s:"Vulcan",             w:"rifle", p:8303.60,   r:5, wear:"BS"},
+  {n:"AK-47", s:"B the Monster",      w:"rifle", p:5254.92,   r:5, wear:"BS"},
+  {n:"AK-47", s:"Redline",      w:"rifle", p:1710.21,   r:4, wear:"BS"},
+  {n:"AK-47", s:"Case Hardened",w:"rifle",p:13740.25, r:4, wear:"BS"},
+  {n:"AK-47", s:"Slate",             w:"rifle", p:235.18,    r:3, wear:"BS"},
+  {n:"AK-47", s:"Wild Lotus",        w:"rifle", p:300617.12, r:5, wear:"BS"},
+  {n:"AWP", s:"Dragon Lore",    w:"awp", p:332882.31,   r:5, wear:"BS"},
+  {n:"AWP", s:"Queen's Gambit",         w:"awp", p:2739.50,     r:5, wear:"BS"},
+  {n:"AWP", s:"Printstream",           w:"awp", p:2906.43,     r:5, wear:"BS"},
+  {n:"AWP", s:"Desert Hydra",      w:"awp", p:84707.01,    r:5, wear:"BS"},
+  {n:"AWP", s:"Gungnir",              w:"awp", p:462885.66,   r:5, wear:"BS"},
+  {n:"AWP", s:"Asiimov",               w:"awp", p:5393.71,     r:5, wear:"BS"},
+  {n:"AWP", s:"LongDog",              w:"awp", p:5041.94,     r:5, wear:"BS"},
+  {n:"AWP", s:"The End",                w:"awp", p:857.73,      r:4, wear:"BS"},
+  {n:"AWP", s:"Ice Coaled",        w:"awp", p:294.70,      r:4, wear:"BS"},
+  {n:"M4A4", s:"Temukau",             w:"rifle", p:1991.00,   r:5, wear:"BS"},
+  {n:"M4A4", s:"Full Throttle",          w:"rifle", p:2057.22,   r:5, wear:"BS"},
+  {n:"M4A4", s:"Howl",                 w:"rifle", p:299154.39, r:5, wear:"WW"},
+  {n:"M4A4", s:"Hellish",              w:"rifle", p:1180.69,   r:4, wear:"BS"},
+  {n:"M4A4", s:"The Emperor",           w:"rifle", p:3801.54,   r:5, wear:"BS"},
+  {n:"M4A4", s:"Desolate Space",    w:"rifle", p:803.18,    r:4, wear:"BS"},
+  {n:"M4A4", s:"Neo-Noir",            w:"rifle", p:2043.76,   r:5, wear:"BS"},
+  {n:"M4A1-S", s:"Fade",          w:"rifle", p:19051.85,  r:5, wear:"FN"},
+  {n:"M4A1-S", s:"Blue Phosphor",      w:"rifle", p:40803.31,  r:4, wear:"FN"},
+  {n:"M4A1-S", s:"Printstream",        w:"rifle", p:11851.83,  r:5, wear:"BS"},
+  {n:"M4A1-S", s:"Vaporwave",        w:"rifle", p:3537.30,   r:5, wear:"BS"},
+  {n:"M4A1-S", s:"Electrum",          w:"rifle", p:73.20,     r:3, wear:"BS"},
+  {n:"M4A1-S", s:"Black Lotus",      w:"rifle", p:347.59,    r:4, wear:"FT"},
+  {n:"M4A1-S", s:"Hot Rod",           w:"rifle", p:115081.58, r:4, wear:"FN"},
+  {n:"SG 553", s:"Integrale",          w:"rifle", p:230.25,    r:4, wear:"BS"},
+  {n:"SG 553", s:"Colony IV",        w:"rifle", p:556.93,    r:4, wear:"FT"},
+  {n:"SG 553", s:"Dragon Tech",  w:"rifle", p:24.12,     r:3, wear:"BS"},
+  {n:"AUG", s:"Akihabara Accept",            w:"rifle", p:20081.51,  r:5, wear:"BS"},
+  {n:"AUG", s:"Carved Jade",        w:"rifle", p:717.71,    r:2, wear:"MW"},
+  {n:"AUG", s:"Eye of Zapems",          w:"rifle", p:117.32,    r:3, wear:"BS"},
+  {n:"FAMAS", s:"Bad Trip",           w:"rifle", p:3094.45,   r:5, wear:"BS"},
+  {n:"FAMAS", s:"Mecha Industries",      w:"rifle", p:2377.57,   r:4, wear:"BS"},
+  {n:"FAMAS", s:"Yeti Camo",      w:"rifle", p:9.76,     r:2, wear:"BS"},
+  {n:"Galil AR", s:"Galigator",       w:"rifle", p:40.38,     r:3, wear:"BS"},
+  {n:"Galil AR", s:"Rainbow Spoon",  w:"rifle", p:2463.45,   r:4, wear:"FT"},
+  {n:"Galil AR", s:"Eco",             w:"rifle", p:757.99,    r:4, wear:"BS"},
+  {n:"Galil AR", s:"Chromatic Aberration",w:"rifle",p:224.99,    r:4, wear:"WW"},
+  {n:"Desert Eagle", s:"Printstream",  w:"pistol", p:2462.42,  r:5, wear:"BS"},
+  {n:"Desert Eagle", s:"Firebreathing", w:"pistol", p:45.98,    r:3, wear:"BS"},
+  {n:"Desert Eagle", s:"Mulberry",   w:"pistol", p:87.34,    r:3, wear:"BS"},
+  {n:"Desert Eagle", s:"Heat Treated",w:"pistol",p:77.96,   r:4, wear:"BS"},
+  {n:"Desert Eagle", s:"Fennec Fox",       w:"pistol", p:13611.58, r:4, wear:"BS"},
+  {n:"Desert Eagle", s:"Starcade",    w:"pistol", p:2417.86,  r:4, wear:"BS"},
+  {n:"Glock-18", s:"Fully Tuned",   w:"pistol", p:3398.28,  r:5, wear:"BS"},
+  {n:"Glock-18", s:"Shinobu",          w:"pistol", p:323.69,   r:4, wear:"BS"},
+  {n:"Glock-18", s:"Mirror Mosaic",w:"pistol",p:310.47,  r:4, wear:"BS"},
+  {n:"Glock-18", s:"AXIA",           w:"pistol", p:3096.89,  r:4, wear:"BS"},
+  {n:"Glock-18", s:"Green Line",   w:"pistol", p:15.12,    r:2, wear:"BS"},
+  {n:"USP-S", s:"Silent Shot",      w:"pistol", p:17.34,    r:2, wear:"BS"},
+  {n:"USP-S", s:"Printstream",         w:"pistol", p:2426.67,  r:5, wear:"BS"},
+  {n:"USP-S", s:"Sleeping Potion",       w:"pistol", p:55.48,    r:3, wear:"BS"},
+  {n:"USP-S", s:"Jawbreaker",            w:"pistol", p:227.82,   r:4, wear:"BS"},
+  {n:"USP-S", s:"Royal Guard",w:"pistol", p:33.24,    r:3, wear:"BS"},
+  {n:"Karambit", s:"Case Hardened",w:"knife",p:48375.75,r:6,wear:"BS"},
+  {n:"Karambit", s:"Lore",        w:"knife", p:37154.04,  r:6, wear:"BS"},
+  {n:"Karambit", s:"Doppler",          w:"knife", p:97804.79,  r:6, wear:"FN"},
+  {n:"Karambit", s:"Tiger Tooth",   w:"knife", p:67736.14,  r:6, wear:"FN"},
+  {n:"Karambit", s:"Doppler Ruby",    w:"knife", p:590193.86, r:6, wear:"MW"},
+  {n:"Sport Gloves", s:"Vice",     w:"gloves", p:22790.53, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Nocts",    w:"gloves", p:33029.02, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Ultra Violent",w:"gloves",p:49853.05,r:6,wear:"BS"},
+  {n:"Sport Gloves", s:"Occult",  w:"gloves", p:25980.11, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Amphibious",  w:"gloves", p:18546.86, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Pandora's Box",w:"gloves",p:166691.96,r:6,wear:"BS"},
+  {n:"Sport Gloves", s:"Violet Beadwork",w:"gloves",p:17523.99,r:6,wear:"BS"},
+  {n:"Sport Gloves", s:"Omega",    w:"gloves", p:12029.42, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Slingshot",  w:"gloves", p:14035.57, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Hedge Maze", w:"gloves", p:177254.96,r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Frosty", w:"gloves", p:13087.62, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Scarlet Shamagh",w:"gloves",p:11755.56, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Big Game",w:"gloves",p:9950.05,r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Creme Pinstripe",w:"gloves",p:8381.29,r:6,wear:"BS"},
+  {n:"Sport Gloves", s:"Blaze",    w:"gloves", p:11916.10, r:6, wear:"BS"},
+  {n:"Sport Gloves", s:"Red Racer",w:"gloves",p:11338.38,r:6,wear:"BS"},
+  {n:"Sport Gloves", s:"Superconductor",w:"gloves",p:75051.42,r:6,wear:"BS"},
+  {n:"Sport Gloves", s:"Bronze Morph",w:"gloves",p:7470.26,r:6,wear:"BS"},
+  {n:"Sport Gloves", s:"Arid",   w:"gloves", p:24286.48, r:6, wear:"BS"},
+  {n:"Falchion Knife", s:"Ultraviolet", w:"knife", p:6217.56, r:6, wear:"FT"},
+  {n:"M9 Bayonet", s:"Marble Fade", w:"knife", p:105919.46, r:6, wear:"FN"},
+  {n:"Butterfly Knife", s:"Fade", w:"knife", p:226401.27, r:6, wear:"FN"},
+  {n:"Karambit", s:"Autotronic", w:"knife", p:86867.08, r:6, wear:"FN"},
+  {n:"Moto Gloves", s:"Spearmint", w:"gloves", p:55929.86, r:6, wear:"FT"},
+  {n:"M9 Bayonet", s:"Lore", w:"knife", p:29088.65, r:6, wear:"BS"},
+  {n:"M9 Bayonet", s:"Tiger Tooth", w:"knife", p:49316.23, r:6, wear:"FN"},
+  {n:"M9 Bayonet", s:"Doppler Phase 2", w:"knife", p:98461.91, r:6, wear:"FN"},
+  {n:"M9 Bayonet", s:"Doppler Phase 4", w:"knife", p:77839.24, r:6, wear:"FN"},
+  {n:"M9 Bayonet", s:"Crimson Web", w:"knife", p:30512.35, r:6, wear:"BS"},
+  {n:"Butterfly Knife", s:"Lore", w:"knife", p:37714.71, r:6, wear:"BS"},
+  {n:"Butterfly Knife", s:"Gamma Doppler Emerald", w:"knife", p:547913.35, r:6, wear:"MW"},
+  {n:"Butterfly Knife", s:"Gamma Doppler", w:"knife", p:129572.52, r:6, wear:"FN"},
+  {n:"Butterfly Knife", s:"Black Laminate", w:"knife", p:40718.87, r:6, wear:"BS"},
+  {n:"P250", s:"Kintsugi", w:"pistol", p:324.84, r:4, wear:"BS"},
+  {n:"P250", s:"See Ya Later", w:"pistol", p:6800.94, r:5, wear:"BS"},
+  {n:"P250", s:"Constructivist", w:"pistol", p:1.57, r:1, wear:"FT"},
+  {n:"P250", s:"Visions", w:"pistol", p:233.71, r:4, wear:"BS"},
+  {n:"Five-SeveN", s:"Fraise Crane", w:"pistol", p:12.27, r:2, wear:"BS"},
+  {n:"Five-SeveN", s:"Heat Treated", w:"pistol", p:249.22, r:3, wear:"BS"},
+  {n:"Five-SeveN", s:"Case Hardened", w:"pistol", p:881.00, r:3, wear:"BS"},
+  {n:"Five-SeveN", s:"Dark Polymer", w:"pistol", p:3.90, r:2, wear:"BS"},
+];
+const IMG = [
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_ak47_crane_flight_light.37b674715c5c677bf27804ae46f4a277fb2016f7.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_ak_porcelain_light.dc4f76fc365175e4ac42d14ea8472d76cf3fa663.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_gsch_ak_djiin_light.b109392bd1429968c5bbf34288f0328350b37b93.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_gs_ak47_bloodsport_light.3565d44a1edeafb2f806d16110c7576f1706a7e3.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_cu_ak47_rubber_light.335fe2ff5d8a63fbee39f51ab9a87d3d8f41b592.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_cu_overpass_monster_ak47_light.561757e5112326a0261ee92f50159c798cb6afe7.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_cu_ak47_cobra_light.f458c105ab75fc74e8dec19ad58bbee9072a115a.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_aq_oiled_light.cd241b23f4fac24d4542811d55b2312b013af919.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_gs_ak47_professional_light.296ba8b1510da49aef551f6e3e8ed80e217da746.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_ak47_cu_ak_island_floral_light.058f31732d6828ac86761c38ee34011c468b2657.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_cu_medieval_dragon_awp_light.d087e1fdc0693216cda796494167bae99fed7fbd.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_awp_queens_gambit_light.b1f9cbd084c82b531e51b0afc3323f1ba2ac1387.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_awp_printstream_light.4fb2e46877eda34bbb7bfce829a04b06952ffd61.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_gs_awp_hydra_light.8fd4db54ad925910973921eb03d40b5cec196b80.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_gs_awp_gungnir_light.3bc77989ec1fc7c6f4b09ff9b313530794f92309.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_cu_awp_asimov_light.f3ac90737ee2967a21024303d4f3a57f114a59c1.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_awp_longdog_light.d2d6dd39925797790f5c74a9b66f10242c9b892a.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_soe_bw_the_end_awp_light.3bb2ed9179c4cf189f4e2c03ad0a8be392eca9fc.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_awp_awp_ice_coaled_light.f640cb9a56eec31bd9fb6fe5f9640bb609bd7209.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_cu_m4a4_temukau_light.41b1d556f510cef4fc70007f8f3f35b729243279.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_m4a4_skrrrt_green_light.f781fb14f879de1c6dfc60ea2667cd2361edd8a2.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_cu_m4a1_howling_light.4910a09d81980d01ff147c41239df1ededb5df61.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_cu_m4a4_train_hell_light.ba7ef5662bd195976656ab28388e8a3e66c89022.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_gs_m4a4_emperor_light.89a5654a765110ae5697e7b0d17ff0daf317defe.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_cu_m4a4_desolate_space_light.a2e4d565d439dc8a7c7aae7ddc5e5d7311bccffd.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_cu_m4a4_neo_noir_light.2f70e4c0c47823a3687a940a6194d9e72aa43cfa.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_silencer_aa_fade_m4a1s_light.cb9dc942694985272e26e535053e282b97a51438.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_silencer_am_m4a1s_bluesmoke_light.5ef1b56de47b083726bbbf3fe6966002657d0782.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_silencer_cu_m4a1s_printstream_light.aa686d2e2820d9e375eb149b8f6a16b5a8b97f97.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_silencer_m4a1s_vaporwave_light.0287562da713ee2d531e5d64cda9d13378ff1b48.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_silencer_m4a1s_electrum_light.0090da52ce7598ef3043a52dc14ab65a30136177.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_silencer_m4a1s_black_lotus_light.e5fc7c50ee810ebe1454be3cf19ccc5861325789.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_m4a1_silencer_an_red_m4a1s_light.3e80f80f17d1579ebb528c30eca7cda51c728895.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_sg556_cu_sg553_rally_light.d6280204911cd81bb0345781140ab9873039b06b.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_sg556_cu_sg553_reactor_light.2e8b982ff2b1323a58a14188646b381d346c2c6c.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_sg556_cu_sg553_cyber_dragon_light.6a41e9e1f7dbaf2cc4ea0ca32f5fcc1000f8c2ab.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_aug_cu_anime_aug_light.c83d855065df1a3a6808a7af2c64cb5189b6da17.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_aug_am_jade_light.533ee48147f76890f5e8197281740ddace6a9d3f.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_aug_cu_overpass_graf_aug_light.2179a6fee710c0c49171bab68d36554cca07ece0.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_famas_famas_badtrip_light.de5dbc07992ee85c005b6fd9e32ce5f23a796250.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_famas_gs_famas_mecha_light.57ae1b83e33bcbe23f35e542cdf1efb4048028e0.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_famas_soe_blue_famas_light.a4480653cef9e0362cbf401c1060e305be7e1fcf.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_galilar_galil_galigator_light.9c8e2c27036e5cabb8c66a41cc2bf3d406da100e.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_galilar_aq_titanium_rainbow_galilar_light.972a419a20102cd11c6ffedb98f39feacdfebcc8.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_galilar_cu_galil_eco_light.cb5ca842c945c25b6dba95a78016b6042530df03.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_galilar_cu_galil_chroma_pink_light.c8cee8ddca46aa00f69839baa4f02fae090ec498.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_deagle_cu_deag_printstream_light.62c1c38402a7236f2343a3c5540d95441d9405b6.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_deagle_deagle_firebreathing_light.5f50fd8074ac24a617bc83fd94e0448f25d750e3.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_deagle_soe_plum_light.7e62e838cad8c5c066fe8c066e896f1c2147e907.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_deagle_aq_deagle_case_hardened_2_light.1200c278ce751418cfd07fc0cb3a5f7c19d3ad83.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_deagle_gs_deagle_fennec_light.361921d445914af8dc70a28e83c605703c605e1d.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_deagle_cu_glitter_deagle_light.b2e7c8f5f1cbdced93fd47e1395fd70d8417b434.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_glock_glock_jdpeek_light.43879e5dcf5f564ac59ee09118c959384321e791.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_glock_glock_shinobu_light.5ddc8805a6cd9eeca383d9111da192cc2c79d1f9.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_glock_glock_mirror_maze_v2_pearl_light.0bd399420869718be9053ce367fd103c842c73aa.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_glock_gsch_axia_glock_light.56f01a1d730d2eed26d9ee18804aaaae883483fe.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_glock_glock_train_green_light.7c571c785890357f884116a704315b7cd3c42143.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_usp_silencer_usps_silent_boy_light.bc167ae2c1845b9c663f932dcaedc7e05bde66bf.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_usp_silencer_cu_usp_printstream_light.c5cd04fac5fc6b1595d5fbea0e3b6d7a520023fe.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_usp_silencer_soe_purple_light.d0a03fbc3732e263bbc3237d14a45f652560f70d.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_usp_silencer_usps_doggy_light.03cd4b11e3c0828b69ed34a617f26de2aab0c18b.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_usp_silencer_soe_blue_and_gold_light.dddd1a6bb5ba26f9ea0dfcbb9a68a8175757d102.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_karambit_aq_oiled_light.5bac90368ae248a5332a146d7606ba8ed7ab3792.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_karambit_cu_karam_lore_light.f8cf82f56096ebb735e97dda0c3ef3212881c62c.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_karambit_am_doppler_phase1_light.2b7caaa2a98db6f65e51bb2d9a8e70408d6009a7.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_karambit_an_tiger_orange_light.1298db5d0b907580a4fdc2f8dd39e1f3a600963d.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_karambit_am_ruby_marbleized_light.d23ec920121353a2850b128a58b98d0c831e6f78.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_blue_pink_light.249036d2e02746a116da8ab870094d0c4a61c9e9.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_jaguar_light.c26ce3cc15976973784d3a7a5495215a3d624170.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_glove_sport_tech_gradient_bright_light.349c6ca26c2cf849a5c9fb9612df01f9cceb45b3.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_glove_sport_velvet_red_light.2ce12edad724a9159072a09f7b30df93010dfb33.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_poison_frog_blue_white_light.8ba26bcac75c8d47371e4be7fad344d4ea53dc2a.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_purple_light.0534ea82778124264aa1b25083f38213e5cba8db.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_glove_sport_beadwork_diamonds_purple_light.e37bd0c4aa983adf4202a4466035135ee5d6083c.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_black_webbing_yellow_light.22d6d2c3a0b27212eb288f7fe6519c450ff31ff8.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_slingshot_light.717a61abf2e3c023cab3c81993a0a909c04094de.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_green_light.1c967652c6f1640b08632040e3e6cdc0313e4f4d.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_glove_sport_camo_winter_light.676c9c6649c1161dd0c2467169cfa87062b59d4f.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_houndstooth_red_light.2ebd685cacd3e8cc8200cc998445ad90d7989b12.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_hunter_light.077db115a79f69848a58d9a4d79415fc19f34547.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_glove_sport_pinstripe_black_light.d37653360af35242c327b4ac750501562719e029.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_glove_sport_flames_orange_light.6b8ad66bf54b4bf10e0bd7dcadafaf7e086a01b9.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_glove_sport_racer_red_light.2ce6c82ae4d8807ba6b3db08cf431ea5a2a7afd9.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_light_blue_light.6482e38ccfe8e2006c2859909e0fc7f12dd214f5.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_poison_frog_red_green_light.0db6548d83f28df12c40c7e8155ef6e5c436de87.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/sporty_gloves_sporty_military_light.b6bbfa75b9f92aab3b389ff2e3a058e4bf509319.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_falchion_so_purple_falchion_light.4e0d01bdb69faa46c92c9ac8a57d0e36abec784a.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_m9_bayonet_am_marble_fade_light.8350abcd50dc009251f51c89d258bff1a24a29b8.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_butterfly_aa_fade_light.7c7265937875012da00b5385fb2e98d221d09bf7.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_karambit_gs_karam_autotronic_light.2bc8110f96cf2f874afca8cae281a8cd3cd1ec95.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/motorcycle_gloves_motorcycle_mint_triangle_light.c3aee2e96d1f9459f348d5ac3b31d78f914821f8.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_m9_bayonet_cu_m9_bay_lore_light.57987dc4831f1d3f2f026ea75b00612f7f09c84c.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_m9_bayonet_an_tiger_orange_light.5185350221dab94133622402a94cfe0dacf62c38.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_m9_bayonet_am_doppler_phase2_light.80f4f4f99988632a85f643f967d52b81df57f66f.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_m9_bayonet_am_doppler_phase4_light.4f4eaf32669e3045ce932dae6128abc0821e0ff1.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_m9_bayonet_hy_webs_light.ac5d3f831f24161df95eb4ce67c521fc3400bce6.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_butterfly_cu_butterfly_lore_light.3ef6964558c97ce7e18b6b6bab907245348f1f5d.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_butterfly_am_emerald_marbleized_light.9427099b08b18c78fc2c9b1a26e755b4741b5cd5.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_butterfly_am_gamma_doppler_phase1_light.41cbe148930f1dc7387a9d10dfc1022ecdcc85fe.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_knife_butterfly_gs_butterfly_black_laminate_light.276bdf2bc0dd32b19829d0e4af9610d630b5052d.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_p250_p250_kintsugi_light.395f9f5f4f285cce39d2240195bb888da0eda67f.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_p250_cu_p250_cybercroc_light.e5101b0e1903e993f5afb5184c89e8312c03fe6b.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_p250_brutalist_architecture_light.9ba6b5dd2d9b841d9e076bae57781477f493b2df.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_p250_gs_p250_visions_light.820e6bf30bb86e1e07f92a63e87b9831434ac611.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_fiveseven_soe_pink_cranes_light.a0b7f0f253b7882747777aac2140c1eadcc41b39.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_fiveseven_aq_case_hardened_fiveseven_light.0a7a4620fb408539be5ab3a4634b76c87896eff6.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_fiveseven_aq_oiled_light.307ff3ef2abe9b372400bd266b3c582510370c3a.png",
+"https://cdn.csgoskins.gg/public/images/buckets/econ/default_generated/weapon_fiveseven_fiveseven_polymer_dark_light.7e076e3e049595fe1a33262ee3bae54235935b59.png",
+];
+const WEARS = {
+ru:{FN:"Прямо с завода",MW:"Немного поношенное",FT:"После полевых испытаний",WW:"Поношенное",BS:"Закалённое в боях"},
+en:{FN:"Factory New",MW:"Minimal Wear",FT:"Field-Tested",WW:"Well-Worn",BS:"Battle-Scarred"},
+tr:{FN:"Fabrikadan Yeni",MW:"Az Yıpranmış",FT:"Sahada Test Edilmiş",WW:"İyi Yıpranmış",BS:"Savaş Yorgunu"}};
+
+/* SVG-фолбэк, если картинка недоступна */
+const SHAPES = {
+  rifle:"M4 30 L14 26 L58 26 L60 22 L78 22 L79 26 L92 27 L96 30 L92 33 L70 34 L66 40 L58 40 L60 34 L34 34 L30 44 L22 44 L26 34 L14 34 Z",
+  awp:  "M2 32 L16 28 L52 28 L54 22 L58 22 L57 28 L88 29 L98 32 L88 34 L64 35 L60 42 L52 42 L55 35 L30 35 L26 46 L18 46 L22 35 L16 36 Z",
+  pistol:"M28 18 L74 18 L74 30 L52 30 L50 46 L36 46 L40 30 L28 30 Z M74 20 L82 22 L82 26 L74 28 Z",
+  smg:  "M10 26 L70 26 L72 22 L80 22 L81 26 L90 28 L90 32 L64 33 L62 40 L54 40 L56 33 L40 33 L38 46 L30 46 L33 33 L10 32 Z",
+  knife:"M14 40 C30 18 52 12 88 14 C70 26 52 34 38 38 L34 46 L22 48 Z",
+  gloves:"M30 12 L44 12 L46 26 L52 14 L62 16 L56 32 L64 26 L72 32 L58 44 L46 50 L32 46 L26 32 Z",
+};
+let gid = 0;
+function skinSVG(sk, h){
+  const id = "g" + (++gid), col = RAR[sk.r];
+  return `<svg viewBox="0 0 100 60" style="height:${h}px;max-width:100%">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${col}"/><stop offset="1" stop-color="#20263a"/></linearGradient></defs>
+    <path d="${SHAPES[sk.w]}" fill="url(#${id})" stroke="rgba(255,255,255,.25)" stroke-width="1"/></svg>`;
+}
+function skinIMG(si, h){
+  return `<img src="assets/${si}.webp" alt="" loading="eager" decoding="async" referrerpolicy="no-referrer"
+    style="width:100%;height:${h}px;object-fit:contain" onerror="imgFail(this,${si},${h})">`;
+}
+window.imgFail = (el, si, h) => {
+  if(!el.dataset.s){ el.dataset.s = "1"; el.src = IMG[si]; }
+  else { el.outerHTML = skinSVG(SKINS[si], h); }
+};
+
+/* ================= STATE ================= */
+const _inRange = SKINS.map((s,i)=>i).filter(i=>SKINS[i].p>=70 && SKINS[i].p<=150);
+const _near110 = SKINS.map((s,i)=>i).sort((a,b)=>Math.abs(SKINS[a].p-110)-Math.abs(SKINS[b].p-110)).slice(0,10);
+const _pool = (_inRange.length>=5 ? _inRange : _near110).slice();
+const cheapest = [];
+while(cheapest.length<5 && _pool.length) cheapest.push(_pool.splice(Math.floor(Math.random()*_pool.length),1)[0]);
+const START = {balance:1000, inv:cheapest.slice(), ups:0, wins:0, best:null, lastInc:0, bonusAt:0, muted:false, fast:false, lang:"ru", cur:"RUB", langSet:false, curSet:false, ts:0};
+let S;
+try{ S = Object.assign({}, START, JSON.parse(localStorage.getItem("jetupgrade_v3")||"{}")); }
+catch(e){ S = Object.assign({}, START); }
+S.inv = Array.isArray(S.inv) ? S.inv.filter(i=>SKINS[i]) : [...START.inv];
+let L = LANGS[S.lang]||LANGS.ru, CUR = CURS[S.cur]||CURS.RUB;
+function save(){
+  S.ts = Date.now();
+  try{ localStorage.setItem("jetupgrade_v3", JSON.stringify(S)); }catch(e){}
+  if(window.authorized && window.player){
+    clearTimeout(save.h);
+    save.h = setTimeout(()=>{ try{ window.player.setData({save:S}, true); }catch(e){} }, 800);
+  }
+}
+
+let selInv = new Set();
+let target = null;
+let mult = 0;
+let page = 0, spinning = false, tab = "inv";
+const PER_PAGE = 12;
+
+/* ================= AUDIO ================= */
+let AC = null;
+function beep(f, d, type, vol){
+  if(S.muted || window.__frozen) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type||"square"; o.frequency.value = f;
+    g.gain.setValueAtTime(vol||.04, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime+d);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+d);
+  }catch(e){}
+}
+
+/* ================= HELPERS ================= */
+const $ = id => document.getElementById(id);
+const fmt = n => (Math.round(n*CUR.r*100)/100).toLocaleString(L.loc,{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0 = n => Math.round(n).toLocaleString("ru-RU");
+function coinHTML(){ return '<span class="coin">'+CUR.s+'</span>'; }
+
+function stakeValue(){
+  let v = 0;
+  selInv.forEach(i => { const sk = SKINS[S.inv[i]]; if(sk) v += sk.p; });
+  return v + coinStakeVal();
+}
+function coinStakeVal(){
+  const x = parseFloat($("coinStake").value);
+  return (isNaN(x)||x<0) ? 0 : Math.min(x/CUR.r, S.balance);
+}
+function chance(){
+  if(!Number.isInteger(target)) return 0;
+  const st = stakeValue(), tp = SKINS[target].p;
+  if(st<=0) return 0;
+  return Math.min(.95, (st/tp)*.92);
+}
+
+/* ================= RENDER ================= */
+function skinCard(si, extra, buyLabel){
+  const sk = SKINS[si];
+  return `<div class="skin ${extra||""}" style="--rar:${RAR[sk.r]}">
+    <div class="price">${coinHTML()} ${fmt(sk.p)}</div>
+    <div class="wear" title="${(WEARS[S.lang]||WEARS.en)[sk.wear]}">${sk.wear}</div>
+    <div class="img" style="height:70px">${skinIMG(si,70)}</div>
+    <div class="rarline"></div>
+    <div class="nm"><b>${sk.r===6?'<span class="star">★</span> ':""}${locN(sk.n)}</b>${locS(sk)}</div>
+    ${buyLabel?`<div class="buy">${buyLabel}</div>`:""}
+  </div>`;
+}
+
+function renderInv(){
+  const g = $("invGrid");
+  const sc = g.scrollTop;
+  if(tab === "shop"){
+    const q = $("shopSearch").value.trim().toLowerCase();
+    const list = SKINS.map((sk,i)=>({sk,i}))
+      .filter(o => (o.sk.n+" "+o.sk.s+" "+locN(o.sk.n)+" "+locS(o.sk)).toLowerCase().includes(q))
+      .sort((a,b)=>a.sk.p-b.sk.p);
+    g.innerHTML = list.map(o=>{
+      const can = S.balance >= o.sk.p;
+      const html = skinCard(o.i, can?"":"cant", can?L.buy:L.noFunds);
+      return html.replace('<div class="skin','<div data-i="'+o.i+'" class="skin');
+    }).join("") || `<div class="empty">${L.notFound}</div>`;
+    g.querySelectorAll(".skin").forEach(el=>{
+      el.onclick = ()=>{ if(spinning) return;
+        const si = +el.dataset.i, sk = SKINS[si];
+        if(S.balance >= sk.p){
+          S.balance -= sk.p; S.inv.push(si);
+          beep(980,.09,"triangle",.07); save(); renderInv(); update();
+        } else { beep(160,.15,"sawtooth",.05); }
+      };
+    });
+    g.scrollTop = sc;
+    $("invInfo").innerHTML = `${list.length} ${L.inShop} ${fmt(S.balance)} ${CUR.s}`;
+    return;
+  }
+  if(!S.inv.length){
+    g.innerHTML = `<div class="empty">${L.emptyInv}</div>`;
+  } else {
+    g.innerHTML = S.inv.map((sid,i)=>{
+      const html = skinCard(sid, selInv.has(i)?"sel":"");
+      return html.replace('<div class="skin','<div data-i="'+i+'" class="skin');
+    }).join("");
+    g.querySelectorAll(".skin").forEach(el=>{
+      el.onclick = ()=>{ if(spinning) return;
+        const i = +el.dataset.i;
+        selInv.has(i) ? selInv.delete(i) : selInv.add(i);
+        beep(700,.05); renderInv(); renderCat(); update();
+      };
+    });
+  }
+  g.scrollTop = sc;
+  const worth = S.inv.reduce((a,sid)=>a+SKINS[sid].p,0);
+  $("invInfo").innerHTML = `${S.inv.length} ${L.itemsFor} ${fmt(worth)} ${CUR.s}`;
+}
+
+function setTab(t){
+  tab = t;
+  $("tabInv").classList.toggle("on", t==="inv");
+  $("tabShop").classList.toggle("on", t==="shop");
+  $("invTools").style.display = t==="inv" ? "" : "none";
+  $("shopTools").style.display = t==="shop" ? "" : "none";
+  $("sellSelBtn").style.display = t==="inv" ? "" : "none";
+  $("leftTitle").textContent = t==="inv" ? L.yourItems : L.shop;
+  $("leftSub").textContent = t==="inv" ? L.invSub : L.shopSub;
+  renderInv();
+}
+
+function catList(){
+  const q = $("search").value.trim().toLowerCase();
+  const st = stakeValue();
+  let list = SKINS.map((sk,i)=>({sk,i}))
+    .filter(o => (o.sk.n+" "+o.sk.s+" "+locN(o.sk.n)+" "+locS(o.sk)).toLowerCase().includes(q));
+  list.sort((a,b)=> $("sort").value==="asc" ? a.sk.p-b.sk.p : b.sk.p-a.sk.p);
+  return list;
+}
+function renderCat(){
+  const list = catList();
+  const slice = list;
+  const g = $("catGrid");
+  const sc = g.scrollTop;
+  g.innerHTML = slice.length
+    ? slice.map(o=>{
+        const html = skinCard(o.i, o.i===target?"sel":"");
+        return html.replace('<div class="skin','<div data-i="'+o.i+'" class="skin');
+      }).join("")
+    : `<div class="empty">${L.emptyCat}</div>`;
+  g.querySelectorAll(".skin").forEach(el=>{
+    el.onclick = ()=>{ if(spinning) return;
+      const i = +el.dataset.i;
+      target = (target===i) ? null : i;
+      beep(880,.05); renderCat(); update();
+    };
+  });
+  if(slice.length) Array.from(g.children).forEach((el,idx)=>{ if(slice[idx]) el.dataset.p = slice[idx].sk.p; });
+  g.scrollTop = sc;
+  $("catInfo").textContent = `${list.length} ${L.skins}`;
+}
+
+const MULTS = [0,1.5,2,3,5,10,20];
+let progScroll = 0;
+function scrollToMult(){
+  const st = stakeValue(); if(st<=0 || !(mult>0)) return;
+  const g = $("catGrid"), t = st*mult;
+  let best=null, bd=Infinity;
+  Array.from(g.children).forEach(el=>{
+    const p = parseFloat(el.dataset.p);
+    if(!isNaN(p)){ const d = Math.abs(p-t); if(d<bd){ bd=d; best=el; } }
+  });
+  if(best){ progScroll = Date.now(); best.scrollIntoView({block:"start", behavior:"smooth"}); setTimeout(()=>progScroll=0, 900); }
+}
+function renderMults(){
+  $("mults").innerHTML = MULTS.map(m=>
+    `<button class="mult ${mult===m?'on':''}" data-m="${m}">${m===0?L.anyPrice:"x"+m}</button>`).join("");
+  $("mults").querySelectorAll(".mult").forEach(b=>{
+    b.onclick = ()=>{ mult = +b.dataset.m; renderMults(); if(mult>0) scrollToMult(); };
+  });
+}
+
+function renderPicks(){
+  const pl=$("pickLeft"), pr=$("pickRight");
+  if(!pl||!pr) return;
+  const coins=coinStakeVal();
+  const key=[...selInv].join(",")+"|"+coins+"|"+target+"|"+S.lang+"|"+S.cur+"|"+S.inv.join(",");
+  if(renderPicks.k===key) return;
+  renderPicks.k=key;
+  if(selInv.size||coins>0){
+    let ims="",c=0;
+    selInv.forEach(i=>{ if(c<4 && SKINS[S.inv[i]]){ ims+=`<div class="pimg">${skinIMG(S.inv[i],54)}</div>`; c++; } });
+    pl.innerHTML=`<div class="prow">${ims}</div>${coins>0?`<div class="plbl">${fmt(coins)} ${CUR.s}</div>`:""}<div class="psub">${L.stake}: ${fmt(stakeValue())} ${CUR.s}</div>`;
+  } else {
+    pl.innerHTML=`<div class="pph">⬇</div><div class="psub">${L.pickL}</div>`;
+  }
+  if(Number.isInteger(target)){
+    const sk=SKINS[target];
+    pr.innerHTML=`<div class="pimg big">${skinIMG(target,92)}</div><div class="plbl">${sk.r===6?"★ ":""}${sk.n} | ${sk.s}</div><div class="psub">${fmt(sk.p)} ${CUR.s}</div>`;
+  } else {
+    pr.innerHTML=`<div class="pph">⬆</div><div class="psub">${L.pickR}</div>`;
+  }
+}
+const CIRC = 2*Math.PI*128;
+function update(){
+  const ch = chance(), st = stakeValue();
+  $("balance").textContent = fmt(S.balance);
+  if(typeof update.pb==="number" && update.pb!==S.balance){
+    const b=document.querySelector(".balance");
+    b.classList.remove("up","down"); void b.offsetWidth;
+    b.classList.add(S.balance>update.pb?"up":"down");
+    setTimeout(()=>b.classList.remove("up","down"),560);
+  }
+  update.pb = S.balance;
+  if(typeof update.pc==="number" && Math.abs(update.pc-ch)>0.001){
+    $("chanceVal").classList.add("pop"); setTimeout(()=>$("chanceVal").classList.remove("pop"),260);
+  }
+  update.pc = ch;
+  renderPicks();
+  $("chanceVal").textContent = ch>0 ? (ch*100).toFixed(1)+"%" : "—";
+  const deg = ch*360, len = ch*CIRC;
+  const arc = $("arc");
+  arc.setAttribute("stroke-dasharray", `${len} ${CIRC-len}`);
+  arc.setAttribute("transform", `rotate(${-90-deg/2} 160 160)`);
+  $("stakeLine").innerHTML = st>0
+    ? `${L.stake} <b>${fmt(st)} ${CUR.s}</b>${Number.isInteger(target)?" → "+L.goal+" <b>"+fmt(SKINS[target].p)+" "+CUR.s+"</b>":""}`
+    : L.collect;
+  $("goBtn").disabled = spinning || !(st>0 && Number.isInteger(target) && ch>0.005);
+  if(!S.lastInc) S.lastInc = Date.now();
+  const kInc = Math.floor((Date.now()-S.lastInc)/120000);
+  if(kInc>0){ S.balance += Math.min(kInc,30)*250; S.lastInc = kInc>30 ? Date.now() : S.lastInc + kInc*120000; save(); }
+  $("bonusBtn").textContent = "📺 +"+fmt(3000)+" "+CUR.s+L.adFor;
+  $("bonusBtn").classList.toggle("pulse", S.balance<20 && !S.inv.length);
+  const rem = Math.max(0, 120000-(Date.now()-S.lastInc));
+  $("incomeChip").textContent = "⏳ +"+fmt(250)+" "+CUR.s+" • "+Math.floor(rem/60000)+":"+String(Math.floor(rem%60000/1000)).padStart(2,"0");
+}
+
+/* ================= SPIN ================= */
+let needleAngle = 0, pendingCoins = 0, spinTimer = null, pendingSpin = null, frozenAt = 0, spinStart = 0, spinPaused = 0, spinDurMs = 0, tickTimer = null, tickIdx = 0, tickMarks = [], spinAnim = null;
+function freeze(on){
+  if(!!window.__frozen === !!on) return;
+  window.__frozen = on;
+  document.body.classList.toggle("frozen", on);
+  try{ if(window.__ready && window.ysdk && window.ysdk.features && window.ysdk.features.GameplayAPI){ on ? window.ysdk.features.GameplayAPI.stop() : window.ysdk.features.GameplayAPI.start(); } }catch(e){}
+  try{ if(AC){ on ? AC.suspend() : AC.resume(); } }catch(e){}
+  if(on){
+    frozenAt = Date.now();
+    try{ if(window.authorized && window.player){ clearTimeout(save.h); window.player.setData({save:S}, true); } }catch(e){}
+    if(spinning){
+      if(spinTimer){ clearTimeout(spinTimer); spinTimer = null; }
+      freeze._sp = Date.now();
+      try{ spinAnim && spinAnim.pause(); }catch(e){}
+    }
+  } else {
+    if(frozenAt){ S.lastInc = (S.lastInc||Date.now()) + (Date.now()-frozenAt); frozenAt = 0; }
+    if(spinning && pendingSpin){
+      if(freeze._sp){ spinPaused += Date.now() - freeze._sp; freeze._sp = 0; }
+      const ps = pendingSpin;
+      const remaining = Math.max(80, spinStart + spinDurMs + spinPaused - Date.now());
+      try{ spinAnim && spinAnim.play(); }catch(e){}
+      spinTimer = setTimeout(()=>{ pendingSpin = null; needleAngle = ps.a; finish(ps.win); }, remaining + 250);
+    }
+  }
+}
+document.addEventListener("visibilitychange", ()=>freeze(document.hidden));
+window.addEventListener("blur", ()=>freeze(true));
+window.addEventListener("focus", ()=>{ if(!document.hidden && !window.__adLock) freeze(false); });
+window.addEventListener("pagehide", ()=>freeze(true));
+window.addEventListener("game_api_pause", ()=>freeze(true));
+window.addEventListener("game_api_resume", ()=>{ if(!window.__adLock && !document.hidden) freeze(false); });
+document.addEventListener("game_api_pause", ()=>freeze(true));
+document.addEventListener("game_api_resume", ()=>{ if(!window.__adLock && !document.hidden) freeze(false); });
+setInterval(()=>{ try{ if(!window.__frozen && window.authorized && window.player) window.player.setData({save:S}, true); }catch(e){} }, 60000);
+function spin(){
+  if(spinning) return;
+  const ch = chance(); if(ch<=0) return;
+  spinning = true; $("goBtn").disabled = true;
+  pendingCoins = coinStakeVal();
+  pendingSpin = null;
+  $("coinStake").disabled = true;
+  const win = Math.random() < ch;
+  const deg = ch*360;
+  let final;
+  if(win){ final = (Math.random()*0.86 - 0.43)*deg; }
+  else{
+    const free = 360 - deg;
+    final = deg/2 + 3 + Math.random()*(free-6);
+    if(final>180) final -= 360;
+  }
+  const turns = 4*360;
+  const targetAngle = needleAngle + turns + ((final - (needleAngle%360) + 540)%360 - 180);
+  const needle = $("needle");
+  const dur = S.fast ? 1.6 : 5.4;
+  needle.style.transition = "none";
+  if(spinAnim){ try{ spinAnim.cancel(); }catch(e){} spinAnim = null; }
+  spinAnim = needle.animate(
+    [{transform:`rotate(${needleAngle}deg)`},{transform:`rotate(${targetAngle}deg)`}],
+    {duration: dur*1000, easing:"cubic-bezier(.12,.75,.18,1)", fill:"forwards"}
+  );
+  spinStart = Date.now(); spinPaused = 0; spinDurMs = dur*1000; tickIdx = 0;
+  const NT = S.fast ? 12 : 30;
+  tickMarks = []; for(let t=0;t<NT;t++) tickMarks.push(Math.pow(t/NT,2.2)*(dur*1000-250));
+  clearInterval(tickTimer);
+  tickTimer = setInterval(()=>{
+    if(window.__frozen || !spinning){ return; }
+    const el = Date.now() - spinStart - spinPaused;
+    while(tickIdx < tickMarks.length && el >= tickMarks[tickIdx]){ beep(920 - tickIdx*14, .03, "square", .03); tickIdx++; }
+    if(el >= spinDurMs) clearInterval(tickTimer);
+  }, 60);
+  pendingSpin = {win: win, a: targetAngle};
+  spinTimer = setTimeout(()=>{ pendingSpin = null; needleAngle = targetAngle; finish(win); }, dur*1000+250);
+}
+
+function finish(win){
+  clearInterval(tickTimer); pendingSpin = null;
+  try{
+    needleAngle = ((needleAngle % 360) + 360) % 360;
+    const nd = $("needle");
+    nd.style.transition = "none"; nd.style.transform = `rotate(${needleAngle}deg)`;
+    if(spinAnim){ spinAnim.cancel(); spinAnim = null; }
+  }catch(e){}
+  const tgt = target;
+  S.balance -= Math.min(pendingCoins, S.balance);
+  pendingCoins = 0;
+  $("coinStake").disabled = false;
+  S.inv = S.inv.filter((_,i)=>!selInv.has(i));
+  selInv.clear();
+  $("coinStake").value = "";
+  S.ups++;
+  if(win){ S.wins=(S.wins||0)+1; if(!Number.isInteger(S.best) || SKINS[tgt].p > SKINS[S.best].p) S.best = tgt; }
+  if(win){
+    S.inv.push(tgt);
+    beep(660,.12,"triangle",.08); setTimeout(()=>beep(880,.14,"triangle",.08),120); setTimeout(()=>beep(1320,.25,"triangle",.08),260);
+    showModal(true, tgt);
+    addTick(L.you, tgt);
+  } else {
+    beep(180,.4,"sawtooth",.06);
+    showModal(false, tgt);
+  }
+  if(S.inv.length){ selInv.clear(); selInv.add(S.inv.length-1); }
+  save();
+  spinning = false;
+  renderInv(); renderCat(); update();
+}
+
+function showModal(win, si){
+  const sk = SKINS[si];
+  $("mTitle").textContent = win ? L.win : L.lose;
+  $("mTitle").className = win ? "win" : "lose";
+  $("mSub").textContent = win ? L.winSub : L.loseSub;
+  $("mImg").innerHTML = win ? skinIMG(si,120) : `<div style="font-size:64px">💨</div>`;
+  $("mName").textContent = win ? (sk.r===6?"★ ":"")+locN(sk.n)+" | "+locS(sk) : "";
+  $("mPrice").innerHTML = win ? coinHTML()+" "+fmt(sk.p) : "";
+  const sell = $("mSell");
+  sell.style.display = win ? "" : "none";
+  $("mOk").textContent = win ? L.take : L.ok;
+  if(win){
+    sell.textContent = L.sellFor+fmt(sk.p)+" "+CUR.s;
+    sell.onclick = ()=>{
+      const idx = S.inv.lastIndexOf(si);
+      if(idx>-1){ S.inv.splice(idx,1); S.balance += sk.p; save(); renderInv(); update(); }
+      hideModal();
+    };
+    confetti();
+  }
+  $("overlay").classList.add("show");
+}
+function hideModal(){
+  $("overlay").classList.remove("show");
+  $("modalBox").querySelectorAll(".cf").forEach(e=>e.remove());
+}
+function confetti(){
+  const box = $("modalBox");
+  const colors = ["#fbbf24","#f97316","#22d3ee","#34d399","#d32ce6","#fff"];
+  for(let i=0;i<26;i++){
+    const d = document.createElement("div");
+    d.className = "cf";
+    d.style.setProperty("--x", (Math.random()*360-180).toFixed(0)+"px");
+    d.style.setProperty("--r", (Math.random()*720-360).toFixed(0)+"deg");
+    d.style.setProperty("--d", (0.9+Math.random()*0.9).toFixed(2)+"s");
+    d.style.setProperty("--c", colors[i%colors.length]);
+    box.appendChild(d);
+    setTimeout(()=>d.remove(), 2000);
+  }
+}
+
+/* ================= TICKER ================= */
+const NICK_BASES=["kirill","maks","artem","nikita","danya","vladik","sanya","dimon","egor","lexa","timur","roma","pasha","ilya","zheka","kolyan","seryoga","matvey","denchik","vitya","gleb","stepa"];
+const NICK_TAILS=["","_pro","_cs2","_tv","_wtf","228","1337","777","2007","2008","_52","_rus","_ez","_god","_top","07","99"];
+const NICK_SOLO=["s1mple_fan","AWPer_One","headshot_machine","flick_master","rush_b_please","EcoRoundKing","NoScope_Nick","dust2_enjoyer","kray_nn","GLOCK_papa","silver_elite96","global_smurf","faceit_lvl10","1taps_only","kefir_ultra","mirage_only","cache_legend","ak_redline_fan","ZywOo_jr","donk_style","MonesyFan","бабушка_взяла_авп","печенька","твой_тиммейт","Опасная Торпеда","COWBOYCHIK","junilingus","Smokezera","꧁★Легенда★꧂","папин_бродяга","мамин_симпотяга","Опасный Огурец","дядя_Женя","NeKit_2010","Продам_гараж","ЪУЪ","kotleta_s_pure","zloy_dedok"];
+function makeNick(){
+  if(Math.random()<0.45) return NICK_SOLO[Math.floor(Math.random()*NICK_SOLO.length)];
+  let n = NICK_BASES[Math.floor(Math.random()*NICK_BASES.length)] + NICK_TAILS[Math.floor(Math.random()*NICK_TAILS.length)];
+  if(Math.random()<0.3) n = n.charAt(0).toUpperCase()+n.slice(1);
+  if(Math.random()<0.15) n = "[BRO] "+n;
+  return n;
+}
+function addTick(who, si){
+  const sk = SKINS[si];
+  const el = document.createElement("div");
+  el.className = "tick-card";
+  el.style.setProperty("--rar", RAR[sk.r]);
+  el.innerHTML = `<span class="timg">${skinIMG(si,32)}</span><div><b>${locN(sk.n)} | ${locS(sk)}</b>${who} • ${fmt(sk.p)} ${CUR.s}</div>`;
+  el.style.cursor = "pointer";
+  el.onclick = ()=>showToast(L.private);
+  if(who===L.you){ el.style.borderColor="var(--accent)"; el.style.boxShadow="0 0 12px rgba(251,191,36,.4)"; el.onclick=null; el.style.cursor="default"; }
+  const t = $("ticker");
+  t.prepend(el);
+  while(t.children.length>12) t.lastChild.remove();
+}
+function fakeOnce(){
+  const r = Math.random();
+  let pool;
+  if(r < 0.68)      pool = SKINS.map((s,i)=>i).filter(i=>SKINS[i].p < 3000);
+  else if(r < 0.95) pool = SKINS.map((s,i)=>i).filter(i=>SKINS[i].p >= 3000 && SKINS[i].r < 6);
+  else              pool = SKINS.map((s,i)=>i).filter(i=>SKINS[i].r === 6);
+  const si = pool[Math.floor(Math.random()*pool.length)];
+  addTick(makeNick(), si);
+}
+function fakeTick(){ if(!window.__frozen) fakeOnce(); setTimeout(fakeTick, 900+Math.random()*800); }
+
+/* ================= INIT ================= */
+function initTicks(){
+  let h = "";
+  for(let i=0;i<60;i++){
+    const a = i*6*Math.PI/180, big = i%5===0, r1=142, r2 = big?152:148;
+    h += `<line x1="${160+r1*Math.sin(a)}" y1="${160-r1*Math.cos(a)}" x2="${160+r2*Math.sin(a)}" y2="${160-r2*Math.cos(a)}" stroke="${big?"#5a5a66":"#2a2a30"}" stroke-width="${big?2.5:1.5}"/>`;
+  }
+  $("ticks").innerHTML = h;
+}
+
+$("catGrid").addEventListener("scroll", ()=>{
+  if(!(mult>0) || progScroll) return;
+  const g = $("catGrid"), top = g.scrollTop, st = stakeValue();
+  if(st<=0) return;
+  let first=null;
+  for(const el of g.children){ if(el.offsetTop - g.offsetTop + el.offsetHeight > top + 4){ first=el; break; } }
+  if(!first) return;
+  const p = parseFloat(first.dataset.p);
+  if(isNaN(p)) return;
+  if(p < st*mult*0.75 || p > st*mult*1.35){ mult = 0; renderMults(); }
+});
+$("goBtn").onclick = spin;
+$("mOk").onclick = hideModal;
+$("overlay").onclick = e=>{ if(e.target===$("overlay")) hideModal(); };
+$("coinStake").oninput = ()=>{ renderCat(); update(); };
+$("allInBtn").onclick = ()=>{ if(spinning) return; $("coinStake").value = Math.floor(S.balance*CUR.r*100)/100; S.inv.forEach((_,i)=>selInv.add(i)); renderInv(); renderCat(); update(); };
+$("search").oninput = ()=>{ page=0; renderCat(); };
+$("shopSearch").oninput = ()=>{ renderInv(); };
+$("sort").onchange = ()=>{ page=0; renderCat(); };
+$("prevPg").onclick = ()=>{ page--; renderCat(); };
+$("nextPg").onclick = ()=>{ page++; renderCat(); };
+$("tabInv").onclick = ()=>setTab("inv");
+$("tabShop").onclick = ()=>setTab("shop");
+function updSpeedBtn(){ const b=$("speedBtn"); b.textContent = S.fast?L.turboOn:L.turboOff; b.classList.toggle("on",!!S.fast); }
+$("speedBtn").onclick = ()=>{ S.fast=!S.fast; save(); updSpeedBtn(); beep(700,.06); };
+updSpeedBtn();
+function showToast(msg){ const t=$("toast"); t.textContent=msg; t.style.display=""; clearTimeout(showToast.h); showToast.h=setTimeout(()=>t.style.display="none",1900); }
+function applyStatic(){
+  $("onlineLbl").textContent=L.online; $("upsLbl").textContent=L.ups;
+  document.querySelector(".subtitle").textContent=L.subtitle;
+  $("tickLbl").textContent=L.ticker;
+  document.querySelector(".chance-lbl").textContent=L.chanceLbl;
+  $("goBtn").textContent=L.go;
+  $("tabInv").textContent=L.inv; $("tabShop").textContent=L.shop;
+  $("coinStake").placeholder=L.coinPh; $("allInBtn").textContent=L.all;
+  $("shopSearch").placeholder=L.shopPh; $("search").placeholder=L.searchPh;
+  const so=$("sort").options; so[0].text=L.asc; so[1].text=L.desc;
+  $("rTitle").textContent=L.rTitle; $("rSub").textContent=L.rSub;
+  $("sellSelBtn").textContent=L.sellSel; $("mOk").textContent=L.take;
+  $("profT").textContent=L.profT; $("profD").textContent=L.profD;
+  $("footTxt").innerHTML=L.footer;
+  document.querySelectorAll(".coin").forEach(c=>c.textContent=CUR.s);
+  document.querySelectorAll("#switchBars [data-lang]").forEach(b=>b.classList.toggle("on", b.dataset.lang===S.lang));
+  document.querySelectorAll("#switchBars [data-cur]").forEach(b=>b.classList.toggle("on", b.dataset.cur===S.cur));
+  $("profLogin") && ($("profLogin").textContent = L.login);
+  $("leftTitle").textContent = tab==="inv" ? L.yourItems : L.shop;
+  $("leftSub").textContent = tab==="inv" ? L.invSub : L.shopSub;
+  document.title = L.title;
+  document.documentElement.lang = S.lang;
+  $("profileBtn").title = L.tipProfile;
+  $("muteBtn").title = L.tipSound;
+  renderMults();
+  try{ refreshProfile(); }catch(e){}
+}
+function setLang(l, auto){
+  S.lang=l; L=LANGS[l]||LANGS.ru;
+  if(!auto) S.langSet = true;
+  if(!S.curSet){ const c=({ru:"RUB",tr:"EUR",en:"USD"})[l]||"USD"; S.cur=c; CUR=CURS[c]; }
+  save(); applyStatic(); setTab(tab); renderInv(); renderCat(); update(); updSpeedBtn(); refreshProfile();
+}
+function setCur(c, auto){ S.cur=c; CUR=CURS[c]; if(!auto) S.curSet=true; save(); applyStatic(); renderInv(); renderCat(); update(); refreshProfile(); }
+document.querySelectorAll("#switchBars [data-lang]").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+document.querySelectorAll("#switchBars [data-cur]").forEach(b=>b.onclick=()=>setCur(b.dataset.cur));
+window.player = null; window.authorized = false;
+async function initPlayer(y){
+  try{
+    const p = await y.getPlayer({scopes:false});
+    window.player = p;
+    window.authorized = !!(p.getMode && p.getMode() !== "lite");
+    if(window.authorized){
+      try{
+        const d = await p.getData(["save"]);
+        if(d && d.save){
+          const c = d.save;
+          const val = s => { try{ return (s.balance||0) + (s.inv||[]).reduce((a,i)=>a+((SKINS[i]||{}).p||0),0); }catch(e){ return 0; } };
+          const useCloud = val(c) > val(S) || (val(c) === val(S) && (c.ts||0) > (S.ts||0));
+          const base = useCloud ? c : S, other = useCloud ? S : c;
+          base.ups  = Math.max(base.ups||0,  other.ups||0);
+          base.wins = Math.max(base.wins||0, other.wins||0);
+          if(Number.isInteger(other.best) && SKINS[other.best] && (!Number.isInteger(base.best) || SKINS[other.best].p > (SKINS[base.best]||{p:0}).p)) base.best = other.best;
+          if(other.langSet && !base.langSet){ base.langSet = true; base.lang = other.lang; }
+          if(other.curSet  && !base.curSet){  base.curSet  = true; base.cur  = other.cur; }
+          S = Object.assign({}, START, base);
+          S.inv = (S.inv||[]).filter(i=>SKINS[i]);
+          L = LANGS[S.lang]||LANGS.ru; CUR = CURS[S.cur]||CURS.RUB;
+          applyStatic(); setTab(tab); renderCat(); update(); updSpeedBtn();
+        }
+      }catch(e){}
+      save();
+    }
+  }catch(e){}
+  refreshProfile();
+}
+function refreshProfile(){
+  const st = $("profStats");
+  if(st){
+    let s = "⚡ "+L.stUps+": <b>"+(S.ups||0)+"</b> &nbsp; 🏆 "+L.stWins+": <b>"+(S.wins||0)+"</b>";
+    if(Number.isInteger(S.best) && SKINS[S.best])
+      s += "<br>💎 "+L.stBest+": <b>"+locN(SKINS[S.best].n)+" | "+locS(SKINS[S.best])+"</b> · "+fmt(SKINS[S.best].p)+" "+CUR.s;
+    st.innerHTML = s;
+  }
+  const av=$("profAva"), nm=$("profName"), lg=$("profLogin");
+  if(!av) return;
+  if(window.authorized && window.player){
+    try{ const ph = window.player.getPhoto ? window.player.getPhoto("medium") : ""; if(ph){ av.src=ph; av.style.display=""; } }catch(e){}
+    nm.textContent = (window.player.getName && window.player.getName()) || "Player";
+    $("profT").style.display = "none";
+    $("profD").textContent = L.profCloud;
+    lg.style.display = "none";
+  } else {
+    av.style.display="none"; nm.textContent="";
+    $("profT").style.display = "";
+    lg.style.display = "";
+  }
+}
+$("profLogin").onclick = async ()=>{
+  try{
+    if(window.ysdk && window.ysdk.auth){ await window.ysdk.auth.openAuthDialog(); await initPlayer(window.ysdk); }
+    else showToast(L.onlyYa);
+  }catch(e){}
+};
+$("profileBtn").onclick = (e)=>{ e.stopPropagation(); refreshProfile(); const p=$("profilePop"); p.style.display = p.style.display==="none" ? "" : "none"; };
+document.addEventListener("click", e=>{ const p=$("profilePop"); if(p.style.display!=="none" && !p.contains(e.target) && e.target.id!=="profileBtn") p.style.display="none"; });
+$("sellSelBtn").onclick = ()=>{
+  if(spinning || !selInv.size || tab!=="inv") return;
+  let got = 0;
+  const keep = [];
+  S.inv.forEach((sid,i)=>{ selInv.has(i) ? got += SKINS[sid].p : keep.push(sid); });
+  S.inv = keep; S.balance += got; selInv.clear();
+  beep(980,.08); save(); renderInv(); renderCat(); update();
+};
+$("bonusBtn").onclick = ()=>{
+  if(window.ysdk && window.ysdk.adv && window.ysdk.adv.showRewardedVideo){
+    try{
+      window.ysdk.adv.showRewardedVideo({callbacks:{
+        onOpen: ()=>{ window.__adLock = true; freeze(true); },
+        onRewarded: ()=>{ S.balance += 3000; save(); },
+        onClose: ()=>{ window.__adLock = false; freeze(false); update(); },
+        onError: ()=>{ window.__adLock = false; freeze(false); showToast(L.adFail); }
+      }});
+    }catch(e){ showToast(L.adFail); }
+  } else { S.balance += 3000; save(); update(); showToast(L.adTest); }
+};
+$("muteBtn").onclick = ()=>{ S.muted = !S.muted; $("muteBtn").textContent = S.muted?"🔇":"🔊"; save(); };
+$("muteBtn").textContent = S.muted?"🔇":"🔊";
+
+setInterval(()=>{
+  if(window.__frozen) return;
+  const t = Date.now();
+  $("online").textContent = fmt0(31 + Math.round(7*Math.sin(t/40000)) + (Math.floor(t/5000)%4));
+  $("totalUps").textContent = fmt0(6700 + Math.floor((t-1783200000000)/2500));
+}, 2000);
+setInterval(()=>{ if(!window.__frozen) update(); }, 1000);
+
+initTicks(); renderMults(); renderInv(); renderCat(); update();
+window.__ready = false;
+let __sdkDone = false, __sdkTimeout = false;
+function launchGame(){
+  if(window.__ready) return;
+  if(!__sdkDone && !__sdkTimeout) return;
+  window.__ready = true;
+  try{ if(window.ysdk && window.ysdk.features && window.ysdk.features.LoadingAPI) window.ysdk.features.LoadingAPI.ready(); }catch(e){}
+  try{ if(window.ysdk && window.ysdk.features && window.ysdk.features.GameplayAPI) window.ysdk.features.GameplayAPI.start(); }catch(e){}
+  const l = $("loader");
+  if(l){ l.style.opacity = "0"; setTimeout(()=>{ try{ l.remove(); }catch(e){} }, 450); }
+  try{ document.getElementById("gameApp").classList.remove("lock"); }catch(e){}
+  try{ fitApp(); }catch(e){}
+  try{ if(window.ysdk && window.ysdk.adv && window.ysdk.adv.showFullscreenAdv) window.ysdk.adv.showFullscreenAdv({callbacks:{
+    onOpen: ()=>{ window.__adLock = true; freeze(true); },
+    onClose: ()=>{ window.__adLock = false; freeze(false); },
+    onError: ()=>{ window.__adLock = false; freeze(false); }
+  }}); }catch(e){}
+}
+setTimeout(()=>{ __sdkTimeout = true; launchGame(); }, 4000);
+applyStatic();
+try{
+  const sdkInit = ()=>{ try{ window.YaGames && YaGames.init().then(y=>{
+    window.ysdk = y;
+    try{
+      const yl = (y.environment && y.environment.i18n && y.environment.i18n.lang) || "ru";
+      if(!S.langSet) setLang(({ru:"ru",be:"ru",kk:"ru",uk:"ru",uz:"ru",tr:"tr"})[yl]||"en", true);
+    }catch(e){}
+    initPlayer(y);
+    __sdkDone = true;
+    launchGame();
+  }).catch(()=>{ __sdkTimeout = true; launchGame(); }); }catch(e){ __sdkTimeout = true; launchGame(); } };
+  (function poll(n){
+    if(window.YaGames) sdkInit();
+    else if(n < 80) setTimeout(()=>poll(n+1), 50);
+    else { __sdkTimeout = true; launchGame(); }
+  })(0);
+}catch(e){}
+for(let i=0;i<8;i++) fakeOnce();
+launchGame();
+document.addEventListener("contextmenu", e=>e.preventDefault());
+document.addEventListener("dragstart", e=>e.preventDefault());
+document.addEventListener("selectstart", e=>{ const t=e.target.tagName; if(t!=="INPUT" && t!=="TEXTAREA") e.preventDefault(); });
+const LOGW = 980, LOGH = 640;
+function fitApp(){
+  try{
+    const app = document.getElementById("gameApp");
+    if(!app) return;
+    const vw = Math.max(1, innerWidth), vh = Math.max(1, innerHeight);
+    const coarse = !!(window.matchMedia && matchMedia("(pointer:coarse)").matches);
+    const k = Math.min(1, vw/LOGW, vh/LOGH);
+    app.classList.toggle("narrow", (k < 0.999 ? vw/k : vw) < 880);
+    if(k >= 0.999 && !coarse){
+      app.classList.remove("scaled");
+      app.style.width=""; app.style.height=""; app.style.transform="";
+      return;
+    }
+    app.classList.add("scaled");
+    app.style.width = (vw/k) + "px";
+    app.style.height = (vh/k) + "px";
+    app.style.transform = k < 0.999 ? ("scale("+k+")") : "none";
+  }catch(e){}
+}
+window.addEventListener("resize", fitApp);
+window.addEventListener("orientationchange", ()=>setTimeout(fitApp,120));
+fitApp();
+setTimeout(fitApp, 150);
+setTimeout(fakeTick, 500);
+</script>
+
+
+</body></html>
