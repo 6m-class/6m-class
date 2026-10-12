@@ -445,5 +445,45 @@
     "role": "student",
     "avatar": "",
     "coins": 100
+  },
+  {
+    "login": "acvfysl",
+    "password": "sl7hkg6",
+    "name": "Никита Кузнецов",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "hrtgibqt",
+    "password": "ckt5aguq",
+    "name": "Григорий Иванов",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "cpxwhagwfc",
+    "password": "2xrzkayy0",
+    "name": "Алексей Семёнов",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "ozswmlipmzyx",
+    "password": "qf2t06xib",
+    "name": "Полина Смирнов",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
+  },
+  {
+    "login": "ktxhexkl",
+    "password": "9t49ua0ag",
+    "name": "Артём Иванов",
+    "role": "student",
+    "avatar": "",
+    "coins": 100
   }
 ]
