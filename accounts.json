@@ -40,7 +40,7 @@
     "password": "ggtufd",
     "role": "student",
     "avatar": "https://raw.githubusercontent.com/6m-class/6m-class/main/avatars/Hgybvf_1790591358939.jpg",
-    "coins": 2.7125870575678866e+61
+    "coins": 100
   },
   {
     "name": "TEST2",
@@ -451,7 +451,6 @@
     "login": "Ivan431",
     "password": "xxxx",
     "role": "student",
-    "avatar": "",
-    "coins": 10000165
+    "avatar": ""
   }
 ]
