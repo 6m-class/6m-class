@@ -35,6 +35,21 @@
     "avatar": ""
   },
   {
+    "name": "Bylka",
+    "login": "Hgybvf",
+    "password": "ggtufd",
+    "role": "student",
+    "avatar": "https://raw.githubusercontent.com/6m-class/6m-class/main/avatars/Hgybvf_1790591358939.jpg",
+    "coins": 1.0502468280466248e+24
+  },
+  {
+    "name": "TEST2",
+    "login": "TEST2",
+    "password": "TEST2",
+    "role": "student",
+    "avatar": ""
+  },
+  {
     "name": "TESTER",
     "login": "123123",
     "password": "TESTER",
