@@ -445,5 +445,12 @@
     "role": "student",
     "avatar": "",
     "coins": 100
+  },
+  {
+    "name": "Иван",
+    "login": "Ivan431",
+    "password": "xxxx",
+    "role": "student",
+    "avatar": ""
   }
 ]
