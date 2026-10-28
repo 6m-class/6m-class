@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Абсолютно Научный IQ Тест</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #f7971e, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .question-block:last-of-type { border-bottom: none; }
+        .q-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #ffd200;
+        }
+        .options label {
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .options label:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: #ffd200;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+            accent-color: #ffd200;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #000;
+            background: linear-gradient(to right, #f7971e, #ffd200);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 210, 0, 0.3);
+        }
+        #result {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            animation: fadeIn 1s ease-in;
+        }
+        .iq-score {
+            font-size: 5em;
+            font-weight: 900;
+            background: linear-gradient(to right, #00f260, #0575e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+            text-shadow: 0 0 30px rgba(0, 242, 96, 0.3);
+        }
+        .iq-message {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #ddd;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .error-msg {
+            color: #ff4d4d;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🧠 АБСОЛЮТНО НАУЧНЫЙ IQ ТЕСТ 🧠</h1>
+    <p class="subtitle">Одобрен Международным Институтом Измерения Невозможного</p>
+
+    <form id="quizForm">
+        
+        <div class="question-block">
+            <div class="q-title">1. Если стул решает стать столом, что чувствует табуретка?</div>
+            <div class="options">
+                <label><input type="radio" name="q1" value="1"> Экзистенциальный ужас</label>
+                <label><input type="radio" name="q1" value="2"> Запах фиолетового цвета</label>
+                <label><input type="radio" name="q1" value="3"> Она всегда была холодильником</label>
+                <label><input type="radio" name="q1" value="4"> 42</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">2. Сколько углов у звука, если он падает вверх?</div>
+            <div class="options">
+                <label><input type="radio" name="q2" value="1"> Семь, но только по вторникам</label>
+                <label><input type="radio" name="q2" value="2"> Звук — это жидкость</label>
+                <label><input type="radio" name="q2" value="3"> Минус три угла</label>
+                <label><input type="radio" name="q2" value="4"> Углы украли голуби</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">3. Какой вкус у числа Пи, если его пожарить на сковороде из тишины?</div>
+            <div class="options">
+                <label><input type="radio" name="q3" value="1"> Хрустящая меланхолия</label>
+                <label><input type="radio" name="q3" value="2"> Вкус забытого пароля от Wi-Fi</label>
+                <label><input type="radio" name="q3" value="3"> Оно не прожарилось, потому что Пи — веган</label>
+                <label><input type="radio" name="q3" value="4"> Как левый носок</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">4. Если рыба едет на велосипеде, кто платит за бензин?</div>
+            <div class="options">
+                <label><input type="radio" name="q4" value="1"> Карл Маркс</label>
+                <label><input type="radio" name="q4" value="2"> Велосипед работает на воде</label>
+                <label><input type="radio" name="q4" value="3"> Бензин — это социальный конструкт</label>
+                <label><input type="radio" name="q4" value="4"> Рыба вообще не умеет водить, она штурман</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">5. Какого цвета зеркало, когда оно спит?</div>
+            <div class="options">
+                <label><input type="radio" name="q5" value="1"> Прозрачно-громкого</label>
+                <label><input type="radio" name="q5" value="2"> Цвета, который изобрели завтра</label>
+                <label><input type="radio" name="q5" value="3"> Зеркала не спят, они притворяются стенами</label>
+                <label><input type="radio" name="q5" value="4"> Оранжевого, но шёпотом</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">6. Что будет, если скрестить тостер и философию Канта?</div>
+            <div class="options">
+                <label><input type="radio" name="q6" value="1"> Хлеб, который отказывается быть съеденным ради категорического императива</label>
+                <label><input type="radio" name="q6" value="2"> Тостер начнет критиковать чистый разум</label>
+                <label><input type="radio" name="q6" value="3"> Получится микроволновка Гегеля</label>
+                <label><input type="radio" name="q6" value="4"> Ничего, они оба уже мертвы внутри</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">7. Сколько литров среды нужно, чтобы заполнить пустоту между мыслями кота?</div>
+            <div class="options">
+                <label><input type="radio" name="q7" value="1"> Ровно столько же, сколько весит вторник</label>
+                <label><input type="radio" name="q7" value="2"> Коты не думают, они транслируют радио</label>
+                <label><input type="radio" name="q7" value="3"> 0.004 литра сарказма</label>
+                <label><input type="radio" name="q7" value="4"> Бесконечность минус один ус</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">8. Если время — это суп, то какая ложка правильная?</div>
+            <div class="options">
+                <label><input type="radio" name="q8" value="1"> Деревянная, потому что она помнит лес</label>
+                <label><input type="radio" name="q8" value="2"> Ложка — это иллюзия, навязанная столовыми приборами</label>
+                <label><input type="radio" name="q8" value="3"> Та, которая гнется под тяжестью прошлого</label>
+                <label><input type="radio" name="q8" value="4"> Суп едят вилкой, ты что, не знал?</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">9. Почему облака никогда не опаздывают на работу?</div>
+            <div class="options">
+                <label><input type="radio" name="q9" value="1"> Потому что их работа — это ветер, а ветер всегда на месте</label>
+                <label><input type="radio" name="q9" value="2"> Они работают удаленно из стратосферы</label>
+                <label><input type="radio" name="q9" value="3"> Облака безработные, это просто пар</label>
+                <label><input type="radio" name="q9" value="4"> Они опаздывают, но мы этого не видим из-за гравитации</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">10. Какой формы мысль, если её заморозить в микроволновке?</div>
+            <div class="options">
+                <label><input type="radio" name="q10" value="1"> Формы паники</label>
+                <label><input type="radio" name="q10" value="2"> Микроволновка размораживает, ты всё перепутал</label>
+                <label><input type="radio" name="q10" value="3"> Идеально круглой, как ноль</label>
+                <label><input type="radio" name="q10" value="4"> Мысль взорвется и испачкает тарелку вращения</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">11. Если бы гравитация умела петь, какой жанр она бы выбрала?</div>
+            <div class="options">
+                <label><input type="radio" name="q11" value="1"> Тяжелый металл (Heavy Metal)</label>
+                <label><input type="radio" name="q11" value="2"> Рэп, потому что она постоянно давит на бит</label>
+                <label><input type="radio" name="q11" value="3"> Опера, так как всё падает драматично</label>
+                <label><input type="radio" name="q11" value="4"> Гравитация глухая</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">12. Сколько ног у идеи, если она бежит от реальности?</div>
+            <div class="options">
+                <label><input type="radio" name="q12" value="1"> Ни одной, она использует колеса абстракции</label>
+                <label><input type="radio" name="q12" value="2"> Столько же, сколько букв в слове "сороконожка"</label>
+                <label><input type="radio" name="q12" value="3"> Реальность сама убегает от идей</label>
+                <label><input type="radio" name="q12" value="4"> Две левые ноги</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">13. Что тяжелее: килограмм совести или фунт воображения?</div>
+            <div class="options">
+                <label><input type="radio" name="q13" value="1"> Килограмм, потому что метрическая система объективнее</label>
+                <label><input type="radio" name="q13" value="2"> Воображение нельзя взвесить, оно ломает весы</label>
+                <label><input type="radio" name="q13" value="3"> Совесть тяжелее, она тянет вниз</label>
+                <label><input type="radio" name="q13" value="4"> Оба весят ровно один кирпич</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">14. Если дверь закрыта, но ключ — это банан, как войти?</div>
+            <div class="options">
+                <label><input type="radio" name="q14" value="1"> Съесть банан и пройти сквозь стену на энергии калия</label>
+                <label><input type="radio" name="q14" value="2"> Постучать кожурой</label>
+                <label><input type="radio" name="q14" value="3"> Дверь — это метафора, вы уже внутри</label>
+                <label><input type="radio" name="q14" value="4"> Подождать, пока банан созреет и станет ключом</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <div class="q-title">15. Какой пароль от Вселенной?</div>
+            <div class="options">
+                <label><input type="radio" name="q15" value="1"> admin123</label>
+                <label><input type="radio" name="q15" value="2"> Вселенная использует FaceID, но у неё нет лица</label>
+                <label><input type="radio" name="q15" value="3"> Пароль меняется каждые 13.8 миллиардов лет</label>
+                <label><input type="radio" name="q15" value="4"> Ты и есть пароль, но ты его забыл</label>
+            </div>
+        </div>
+
+        <button type="button" onclick="calculateIQ()">УЗНАТЬ СВОЙ ИСТИННЫЙ IQ</button>
+        <p class="error-msg" id="errorMsg">⚠️ Вы ответили не на все вопросы! Даже абсурд требует полного погружения.</p>
+    </form>
+
+    <div id="result">
+        <h2>Результат анализа вашего мозга:</h2>
+        <div class="iq-score" id="iqNumber"></div>
+        <p class="iq-message" id="iqMessage"></p>
+        <button onclick="location.reload()" style="margin-top: 30px;">Пройти заново (результат изменится, потому что звезды сдвинулись)</button>
+    </div>
+</div>
+
+<script>
+    function calculateIQ() {
+        const form = document.getElementById('quizForm');
+        const formData = new FormData(form);
+        let totalQuestions = 15;
+        let answered = 0;
+        let sum = 0;
+
+        for (let i = 1; i <= totalQuestions; i++) {
+            if (formData.has('q' + i)) {
+                answered++;
+                sum += parseInt(formData.get('q' + i));
+            }
+        }
+
+        if (answered < totalQuestions) {
+            document.getElementById('errorMsg').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('errorMsg').style.display = 'none';
+
+        // Абсолютно ненаучная формула для генерации IQ от 80 до 170
+        // sum может быть от 15 (все 1) до 60 (все 4).
+        // Добавляем рандомный фактор "настроения вселенной", чтобы тест казался "живым"
+        let universeMood = Math.random() * 20 - 10; // от -10 до +10
+        
+        // Базовый расчет
+        let rawScore = (sum / 60) * 90; // от 0 до 90
+        let finalIQ = Math.round(80 + rawScore + universeMood);
+
+        // Ограничиваем пределы строго от 80 до 170
+        if (finalIQ < 80) finalIQ = 80;
+        if (finalIQ > 170) finalIQ = 170;
+
+        // Скрываем форму и показываем результат
+        form.style.display = 'none';
+        document.querySelector('.subtitle').style.display = 'none';
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        document.getElementById('iqNumber').innerText = finalIQ;
+
+        // Генерируем абсурдное сообщение в зависимости от IQ
+        let message = "";
+        if (finalIQ < 100) {
+            message = "Ваш мозг работает в режиме энергосбережения. Это не плохо — вы просто экономите электричество для будущих поколений. Попробуйте думать о фиолетовом чаще.";
+        } else if (finalIQ >= 100 && finalIQ < 120) {
+            message = "Стандартный уровень абсурда. Вы идеально подходите для работы бухгалтером в стране чудес. Ваши мысли имеют правильную геометрическую форму.";
+        } else if (finalIQ >= 120 && finalIQ < 140) {
+            message = "Поздравляем! Ваш интеллект настолько гибок, что вы можете завязывать время в узлы. Эйнштейн бы вам позавидовал, но он занят разговором с тостером.";
+        } else if (finalIQ >= 140 && finalIQ < 160) {
+            message = "Вы находитесь в зоне гениального бреда. Ваш мозг способен одновременно понимать квантовую механику и рецепт борща, смешивая их в единую теорию всего.";
+        } else {
+            message = "АБСОЛЮТНЫЙ ПРЕДЕЛ. Ваш IQ пробил потолок шкалы и улетел в космос. Вы больше не человек, вы — концепция. Пожалуйста, не пытайтесь читать мысли у мебели, ей это не нравится.";
+        }
+
+        document.getElementById('iqMessage').innerText = message;
+    }
+</script>
+
+</body>
+  </html>
