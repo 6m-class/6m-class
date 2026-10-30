@@ -451,6 +451,7 @@
     "login": "Vlad",
     "password": "Vlad",
     "role": "student",
-    "avatar": ""
+    "avatar": "",
+    "coins": 130
   }
 ]
